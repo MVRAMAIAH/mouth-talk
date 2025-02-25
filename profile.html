@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Enable Scrolling */
+        body {
+            background: black;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 60px;
+            overflow-y: auto;
+        }
+
+        /* Header */
+        .header {
+            width: 100%;
+            padding: 20px 50px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #FF073A;
+            text-transform: uppercase;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #FF073A;
+        }
+
+        /* Profile Container */
+        .profile-container {
+            text-align: center;
+            padding: 50px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(255, 7, 58, 0.7);
+            width: 80%;
+            max-width: 600px;
+            margin-top: 120px;
+        }
+
+        /* Profile Image */
+        .profile-container img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border: 5px solid white;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            cursor: pointer;
+        }
+
+        .profile-container img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 7, 58, 1);
+        }
+
+        /* Hidden File Input */
+        #image-upload {
+            display: none;
+        }
+
+        /* Inputs and Select */
+        .input-field, .profile-container select {
+            margin: 10px 0;
+            font-size: 18px;
+            padding: 12px;
+            border: 2px solid #FF073A;
+            border-radius: 10px;
+            background-color: transparent;
+            color: white;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .input-field:hover, .profile-container select:hover {
+            background-color: #FF073A;
+            box-shadow: 0 0 10px rgba(255, 7, 58, 1);
+        }
+
+        /* Button */
+        .profile-container button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #FF073A, #D90429);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            text-decoration: none;
+            box-shadow: 0 0 15px rgba(255, 7, 58, 0.8);
+        }
+
+        .profile-container button:hover {
+            background: white;
+            color: #FF073A;
+            box-shadow: 0 0 20px rgba(255, 7, 58, 1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">MTALK</div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Profile</a>
+            <a href="#">Location</a>
+            <a href="#">About</a>
+        </div>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="profile-container">
+        <!-- Clickable Profile Image -->
+        <label for="image-upload">
+            <img id="profile-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png" alt="User Image">
+        </label>
+        <!-- Hidden File Input -->
+        <input type="file" id="image-upload" accept="image/*">
+
+        <h2 id="user-name">No name yet</h2>
+        <input type="text" id="user-name-input" class="input-field" placeholder="Enter your name">
+        <input type="text" id="actor-input" class="input-field" placeholder="Favourite Actor">
+        <input type="text" id="actress-input" class="input-field" placeholder="Favourite Actress">
+        <input type="text" id="director-input" class="input-field" placeholder="Favourite Director">
+        
+        <select id="cinephile">
+            <option value="casual">Casual Cinephile</option>
+            <option value="enthusiast">Cinephile Enthusiast</option>
+            <option value="expert">Cinephile Expert</option>
+            <option value="veteran">Veteran Cinephile</option>
+        </select>
+        
+        <button onclick="updateProfile()">Update Profile</button>
+    </div>
+
+    <script>
+        // Function to update the profile with user inputs
+        function updateProfile() {
+            const userName = document.getElementById("user-name-input").value;
+            if (userName) document.getElementById("user-name").textContent = userName;
+        }
+
+        // Image Upload on Click
+        document.getElementById("image-upload").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("profile-image").src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
