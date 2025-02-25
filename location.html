@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Location - Asli Review</title>
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Enable Scrolling */
+        body {
+            background: black;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 60px;
+            overflow-y: auto;
+        }
+
+        /* Header (Same as Previous Pages) */
+        .header {
+            width: 100%;
+            padding: 20px 50px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #FF073A;
+            text-transform: uppercase;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #FF073A;
+        }
+
+        /* Centered Content */
+        .centered-content {
+            text-align: center;
+            padding-top: 120px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 40px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #FF073A;
+        }
+
+        /* Dropdown Styling */
+        .dropdown-container {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        label {
+            font-size: 22px;
+            font-weight: bold;
+            color: #FF073A;
+            display: block;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px black;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #FF073A;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            transition: 0.3s ease-in-out;
+        }
+
+        select:hover {
+            background-color: #FF073A;
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 7, 58, 1);
+        }
+
+        /* Submit Button */
+        .submit-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .hover-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #FF073A, #D90429);
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-decoration: none;
+            border: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 7, 58, 0.8);
+            cursor: pointer;
+        }
+
+        .hover-button:hover {
+            background-color: white;
+            color: #FF073A;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 7, 58, 1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header { padding: 15px; }
+            .logo { font-size: 22px; }
+            .nav-links a { font-size: 16px; margin: 0 10px; }
+            .centered-content { width: 90%; }
+        }
+
+        @media (max-width: 480px) {
+            .header { flex-direction: column; align-items: center; padding: 10px; }
+            .nav-links { flex-direction: column; gap: 10px; }
+            .centered-content { width: 95%; padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">MTALK</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="profile.html">Profile</a>
+            <a href="location.html">Location</a>
+            <a href="about.html">About</a>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="centered-content">
+        <h1>Select Location</h1>
+
+        <!-- State Dropdown -->
+        <div class="dropdown-container">
+            <label for="state">Choose Your State:</label>
+            <select id="state" name="state" onchange="updateMandals()">
+                <option value="none">Select State</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Karnataka">Karnataka</option>
+            </select>
+        </div>
+
+        <!-- Mandal Dropdown -->
+        <div class="dropdown-container">
+            <label for="mandal">Choose Your Mandal:</label>
+            <select id="mandal" name="mandal">
+                <option value="none">Select Mandal</option>
+            </select>
+        </div>
+
+        <div class="submit-container">
+            <button class="hover-button" onclick="submitLocation()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        function updateMandals() {
+            const state = document.getElementById("state").value;
+            const mandalDropdown = document.getElementById("mandal");
+
+            mandalDropdown.innerHTML = "<option value='none'>Select Mandal</option>";
+
+            const mandals = {
+                "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur"],
+                "Tamil Nadu": ["Chennai", "Madurai", "Coimbatore"],
+                "Uttar Pradesh": ["Lucknow", "Varanasi", "Agra"],
+                "Karnataka": ["Bengaluru", "Mysore", "Hubli"]
+            };
+
+            if (mandals[state]) {
+                mandals[state].forEach(function(mandal) {
+                    const option = document.createElement("option");
+                    option.value = mandal;
+                    option.textContent = mandal;
+                    mandalDropdown.appendChild(option);
+                });
+            }
+        }
+
+        function submitLocation() {
+            const state = document.getElementById("state").value;
+            const mandal = document.getElementById("mandal").value;
+
+            if (state !== "none" && mandal !== "none") {
+                alert(`You selected: ${state}, ${mandal}`);
+            } else {
+                alert("Please select both State and Mandal.");
+            }
+        }
+    </script>
+</body>
+</html>
