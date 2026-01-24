@@ -167,6 +167,12 @@
 </head>
 <body>
     <script>
+  function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+  }
+</script>
+    <script>
   const token = localStorage.getItem("token");
   if (!token) {
     document.body.style.display = "none";
@@ -213,6 +219,7 @@
     </div>
 </body>
 </html>
+
 
 
 
