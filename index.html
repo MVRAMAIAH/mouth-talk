@@ -166,19 +166,6 @@
     </style>
 </head>
 <body>
-    <script>
-  function logout() {
-    localStorage.removeItem("token");
-    window.location.href = "login.html";
-  }
-</script>
-    <script>
-  const token = localStorage.getItem("token");
-  if (!token) {
-    document.body.style.display = "none";
-    window.location.href = "login.html";
-  }
-</script>
     <div class="header">
         <div class="logo">MTALK</div>
         <div class="nav-links">
@@ -186,9 +173,6 @@
             <a href="profile.html">Profile</a>
             <a href="location.html">Location</a>
             <a href="about.html">About</a>
-            <div onclick="logout()" style="cursor:pointer;font-size:20px;">
-        ⏻
-    </div>
         </div>
     </div>
 
@@ -219,10 +203,6 @@
     </div>
 </body>
 </html>
-
-
-
-
 
 
 
