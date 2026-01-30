@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Review - Asli Talk</title>
+  <meta name="description" content="Submit your review and ratings for movies on Asli Talk." />
+  <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    body {
+      background: black;
+      color: white;
+      overflow-x: hidden;
+      padding-bottom: 80px;
+    }
+
+    .header {
+      width: 100%;
+      padding: 20px 50px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      transition: background 0.3s ease;
+    }
+
+    .header:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: bold;
+      color: white;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .logo:hover {
+      color: #FF073A;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: white;
+      font-size: 18px;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #FF073A;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 140px auto 40px;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid #FF073A;
+      border-radius: 15px;
+      box-shadow: 0 0 30px rgba(255, 7, 58, 0.3);
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      color: #FF073A;
+      margin-bottom: 30px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      color: white;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #FF073A;
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      font-family: 'Orbitron', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 15px rgba(255, 7, 58, 0.5);
+      border-color: #FF4813;
+    }
+
+    select option {
+      background: black;
+      color: white;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .rating-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .star-rating {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .star {
+      font-size: 2.5rem;
+      cursor: pointer;
+      color: rgba(255, 7, 58, 0.5);
+      transition: all 0.2s ease;
+    }
+
+    .star:hover,
+    .star.active {
+      color: #FF073A;
+      transform: scale(1.2);
+      filter: drop-shadow(0 0 10px #FF073A);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #FF073A, #D7002D);
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+      transition: all 0.4s ease-in-out;
+    }
+
+    .submit-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 15px 25px rgba(255, 7, 58, 0.4);
+      background: linear-gradient(135deg, #FF073A, #FF4813);
+    }
+
+    .success-message {
+      display: none;
+      background: rgba(0, 255, 0, 0.2);
+      border: 2px solid #00FF00;
+      color: #00FF00;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .error-message {
+      display: none;
+      background: rgba(255, 0, 0, 0.2);
+      border: 2px solid #FF0000;
+      color: #FF0000;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin-top: 120px;
+        padding: 25px;
+      }
+
+      .page-title {
+        font-size: 1.8rem;
+      }
+
+      .star {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo" onclick="window.location.href='index.html'">MTALK</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="profile.html">Profile</a>
+      <a href="location.html">Location</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+
+  <!-- Review Form Container -->
+  <div class="container">
+    <h1 class="page-title">Submit Your Review</h1>
+    
+    <div id="successMessage" class="success-message">
+      Thank you! Your review has been submitted successfully.
+    </div>
+    <div id="errorMessage" class="error-message">
+      Please fill in all required fields.
+    </div>
+
+    <form id="reviewForm" onsubmit="submitReview(event)">
+      <!-- Movie Selection -->
+      <div class="form-group">
+        <label for="movie">Select Movie *</label>
+        <select id="movie" required>
+          <option value="">-- Choose a movie --</option>
+          <option value="hit3">Hit - The Third Case</option>
+          <option value="arjun">Arjun Sarkaar</option>
+          <option value="tollywood">Tollywood Classic</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <!-- User Name -->
+      <div class="form-group">
+        <label for="name">Your Name *</label>
+        <input type="text" id="name" placeholder="Enter your name" required />
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input type="email" id="email" placeholder="Enter your email" required />
+      </div>
+
+      <!-- Star Rating -->
+      <div class="form-group">
+        <label>Your Rating *</label>
+        <div class="star-rating" id="starRating">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+        </div>
+        <input type="hidden" id="ratingValue" value="0" required />
+      </div>
+
+      <!-- Review Text -->
+      <div class="form-group">
+        <label for="reviewText">Your Review *</label>
+        <textarea id="reviewText" placeholder="Share your thoughts about the movie..." required></textarea>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category">Review Category *</label>
+        <select id="category" required>
+          <option value="">-- Select category --</option>
+          <option value="acting">Acting</option>
+          <option value="direction">Direction</option>
+          <option value="music">Music</option>
+          <option value="cinematography">Cinematography</option>
+          <option value="story">Story</option>
+          <option value="overall">Overall</option>
+        </select>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="submit-btn">Submit Review</button>
+    </form>
+  </div>
+
+  <script>
+    // Star Rating Functionality
+    const stars = document.querySelectorAll('.star');
+    const ratingValue = document.getElementById('ratingValue');
+
+    stars.forEach(star => {
+      star.addEventListener('click', function() {
+        const value = this.getAttribute('data-value');
+        ratingValue.value = value;
+
+        stars.forEach(s => {
+          if (s.getAttribute('data-value') <= value) {
+            s.classList.add('active');
+          } else {
+            s.classList.remove('active');
+          }
+        });
+      });
+
+      star.addEventListener('mouseover', function() {
+        const value = this.getAttribute('data-value');
+        stars.forEach(s => {
+          if (s.getAttribute('data-value') <= value) {
+            s.style.color = '#FF073A';
+          } else {
+            s.style.color = 'rgba(255, 7, 58, 0.5)';
+          }
+        });
+      });
+    });
+
+    document.getElementById('starRating').addEventListener('mouseleave', function() {
+      stars.forEach(star => {
+        if (star.classList.contains('active')) {
+          star.style.color = '#FF073A';
+        } else {
+          star.style.color = 'rgba(255, 7, 58, 0.5)';
+        }
+      });
+    });
+
+    // Form Submission
+    function submitReview(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const rating = document.getElementById('ratingValue').value;
+      const movie = document.getElementById('movie').value;
+      const reviewText = document.getElementById('reviewText').value.trim();
+      const category = document.getElementById('category').value;
+
+      const errorMessage = document.getElementById('errorMessage');
+      const successMessage = document.getElementById('successMessage');
+
+      // Hide messages initially
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+
+      // Validate all fields
+      if (!name || !email || rating === '0' || !movie || !reviewText || !category) {
+        errorMessage.style.display = 'block';
+        return;
+      }
+
+      // Show success message
+      successMessage.style.display = 'block';
+
+      // Reset form
+      document.getElementById('reviewForm').reset();
+      ratingValue.value = '0';
+      stars.forEach(s => s.classList.remove('active'));
+
+      // Hide success message after 5 seconds
+      setTimeout(() => {
+        successMessage.style.display = 'none';
+      }, 5000);
+
+      // Here you can send the data to your backend
+      console.log({
+        name,
+        email,
+        rating,
+        movie,
+        reviewText,
+        category
+      });
+    }
+  </script>
+
+</body>
+</html>

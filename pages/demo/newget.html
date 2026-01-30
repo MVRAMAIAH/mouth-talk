@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asli Re - The Ultimate Winner</title>
+
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        body {
+            background: black;
+            background-image: url("../../assets/images/land.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            color: white;
+            overflow: hidden;
+            padding-bottom: 60px;
+        }
+
+        /* HEADER */
+        .header {
+            width: 100%;
+            padding: 20px 50px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #FF073A;
+            text-transform: uppercase;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #FF073A;
+        }
+
+        /* BOTTOM CONTENT */
+        .bottom-content {
+            position: absolute;
+            bottom: 60px;
+            text-align: center;
+        }
+
+        /* REDUCED HEADING SIZE */
+        .heading {
+            display: flex;
+            font-size: 56px;   /* REDUCED */
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: rgba(255, 255, 255, 0.2);
+            justify-content: center;
+        }
+
+        .letter {
+            display: inline-block;
+            position: relative;
+        }
+
+        .letter::before {
+            content: attr(data-letter);
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: transparent;
+            opacity: 0;
+            transition: 0.3s ease-in-out;
+        }
+
+        .letter:hover::before {
+            opacity: 1;
+            text-shadow: 0 0 10px #D54748, 0 0 20px #D54748;
+            -webkit-text-stroke: 1px #D54748;
+        }
+
+        /* CTA BUTTON */
+        .cta-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #FF073A, #D90429);
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 0 20px rgba(255, 7, 58, 0.8);
+            transition: 0.4s;
+        }
+
+        .cta-button:hover {
+            background: white;
+            color: #FF073A;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .heading { font-size: 40px; }
+            .cta-button { font-size: 18px; }
+        }
+
+        @media (max-width: 480px) {
+            .heading { font-size: 32px; }
+            .cta-button { font-size: 16px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="logo">MTALK</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="profile.html">Profile</a>
+            <a href="location.html">Location</a>
+            <a href="about.html">About</a>
+        </div>
+    </div>
+
+    <div class="bottom-content">
+        <h3 class="heading">
+            <span class="letter" data-letter="L">L</span>
+            <span class="letter" data-letter="E">E</span>
+            <span class="letter" data-letter="T">T</span>
+            <span class="letter" data-letter="'">'</span>
+            <span class="letter" data-letter="S">S</span>
+            <span class="letter" data-letter="-">-</span>
+            <span class="letter" data-letter="M">M</span>
+            <span class="letter" data-letter="A">A</span>
+            <span class="letter" data-letter="K">K</span>
+            <span class="letter" data-letter="E">E</span>
+            <span class="letter" data-letter="-">-</span>
+            <span class="letter" data-letter="H">H</span>
+            <span class="letter" data-letter="I">I</span>
+            <span class="letter" data-letter="G">G</span>
+            <span class="letter" data-letter="H">H</span>
+        </h3>
+
+        <a href="get started.html" class="cta-button">Get Started</a>
+    </div>
+
+</body>
+</html>
