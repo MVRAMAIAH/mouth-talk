@@ -1,0 +1,75 @@
+[
+  {
+    "id": "hit3",
+    "title": "Hit - the third case",
+    "poster": "hitt4k.jpg",
+    "synopsis": "Arjun Sarkaar is imprisoned for an unspecified crime. In jail, he is saved by a fellow prisoner named Samuel Joseph from being harmed by inmates he had previously arrested. Later Arjun narrates his story to Joseph through a series of flashbacks.",
+    "actor": "Nani",
+    "actress": "Sree Nidhi Shetty",
+    "director": "Sailesh Kolanu",
+    "producer": "Nani & Prashanti Tipirneni",
+    "music": "John Stewart Eduri",
+    "trailer": "https://www.youtube.com/embed/kAtfaaUgDRU"
+  },
+
+  {
+    "id": "retr",
+    "title": "Retro",
+    "poster": "retr.jpg",
+    "synopsis": "Retro (2025) is a Tamil action-drama directed by Karthik Subbaraj starring Suriya as Paarivel Kannan, a gangster raised in 1960s Thoothukudi who attempts to abandon his violent life for his lover, Rukmini (Pooja Hegde). The plot follows his struggle to reform while facing his past, featuring themes of love, war, and vengeance. ",
+    "actor": "suriya",
+    "actress": " pooja hegde",
+    "director": "karthik subbaraj",
+    "producer": "venkata ramaiah marupudi",
+    "music": "santosh narayanan",
+    "trailer": "https://www.youtube.com/embed/y1TsOIB96e8?si=0_Oyf7f_BxfSK8fu" 
+  },
+  {
+    "id": "bhram",
+    "title": "Brahmotsavam",
+    "poster": "bhram.jpg",
+    "synopsis": "Brahmotsavam is a family-oriented drama that celebrates relationships, traditions, and values. The film follows the life of a wealthy joint family and highlights emotional bonds, conflicts, and the importance of togetherness in modern society.",
+    "actor": "Mahesh Babu",
+    "actress": "Kajal Aggarwal, Samantha Ruth Prabhu, Pranitha Subhash",
+    "director": "Srikanth Addala",
+    "producer": "Prasad V. Potluri",
+    "music": "Mickey J Meyer",
+    "trailer": "https://www.youtube.com/embed/cWRYYZjCMgY"
+  },
+  {
+    "id": "ntr30",
+    "title": "Devara",
+    "poster": "dev.jpg",
+    "synopsis": "A village chief's son secretly continues his father's mission to end smuggling, while pretending to be weak and maintaining the illusion that his father is still alive",
+    "actor": "NTR",
+    "actress": "Jhanvi Kapoor",
+    "director": "Korata Siva",
+    "producer": "Sudhakar Mikkilineni",
+    "music": "Anirudh Ravichander",
+    "trailer": "https://www.youtube.com/embed/5cx7rvMvAWo"
+  },
+  {
+    "id": "indushit",
+    "title": "rajasaab",
+    "poster": "rajasaab.jpg",
+    "synopsis": "The Raja Saab (2026) is a Telugu horror-romance film where Raju (Prabhas) searches for his estranged grandfather, Kanakaraju (Sanjay Dutt), to fulfill his Alzheimer’s-stricken grandmother's wish. The journey leads him to a haunted mansion in Hyderabad, where he discovers his grandfather is a dark, supernatural entity who trapped.",
+    "actor":"Prabhas",
+    "actress": "ridhi kumar , nidhi agarwal , malvika mohanan",
+    "director": "maveric maruthi",
+    "producer": "T G vishwa prasad",
+    "music": " SS thaman",
+    "trailer": "https://www.youtube.com/embed/wT4HcYAeV5U?si=sRvA3JqYiaVKqBXx"
+  },
+  {
+    "id": "pk04",
+    "title": "OG",
+    "poster": "og.jpg",
+    "synopsis": "hey Call Him OG (2025) is a high-octane Telugu action drama directed by Sujeeth, starring Pawan Kalyan as Ojas Gambheera a lethal, Samurai-trained gangster. The story follows OG as he returns from a self-imposed exile in the 1990s to protect his found family and city from violent rival mob bosses, specifically Omi Bhau (Emraan Hashmi). ",
+    "actor":"Pawan kalyan konidela",
+    "actress": "priyanka mohan",
+    "director": "sujeeth",
+    "producer": "DVV entertainments",
+    "music": " SS thaman",
+    "trailer": "https://www.youtube.com/embed/_8J8LwoVH_0?si=dBcADfJ0vbJ3FssZ" 
+  }
+]

@@ -6,70 +6,14 @@
   <title>Mouth Talk – Movies</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Orbitron', sans-serif;
-      background-color: #000;
-      color: #fff;
-    }
-
-    nav {
-      display: flex;
-      justify-content: space-between;
-      padding: 50px;
-      background-color: #000;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    nav a {
-      color: white;
-      margin-left: 15px;
-      text-decoration: none;
-      text-transform: uppercase;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      margin-top: 30px;
-    }
-
-    .movie-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-      padding: 25px;
-    }
-
-    .movie-box {
-      width: 150px;
-      height: 200px;
-      border: 2px solid #ff4d4d;
-      border-radius: 6px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: 0.3s ease;
-      text-decoration: none;
-      color: #fff;
-    }
-
-    .movie-box:hover {
-      border-color: #ff073a;
-      box-shadow: 0 0 10px #ff073a, 0 0 20px #ff073a33;
-      transform: scale(1.05);
-    }
-
-    .movie-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    body { margin:0; font-family:'Orbitron',sans-serif; background:#000; color:#fff;}
+    nav { display:flex; justify-content:space-between; padding:50px; background:#000; position:sticky; top:0; z-index:100;}
+    nav a { color:#fff; margin-left:15px; text-decoration:none; text-transform:uppercase; font-weight:600; font-size:0.85rem;}
+    h1 { text-align:center; font-size:2rem; margin-top:30px;}
+    .movie-grid { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; padding:25px;}
+    .movie-box { width:150px; height:200px; border:2px solid #ff4d4d; border-radius:6px; overflow:hidden; cursor:pointer; transition:.3s ease; text-decoration:none; color:#fff;}
+    .movie-box:hover { border-color:#ff073a; box-shadow:0 0 10px #ff073a,0 0 20px #ff073a33; transform:scale(1.05);}
+    .movie-box img { width:100%; height:100%; object-fit:cover; display:block;}
   </style>
 </head>
 <body>
@@ -85,19 +29,38 @@
 
   <h1>Running Movies – (Tollywood)</h1>
 
-  <div class="movie-grid">
-    <a href="tol1.html" class="movie-box">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBloGjCfdNv1I1O424lr0Cv6XMqUgg4k5Odg&s" alt="Movie 1"/>
-    </a>
-    <a href="movie.html" class="movie-box">
-      <img src="gym.jpg" alt="Movie 2"/>
-    </a>
-    <a href="movie.html" class="movie-box">
-      <img src="retr.jpg" alt="Movie 3"/>
-    </a>
-    <a href="bhram.html" class="movie-box">
-      <img src="bob.jpg" alt="Movie 4"/>
-    </a>
-  </div>
+  <div id="movieGrid" class="movie-grid"></div>
+
+  <script>
+    async function loadMovies(){
+      try{
+        const res = await fetch('/api/movies');
+        if(!res.ok) throw new Error('API fetch failed');
+
+        const movies = await res.json();
+        const grid = document.getElementById('movieGrid');
+        grid.innerHTML = '';
+
+        movies.forEach(m => {
+          const a = document.createElement('a');
+          a.className = 'movie-box';
+          a.href = `movie.html?id=${encodeURIComponent(m.id)}`;
+
+          const img = document.createElement('img');
+          img.alt = m.title || 'Poster';
+          img.src = `assets/images/${m.poster}`; // fixed path
+
+          a.appendChild(img);
+          grid.appendChild(a);
+        });
+      }catch(err){
+        console.error('loadMovies error', err);
+        document.getElementById('movieGrid').innerHTML =
+          '<p style="padding:20px;color:#f55">Could not load movies.</p>';
+      }
+    }
+
+    loadMovies();
+  </script>
 </body>
 </html>
