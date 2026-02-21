@@ -1,38 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Te Industry</title>
-    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <title>About - MTALK OTT</title>
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
+        type="image/png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
+        :root {
+            --primary: #FF073A;
+            --accent: #D90429;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.7);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
-        /* Enable Scrolling */
         body {
-            background: black;
-            color: white;
+            background: #000;
+            color: var(--text-main);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-bottom: 60px;
-            overflow-y: auto;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #1a0202 0%, #000000 100%);
         }
 
-        /* Header */
+        /* HEADER */
         .header {
             width: 100%;
             padding: 20px 50px;
             background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
             position: fixed;
             top: 0;
             left: 0;
@@ -40,93 +49,344 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
+            border-bottom: 1px solid var(--glass-border);
         }
 
         .logo {
+            font-family: 'Orbitron', sans-serif;
             font-size: 26px;
             font-weight: bold;
-            color: #FF073A;
+            color: var(--primary);
             text-transform: uppercase;
+            cursor: pointer;
+            letter-spacing: 2px;
         }
 
         .nav-links a {
             margin: 0 15px;
             text-decoration: none;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 500;
             transition: 0.3s;
+            opacity: 0.8;
         }
 
         .nav-links a:hover {
-            color: #FF073A;
+            color: var(--primary);
+            opacity: 1;
         }
 
-        /* About Section */
-        .about-container {
-            text-align: center;
-            padding-top: 120px;
-            width: 80%;
-            max-width: 800px;
+        /* MAIN CONTAINER */
+        .main-container {
+            margin-top: 100px;
+            padding: 0 20px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        h1 {
-            font-size: 40px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #FF073A;
-        }
-
-        .about-content {
-            font-size: 18px;
-            line-height: 1.8;
-            text-align: justify;
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(0, 0, 0, 0.8);
+        /* HERO CARD */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 0 15px rgba(255, 7, 58, 0.7);
+            width: 100%;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            text-align: center;
         }
 
-        /* Responsive */
+        /* PROFILE SECTION */
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-img-container {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            padding: 5px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            box-shadow: 0 0 30px rgba(255, 7, 58, 0.4);
+            margin-bottom: 15px;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-img-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(255, 7, 58, 0.6);
+        }
+
+        .profile-img-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #000;
+        }
+
+        .profile-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 10px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: 0.4s ease;
+            letter-spacing: 1px;
+        }
+
+        .profile-img-container:hover+.profile-name {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* INSTAGRAM BUTTON */
+        .insta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px 25px;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(220, 39, 67, 0.3);
+        }
+
+        .insta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(220, 39, 67, 0.5);
+        }
+
+        /* MISSION SECTION */
+        .mission-section {
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        .mission-section h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .mission-text {
+            font-size: 17px;
+            line-height: 1.7;
+            color: var(--text-dim);
+            text-align: center;
+        }
+
+        /* IDEATORS SECTION */
+        .ideators-section {
+            margin-top: 40px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .ideators-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 25px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .ideators-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .ideators-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .ideator-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 16px;
+            opacity: 0;
+            /* Set initial state for GSAP */
+        }
+
+        .ideator-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .ideator-tag {
+            font-size: 12px;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .header { padding: 15px; }
-            .logo { font-size: 22px; }
-            .nav-links a { font-size: 16px; margin: 0 10px; }
-            .about-container { width: 90%; }
-        }
+            .header {
+                padding: 15px 30px;
+            }
 
-        @media (max-width: 480px) {
-            .header { flex-direction: column; align-items: center; padding: 10px; }
-            .nav-links { flex-direction: column; gap: 10px; }
-            .about-container { width: 95%; padding: 30px; }
+            .logo {
+                font-size: 22px;
+            }
+
+            .ideators-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .glass-card {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <div class="header">
-        <div class="logo">MTALK</div>
+        <div class="logo" onclick="window.location.href='get-started.html'">MTALK</div>
         <div class="nav-links">
-            <a href="index.html">Home</a>
+            <a href="get-started.html">Home</a>
             <a href="profile.html">Profile</a>
             <a href="location.html">Location</a>
             <a href="about.html">About</a>
         </div>
     </div>
 
-    <!-- About Section -->
-    <div class="about-container">
-        <h1>About us</h1>
-        <div class="about-content">
-            <pre>  We designed this page specially to encounter the unethical movie critics by 
-                             users it self. We designed a mechanism where the audiance
-                                     are categorised based on their taste.Then while 
-                                          booking the ticket we will automatically
-                                   genarate a unique code.By provding that code  the 
-                                 audian  will be able to give his review in form of  stars. 
-                                  User reviews will only be forwarded to his category.
-              </pre>
+    <div class="main-container">
+        <!-- PROFILE CARD -->
+        <div class="glass-card profile-card">
+            <div class="profile-section">
+                <div class="profile-img-container">
+                    <img src="../assets/images/ramaiah.jpg" alt="Venkata Ramaiah Marupudi">
+                </div>
+                <div class="profile-name">VENKATA RAMAIAH MARUPUDI</div>
+            </div>
+
+            <a href="https://www.instagram.com/mr_ramaiah/" target="_blank" class="insta-btn">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z" />
+                </svg>
+                Connect on Instagram
+            </a>
+        </div>
+
+        <!-- MISSION CARD -->
+        <div class="glass-card">
+            <div class="mission-section">
+                <h1>Our Vision</h1>
+                <p class="mission-text">
+                    Mouth-Talk was specifically designed to empower genuine movie-goers against unethical movie
+                    criticism.
+                    We've implemented a unique mechanism that categorizes audiences based on their personal taste.
+                    By using generated unique codes during ticket booking, audiences can provide weighted star reviews
+                    that are forwarded to their respective categories.
+                </p>
+            </div>
+        </div>
+
+        <!-- IDEATORS SECTION -->
+        <div class="ideators-section">
+            <h2>Brains Behind</h2>
+            <div class="ideators-grid">
+                <div class="ideator-card">
+                    <div class="ideator-tag">Founding Ideator</div>
+                    <div class="ideator-name">SATTENAPALLI BHANU PRAKASH</div>
+                </div>
+                <div class="ideator-card">
+                    <div class="ideator-tag">Founding Ideator</div>
+                    <div class="ideator-name">TALLA PAVAN KUMAR</div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    <script src="../assets/js/firebase-init.js"></script>
+
+    <script>
+        // Auth Guard
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (!res.ok) window.location.href = 'login.html';
+                else {
+                    const user = await res.json();
+                    const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
+                    if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+            }
+        }
+        checkAuth();
+
+        // Animations
+        window.addEventListener('load', () => {
+            gsap.from(".glass-card", {
+                duration: 1,
+                y: 50,
+                opacity: 0,
+                stagger: 0.3,
+                ease: "power3.out"
+            });
+
+            // Ideators appear after a longer delay for better hierarchy
+            gsap.to(".ideator-card", {
+                duration: 1.2,
+                y: 0,
+                opacity: 1,
+                delay: 1.5,
+                stagger: 0.3,
+                ease: "power2.out",
+                onComplete: function () {
+                    // Add hover class or just re-enable hover via CSS if needed
+                    this.targets().forEach(el => el.style.transition = "0.3s");
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>

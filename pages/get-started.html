@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - MTALK OTT</title>
+    <meta name="description"
+        content="MTALK OTT - Stream your favorite Hindi, Tamil, Malayalam, and English movies online!">
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
+        type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        body {
+            background: black;
+            color: white;
+            text-align: center;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        /* HEADER */
+        .header {
+            width: 100%;
+            padding: 20px 50px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+        .header:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .logo:hover {
+            color: #FF073A;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #FF073A;
+        }
+
+        /* CONTAINER */
+        .container {
+            margin-top: 60px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 80px 40px;
+            padding: 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* BOXES */
+        .box {
+            width: 220px;
+            height: 330px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            flex: 0 0 auto;
+        }
+
+        .box-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .box:hover {
+            transform: translateY(-10px);
+        }
+
+        .box:hover .box-inner {
+            box-shadow: 0 0 25px rgba(255, 7, 58, 0.6);
+            border: 1px solid rgba(255, 7, 58, 0.3);
+        }
+
+        .box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+            filter: brightness(80%);
+        }
+
+        .box:hover img {
+            transform: scale(1.1);
+            filter: brightness(100%);
+        }
+
+        .category-label {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 700;
+            color: #FF073A;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0;
+            transition: all 0.4s ease;
+            white-space: nowrap;
+            pointer-events: none;
+            text-shadow: 0 0 12px rgba(255, 7, 58, 0.6);
+        }
+
+        .box:hover .category-label {
+            opacity: 1;
+            top: -45px;
+            text-shadow: 0 0 15px rgba(255, 7, 58, 0.8);
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        /* HEADING */
+        .page-header {
+            margin-top: 140px;
+            text-align: center;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                text-shadow: none;
+            }
+
+            50% {
+                opacity: 1;
+                text-shadow: 0 0 20px #FF073A;
+            }
+        }
+
+        .page-header h1 {
+            font-size: 42px;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            color: white;
+            font-weight: 700;
+            animation: blink 2s infinite ease-in-out;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 30px;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .nav-links a {
+                font-size: 16px;
+            }
+
+            .box {
+                width: 180px;
+                height: 270px;
+            }
+
+            .container {
+                gap: 60px 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px 20px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-links a {
+                display: block;
+                margin: 8px 0;
+            }
+
+            .box {
+                width: 150px;
+                height: 225px;
+            }
+
+            .container {
+                gap: 50px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo" onclick="window.location.href='get-started.html'">MTALK</div>
+        <div class="nav-links">
+            <button class="add-movie-btn admin-only" onclick="openModal()" style="display: none;">+ Add Movie</button>
+            <a href="get-started.html">Home</a>
+            <a href="profile.html">Profile</a>
+            <a href="location.html">Location</a>
+            <a href="about.html">About</a>
+        </div>
+    </div>
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <h1>Select Category</h1>
+    </div>
+
+    <!-- IMAGE ROW -->
+    <div class="container">
+        <div class="box" onclick="window.location.href='tolly.html'">
+            <div class="category-label">Tollywood</div>
+            <div class="box-inner">
+                <img src="/assets/images/bahu.jpg" alt="Tollywood Movies" loading="lazy">
+            </div>
+        </div>
+        <div class="box" onclick="window.location.href='hindi.html'">
+            <div class="category-label">Bollywood</div>
+            <div class="box-inner">
+                <img src="https://cf-img-a-in.tosshub.com/sites/visualstory/wp/2025/02/vicky-chhava-1ITG-1739516595408.jpg?size=*:900"
+                    alt="Bollywood Movies" loading="lazy">
+            </div>
+        </div>
+        <div class="box" onclick="window.location.href='kollywood.html'">
+            <div class="category-label">Kollywood</div>
+            <div class="box-inner">
+                <img src="/assets/images/images.jpg" alt="Kollywood Movies" loading="lazy">
+            </div>
+        </div>
+        <div class="box" onclick="window.location.href='mollywood.html'">
+            <div class="category-label">Mollywood</div>
+            <div class="box-inner">
+                <img src="https://m.media-amazon.com/images/M/MV5BNmY5NjI5ZTQtNDAyZi00NjgyLWE3NzItODE4OGYxNmFkN2E2XkEyXkFqcGc@._V1_.jpg"
+                    alt="Mollywood Movies" loading="lazy">
+            </div>
+        </div>
+        <div class="box" onclick="window.location.href='sandalwood.html'">
+            <div class="category-label">Sandalwood</div>
+            <div class="box-inner">
+                <img src="https://stat5.bollywoodhungama.in/wp-content/uploads/2022/10/Kantara-1.jpg"
+                    alt="Sandalwood Movies" loading="lazy">
+            </div>
+        </div>
+        <!-- NEW CATEGORIES -->
+        <div class="box" onclick="window.location.href='hollywood.html'">
+            <div class="category-label">Hollywood</div>
+            <div class="box-inner">
+                <img src="/assets/images/hollywood.jpg" alt="Hollywood Movies" loading="lazy">
+            </div>
+        </div>
+        <div class="box" onclick="window.location.href='webseries.html'">
+            <div class="category-label">Web Series</div>
+            <div class="box-inner">
+                <img src="/assets/images/webseries.jpg" alt="Web Series" loading="lazy">
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    <script src="../assets/js/firebase-init.js"></script>
+    <script src="../assets/js/admin.js"></script>
+
+    <!-- Page Scripts -->
+    <script>
+        // Auth Guard
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (!res.ok) window.location.href = 'login.html';
+                else {
+                    const user = await res.json();
+                    const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
+                    if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
+
+                    // Admin toggle
+                    if (user.isAdmin) {
+                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+                    }
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+            }
+        }
+        checkAuth();
+
+        // Modal container for admin.js
+        const modalContainer = document.createElement('div');
+        modalContainer.id = 'admin-modal-container';
+        document.body.appendChild(modalContainer);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof injectAdminModal === 'function') injectAdminModal();
+        });
+
+        gsap.from(".box", {
+            duration: 1,
+            opacity: 1,
+            y: 30,
+            stagger: 0.1,
+            ease: "power3.out"
+        });
+    </script>
+</body>
+
+</html>
