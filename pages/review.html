@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Review - Asli Talk</title>
-  <meta name="description" content="Submit your review and ratings for movies on Asli Talk." />
-  <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png" />
+  <title>Mouth Talk – Reviews</title>
+  <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
+    type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     * {
@@ -16,12 +17,13 @@
     }
 
     body {
-      background: black;
-      color: white;
-      overflow-x: hidden;
-      padding-bottom: 80px;
+      background: #0a0a0a;
+      color: #fff;
+      min-height: 100vh;
+      overflow-y: auto;
     }
 
+    /* ─── HEADER ─── */
     .header {
       width: 100%;
       padding: 20px 50px;
@@ -44,14 +46,10 @@
     .logo {
       font-size: 26px;
       font-weight: bold;
-      color: white;
+      color: #FF073A;
       text-transform: uppercase;
       cursor: pointer;
       transition: color 0.3s;
-    }
-
-    .logo:hover {
-      color: #FF073A;
     }
 
     .nav-links {
@@ -71,335 +69,736 @@
       color: #FF073A;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 140px auto 40px;
-      padding: 40px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 2px solid #FF073A;
-      border-radius: 15px;
-      box-shadow: 0 0 30px rgba(255, 7, 58, 0.3);
+    /* ─── PAGE CONTENT ─── */
+    .page-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 100px 20px 60px;
     }
 
     .page-title {
-      font-size: 2.5rem;
-      color: #FF073A;
-      margin-bottom: 30px;
       text-align: center;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      text-shadow: 0 0 12px #FF073A;
+    }
+
+    /* ─── MY OPINION BUTTON ─── */
+    .opinion-bar {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .opinion-btn {
+      display: inline-block;
+      padding: 16px 50px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #FF073A, #D90429);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
       text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow: 0 0 20px rgba(255, 7, 58, 0.6), 0 0 60px rgba(255, 7, 58, 0.2);
+      transition: all 0.3s ease;
+      animation: pulse-glow 2s infinite;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .opinion-btn:hover {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 0 30px rgba(255, 7, 58, 0.9), 0 0 80px rgba(255, 7, 58, 0.4);
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(255, 7, 58, 0.6), 0 0 60px rgba(255, 7, 58, 0.2);
+      }
+
+      50% {
+        box-shadow: 0 0 30px rgba(255, 7, 58, 0.9), 0 0 80px rgba(255, 7, 58, 0.4);
+      }
+    }
+
+    /* ─── REVIEWS FEED ─── */
+    .reviews-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .review-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 7, 58, 0.15);
+      border-radius: 14px;
+      padding: 22px 26px;
+      transition: border-color 0.3s;
+    }
+
+    .review-card:hover {
+      border-color: rgba(255, 7, 58, 0.5);
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .review-movie {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #FF073A;
+      text-transform: capitalize;
+    }
+
+    .review-stars {
+      color: #FFD700;
+      font-size: 1rem;
       letter-spacing: 2px;
     }
 
-    .form-group {
-      margin-bottom: 25px;
+    .review-user {
+      font-size: 0.7rem;
+      color: #888;
+      margin-bottom: 10px;
     }
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 1.1rem;
-      color: white;
-      font-weight: 600;
+    .review-text {
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: #ccc;
+      margin-bottom: 14px;
+      font-family: Arial, sans-serif;
     }
 
-    input[type="text"],
-    input[type="email"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px 15px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid #FF073A;
-      border-radius: 8px;
-      color: white;
-      font-size: 1rem;
-      font-family: 'Orbitron', sans-serif;
-      transition: all 0.3s ease;
-    }
-
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      background: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 0 15px rgba(255, 7, 58, 0.5);
-      border-color: #FF4813;
-    }
-
-    select option {
-      background: black;
-      color: white;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-
-    .rating-group {
+    .review-actions {
       display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
     }
 
-    .star-rating {
+    .react-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      background: transparent;
+      color: #aaa;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .react-btn:hover {
+      border-color: #FF073A;
+      color: #fff;
+      background: rgba(255, 7, 58, 0.1);
+    }
+
+    .react-btn.liked {
+      border-color: #4caf50;
+      color: #4caf50;
+    }
+
+    .react-btn.disliked {
+      border-color: #f44336;
+      color: #f44336;
+    }
+
+    .review-date {
+      margin-left: auto;
+      font-size: 0.65rem;
+      color: #555;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    /* ─── MODAL OVERLAY ─── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #141414;
+      border: 1px solid rgba(255, 7, 58, 0.3);
+      border-radius: 16px;
+      padding: 35px;
+      width: 90%;
+      max-width: 460px;
+      position: relative;
+      animation: modal-in 0.3s ease;
+    }
+
+    @keyframes modal-in {
+      from {
+        opacity: 0;
+        transform: scale(0.92);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #FF073A;
+    }
+
+    .modal h2 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: #FF073A;
+      text-align: center;
+    }
+
+    .modal label {
+      display: block;
+      font-size: 0.7rem;
+      color: #888;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .modal input,
+    .modal textarea {
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+      font-size: 0.85rem;
+      font-family: 'Orbitron', sans-serif;
+      transition: border-color 0.3s;
+    }
+
+    .modal input:focus,
+    .modal textarea:focus {
+      outline: none;
+      border-color: #FF073A;
+    }
+
+    .modal textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: Arial, sans-serif;
+    }
+
+    .modal .info-row {
       display: flex;
       gap: 10px;
-      margin-top: 10px;
+      margin-bottom: 16px;
     }
 
-    .star {
-      font-size: 2.5rem;
-      cursor: pointer;
-      color: rgba(255, 7, 58, 0.5);
-      transition: all 0.2s ease;
+    .modal .info-box {
+      flex: 1;
+      background: rgba(255, 7, 58, 0.07);
+      border: 1px solid rgba(255, 7, 58, 0.2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-align: center;
     }
 
-    .star:hover,
-    .star.active {
-      color: #FF073A;
-      transform: scale(1.2);
-      filter: drop-shadow(0 0 10px #FF073A);
-    }
-
-    .submit-btn {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #FF073A, #D7002D);
-      color: white;
-      font-size: 1.2rem;
-      font-weight: bold;
+    .modal .info-box .info-label {
+      font-size: 0.55rem;
+      color: #888;
       text-transform: uppercase;
-      border: none;
-      border-radius: 8px;
+      margin-bottom: 4px;
+    }
+
+    .modal .info-box .info-value {
+      font-size: 0.8rem;
+      color: #FF073A;
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+
+    /* Star rating picker */
+    .star-picker {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .star-picker span {
+      font-size: 1.8rem;
       cursor: pointer;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
-      transition: all 0.4s ease-in-out;
+      color: #333;
+      transition: color 0.15s, transform 0.15s;
     }
 
-    .submit-btn:hover {
-      transform: scale(1.02);
-      box-shadow: 0 15px 25px rgba(255, 7, 58, 0.4);
-      background: linear-gradient(135deg, #FF073A, #FF4813);
+    .star-picker span:hover,
+    .star-picker span.active {
+      color: #FFD700;
+      transform: scale(1.15);
     }
 
-    .success-message {
-      display: none;
-      background: rgba(0, 255, 0, 0.2);
-      border: 2px solid #00FF00;
-      color: #00FF00;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+    .modal-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #FF073A, #D90429);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+    }
+
+    .modal-btn:hover {
+      box-shadow: 0 0 20px rgba(255, 7, 58, 0.6);
+    }
+
+    .modal-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .modal-error {
+      color: #f44336;
+      font-size: 0.7rem;
       text-align: center;
-      font-weight: bold;
+      margin-bottom: 12px;
+      min-height: 18px;
     }
 
-    .error-message {
-      display: none;
-      background: rgba(255, 0, 0, 0.2);
-      border: 2px solid #FF0000;
-      color: #FF0000;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+    .modal-success {
+      color: #4caf50;
+      font-size: 0.7rem;
       text-align: center;
-      font-weight: bold;
+      margin-bottom: 12px;
     }
 
+    /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
-      .container {
-        margin-top: 120px;
-        padding: 25px;
+      .header {
+        padding: 15px 30px;
+      }
+
+      .logo {
+        font-size: 22px;
+      }
+
+      .nav-links a {
+        font-size: 16px;
       }
 
       .page-title {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
       }
 
-      .star {
-        font-size: 2rem;
+      .opinion-btn {
+        padding: 14px 35px;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 20px;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .nav-links a {
+        display: block;
+        margin: 8px 0;
+      }
+
+      .modal {
+        padding: 25px 20px;
       }
     }
   </style>
 </head>
-<body>
 
-  <!-- Header -->
+<body>
+  <!-- HEADER -->
   <div class="header">
-    <div class="logo" onclick="window.location.href='index.html'">MTALK</div>
+    <div class="logo" onclick="window.location.href='get-started.html'">MTALK</div>
     <div class="nav-links">
-      <a href="index.html">Home</a>
+      <a href="get-started.html">Home</a>
       <a href="profile.html">Profile</a>
       <a href="location.html">Location</a>
       <a href="about.html">About</a>
     </div>
   </div>
 
-  <!-- Review Form Container -->
-  <div class="container">
-    <h1 class="page-title">Submit Your Review</h1>
-    
-    <div id="successMessage" class="success-message">
-      Thank you! Your review has been submitted successfully.
-    </div>
-    <div id="errorMessage" class="error-message">
-      Please fill in all required fields.
+  <!-- PAGE -->
+  <div class="page-wrapper">
+    <h1 class="page-title">Movie Reviews</h1>
+
+    <div class="opinion-bar">
+      <button class="opinion-btn" onclick="openVerifyModal()">🎬 My Opinion</button>
     </div>
 
-    <form id="reviewForm" onsubmit="submitReview(event)">
-      <!-- Movie Selection -->
-      <div class="form-group">
-        <label for="movie">Select Movie *</label>
-        <select id="movie" required>
-          <option value="">-- Choose a movie --</option>
-          <option value="hit3">Hit - The Third Case</option>
-          <option value="arjun">Arjun Sarkaar</option>
-          <option value="tollywood">Tollywood Classic</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-
-      <!-- User Name -->
-      <div class="form-group">
-        <label for="name">Your Name *</label>
-        <input type="text" id="name" placeholder="Enter your name" required />
-      </div>
-
-      <!-- Email -->
-      <div class="form-group">
-        <label for="email">Email Address *</label>
-        <input type="email" id="email" placeholder="Enter your email" required />
-      </div>
-
-      <!-- Star Rating -->
-      <div class="form-group">
-        <label>Your Rating *</label>
-        <div class="star-rating" id="starRating">
-          <span class="star" data-value="1">★</span>
-          <span class="star" data-value="2">★</span>
-          <span class="star" data-value="3">★</span>
-          <span class="star" data-value="4">★</span>
-          <span class="star" data-value="5">★</span>
-        </div>
-        <input type="hidden" id="ratingValue" value="0" required />
-      </div>
-
-      <!-- Review Text -->
-      <div class="form-group">
-        <label for="reviewText">Your Review *</label>
-        <textarea id="reviewText" placeholder="Share your thoughts about the movie..." required></textarea>
-      </div>
-
-      <!-- Category -->
-      <div class="form-group">
-        <label for="category">Review Category *</label>
-        <select id="category" required>
-          <option value="">-- Select category --</option>
-          <option value="acting">Acting</option>
-          <option value="direction">Direction</option>
-          <option value="music">Music</option>
-          <option value="cinematography">Cinematography</option>
-          <option value="story">Story</option>
-          <option value="overall">Overall</option>
-        </select>
-      </div>
-
-      <!-- Submit Button -->
-      <button type="submit" class="submit-btn">Submit Review</button>
-    </form>
+    <div id="reviewsFeed" class="reviews-feed">
+      <p class="empty-state">Loading reviews...</p>
+    </div>
   </div>
 
+  <!-- MODAL: BOOKING VERIFICATION -->
+  <div id="verifyModal" class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModals()">&times;</button>
+      <h2>Verify Your Booking</h2>
+      <label for="bookingInput">Booking ID (10 characters)</label>
+      <input type="text" id="bookingInput" maxlength="10" placeholder="e.g. AB12CD34EF"
+        oninput="this.value = this.value.toUpperCase()" autocomplete="off" />
+      <p id="verifyError" class="modal-error"></p>
+      <button class="modal-btn" id="verifyBtn" onclick="verifyBooking()">Verify</button>
+    </div>
+  </div>
+
+  <!-- MODAL: WRITE REVIEW -->
+  <div id="reviewModal" class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModals()">&times;</button>
+      <h2>Write Your Review</h2>
+
+      <label for="rmName">Your Name</label>
+      <input type="text" id="rmName" placeholder="Enter your name" autocomplete="off" />
+
+      <label for="rmMovieSelect">Select Movie</label>
+      <select id="rmMovieSelect"
+        style="width:100%;padding:12px 14px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.12);border-radius:10px;background:rgba(255,255,255,0.04);color:#fff;font-size:0.85rem;font-family:'Orbitron',sans-serif;">
+        <option value="" disabled selected>Choose a movie...</option>
+      </select>
+
+      <label>Your Rating</label>
+      <div class="star-picker" id="starPicker">
+        <span data-v="1">★</span>
+        <span data-v="2">★</span>
+        <span data-v="3">★</span>
+        <span data-v="4">★</span>
+        <span data-v="5">★</span>
+      </div>
+
+      <label for="reviewText">Your Review</label>
+      <textarea id="reviewText" placeholder="Share your thoughts about the movie..."></textarea>
+
+      <p id="reviewError" class="modal-error"></p>
+      <button class="modal-btn" id="submitReviewBtn" onclick="submitReview()">Post Review</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+  <script src="../assets/js/firebase-init.js"></script>
+
   <script>
-    // Star Rating Functionality
-    const stars = document.querySelectorAll('.star');
-    const ratingValue = document.getElementById('ratingValue');
-
-    stars.forEach(star => {
-      star.addEventListener('click', function() {
-        const value = this.getAttribute('data-value');
-        ratingValue.value = value;
-
-        stars.forEach(s => {
-          if (s.getAttribute('data-value') <= value) {
-            s.classList.add('active');
-          } else {
-            s.classList.remove('active');
-          }
-        });
-      });
-
-      star.addEventListener('mouseover', function() {
-        const value = this.getAttribute('data-value');
-        stars.forEach(s => {
-          if (s.getAttribute('data-value') <= value) {
-            s.style.color = '#FF073A';
-          } else {
-            s.style.color = 'rgba(255, 7, 58, 0.5)';
-          }
-        });
-      });
-    });
-
-    document.getElementById('starRating').addEventListener('mouseleave', function() {
-      stars.forEach(star => {
-        if (star.classList.contains('active')) {
-          star.style.color = '#FF073A';
-        } else {
-          star.style.color = 'rgba(255, 7, 58, 0.5)';
+    // Auth Guard
+    let currentUser = null;
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) window.location.href = 'login.html';
+        else {
+          currentUser = await res.json();
+          const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
+          if (profileLink) profileLink.textContent = currentUser.fullName.split(' ')[0] + "'s Profile";
         }
-      });
-    });
+      } catch (e) {
+        window.location.href = 'login.html';
+      }
+    }
+    checkAuth();
 
-    // Form Submission
-    function submitReview(event) {
-      event.preventDefault();
+    // ─── STATE ───
+    let verifiedBookingId = null;
+    let selectedRating = 0;
+    let moviesList = [];
 
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const rating = document.getElementById('ratingValue').value;
-      const movie = document.getElementById('movie').value;
-      const reviewText = document.getElementById('reviewText').value.trim();
-      const category = document.getElementById('category').value;
+    // ─── LOAD MOVIES (for dropdown) ───
+    async function loadMovies() {
+      try {
+        const res = await fetch('/api/movies');
+        moviesList = await res.json();
+        const sel = document.getElementById('rmMovieSelect');
+        moviesList.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          opt.textContent = m.title;
+          sel.appendChild(opt);
+        });
+      } catch (err) {
+        console.error('Load movies error:', err);
+      }
+    }
 
-      const errorMessage = document.getElementById('errorMessage');
-      const successMessage = document.getElementById('successMessage');
+    // ─── LOAD REVIEWS ───
+    async function loadReviews() {
+      const feed = document.getElementById('reviewsFeed');
+      try {
+        const res = await fetch('/api/reviews');
+        if (!res.ok) throw new Error('Failed');
+        const reviews = await res.json();
 
-      // Hide messages initially
-      errorMessage.style.display = 'none';
-      successMessage.style.display = 'none';
+        if (reviews.length === 0) {
+          feed.innerHTML = '<p class="empty-state">No reviews yet. Be the first to share your opinion!</p>';
+          return;
+        }
 
-      // Validate all fields
-      if (!name || !email || rating === '0' || !movie || !reviewText || !category) {
-        errorMessage.style.display = 'block';
+        feed.innerHTML = reviews.map(r => `
+                    <div class="review-card" data-id="${r._id}">
+                        <div class="review-header">
+                            <span class="review-movie">${esc(r.movieTitle)}</span>
+                            <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+                        </div>
+                        <div class="review-user">by ${esc(r.userName)}</div>
+                        <div class="review-text">${esc(r.text)}</div>
+                        <div class="review-actions">
+                            <button class="react-btn" onclick="react('${r._id}','like', this)">
+                                👍 <span>${r.likes || 0}</span>
+                            </button>
+                            <button class="react-btn" onclick="react('${r._id}','dislike', this)">
+                                👎 <span>${r.dislikes || 0}</span>
+                            </button>
+                            <span class="review-date">${formatDate(r.createdAt)}</span>
+                        </div>
+                    </div>
+                `).join('');
+      } catch (err) {
+        console.error(err);
+        feed.innerHTML = '<p class="empty-state" style="color:#f55">Could not load reviews.</p>';
+      }
+    }
+
+    // ─── REACTIONS ───
+    async function react(reviewId, type, btn) {
+      try {
+        const res = await fetch(`/api/reviews/${reviewId}/react`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type })
+        });
+        if (!res.ok) return;
+        const updated = await res.json();
+
+        // Update counts in-place
+        const card = btn.closest('.review-card');
+        const btns = card.querySelectorAll('.react-btn');
+        btns[0].querySelector('span').textContent = updated.likes || 0;
+        btns[1].querySelector('span').textContent = updated.dislikes || 0;
+
+        // Visual feedback
+        btn.classList.add(type === 'like' ? 'liked' : 'disliked');
+        setTimeout(() => btn.classList.remove('liked', 'disliked'), 1200);
+      } catch (err) {
+        console.error('React error:', err);
+      }
+    }
+
+    // ─── VERIFY BOOKING ───
+    function openVerifyModal() {
+      document.getElementById('verifyModal').classList.add('active');
+      document.getElementById('bookingInput').value = '';
+      document.getElementById('verifyError').textContent = '';
+      document.getElementById('bookingInput').focus();
+    }
+
+    async function verifyBooking() {
+      const id = document.getElementById('bookingInput').value.trim();
+      const errEl = document.getElementById('verifyError');
+      const btn = document.getElementById('verifyBtn');
+
+      if (id.length !== 10) {
+        errEl.textContent = 'Booking ID must be exactly 10 characters';
         return;
       }
 
-      // Show success message
-      successMessage.style.display = 'block';
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+      errEl.textContent = '';
 
-      // Reset form
-      document.getElementById('reviewForm').reset();
-      ratingValue.value = '0';
-      stars.forEach(s => s.classList.remove('active'));
+      try {
+        const res = await fetch('/api/verify-booking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bookingId: id })
+        });
+        const data = await res.json();
 
-      // Hide success message after 5 seconds
-      setTimeout(() => {
-        successMessage.style.display = 'none';
-      }, 5000);
+        if (!res.ok) {
+          errEl.textContent = data.error || 'Verification failed';
+          btn.disabled = false;
+          btn.textContent = 'Verify';
+          return;
+        }
 
-      // Here you can send the data to your backend
-      console.log({
-        name,
-        email,
-        rating,
-        movie,
-        reviewText,
-        category
+        verifiedBookingId = data.bookingId;
+
+        // Close verify modal, open review modal
+        document.getElementById('verifyModal').classList.remove('active');
+        openReviewModal();
+      } catch (err) {
+        errEl.textContent = 'Network error. Please try again.';
+      }
+      btn.disabled = false;
+      btn.textContent = 'Verify';
+    }
+
+    // ─── REVIEW FORM ───
+    function openReviewModal() {
+      document.getElementById('rmName').value = currentUser ? currentUser.fullName : '';
+      document.getElementById('rmMovieSelect').selectedIndex = 0;
+      document.getElementById('reviewText').value = '';
+      document.getElementById('reviewError').textContent = '';
+      selectedRating = 0;
+      updateStars();
+      document.getElementById('reviewModal').classList.add('active');
+    }
+
+    // Star picker
+    document.getElementById('starPicker').addEventListener('click', e => {
+      if (e.target.dataset.v) {
+        selectedRating = parseInt(e.target.dataset.v);
+        updateStars();
+      }
+    });
+
+    function updateStars() {
+      document.querySelectorAll('#starPicker span').forEach(s => {
+        s.classList.toggle('active', parseInt(s.dataset.v) <= selectedRating);
       });
     }
-  </script>
 
+    async function submitReview() {
+      const userName = document.getElementById('rmName').value.trim();
+      const movieId = document.getElementById('rmMovieSelect').value;
+      const text = document.getElementById('reviewText').value.trim();
+      const errEl = document.getElementById('reviewError');
+      const btn = document.getElementById('submitReviewBtn');
+
+      if (!userName) { errEl.textContent = 'Please enter your name'; return; }
+      if (!movieId) { errEl.textContent = 'Please select a movie'; return; }
+      if (selectedRating === 0) { errEl.textContent = 'Please select a rating'; return; }
+      if (text.length < 10) { errEl.textContent = 'Review must be at least 10 characters'; return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Posting...';
+      errEl.textContent = '';
+
+      try {
+        const res = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            bookingId: verifiedBookingId,
+            movieId,
+            userName,
+            rating: selectedRating,
+            text
+          })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errEl.textContent = data.error || 'Failed to post review';
+          btn.disabled = false;
+          btn.textContent = 'Post Review';
+          return;
+        }
+
+        // Success
+        closeModals();
+        loadReviews(); // Refresh feed
+      } catch (err) {
+        errEl.textContent = 'Network error. Please try again.';
+      }
+      btn.disabled = false;
+      btn.textContent = 'Post Review';
+    }
+
+    // ─── MODAL UTILS ───
+    function closeModals() {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+      verifiedBookingId = null;
+    }
+
+    // Close on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) closeModals();
+      });
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModals();
+    });
+
+    // ─── HELPERS ───
+    function esc(str) {
+      const d = document.createElement('div');
+      d.textContent = str || '';
+      return d.innerHTML;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // ─── INIT ───
+    loadMovies();
+    loadReviews();
+  </script>
 </body>
+
 </html>

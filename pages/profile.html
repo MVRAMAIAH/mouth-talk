@@ -1,13 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
-    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
+    <title>User Profile - MTALK</title>
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
+        type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -16,7 +16,6 @@
             font-family: 'Orbitron', sans-serif;
         }
 
-        /* Enable Scrolling */
         body {
             background: black;
             color: white;
@@ -67,85 +66,169 @@
         .profile-container {
             text-align: center;
             padding: 50px;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.8);
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(255, 7, 58, 0.7);
-            width: 80%;
+            box-shadow: 0 4px 15px rgba(255, 7, 58, 0.5);
+            width: 90%;
             max-width: 600px;
             margin-top: 120px;
+            border: 1px solid rgba(255, 7, 58, 0.2);
         }
 
-        /* Profile Image */
-        .profile-container img {
+        .profile-img {
             border-radius: 50%;
-            width: 150px;
-            height: 150px;
+            width: 120px;
+            height: 120px;
             object-fit: cover;
-            border: 5px solid white;
+            border: 3px solid #FF073A;
             margin-bottom: 20px;
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 7, 58, 0.5);
         }
 
-        .profile-container img:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(255, 7, 58, 1);
+        .user-info {
+            margin-bottom: 30px;
         }
 
-        /* Hidden File Input */
-        #image-upload {
-            display: none;
-        }
-
-        /* Inputs and Select */
-        .input-field, .profile-container select {
-            margin: 10px 0;
-            font-size: 18px;
-            padding: 12px;
-            border: 2px solid #FF073A;
-            border-radius: 10px;
-            background-color: transparent;
+        .user-info h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
             color: white;
-            width: 100%;
-            text-align: center;
-            transition: all 0.3s ease-in-out;
+            text-shadow: 0 0 5px #FF073A;
         }
 
-        .input-field:hover, .profile-container select:hover {
-            background-color: #FF073A;
-            box-shadow: 0 0 10px rgba(255, 7, 58, 1);
+        .user-info p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-bottom: 5px;
         }
 
-        /* Button */
-        .profile-container button {
+        .badge {
             display: inline-block;
+            padding: 4px 12px;
+            background: rgba(255, 7, 58, 0.2);
+            border: 1px solid #FF073A;
+            border-radius: 20px;
+            font-size: 10px;
+            color: #FF073A;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        /* Inputs */
+        .input-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #FF073A;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid rgba(255, 7, 58, 0.3);
+            border-radius: 10px;
+            background: transparent;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #FF073A;
+            box-shadow: 0 0 10px rgba(255, 7, 58, 0.3);
+        }
+
+        /* Buttons */
+        .btn-update {
+            width: 100%;
             margin-top: 20px;
-            padding: 15px 30px;
-            font-size: 20px;
+            padding: 15px;
+            font-size: 18px;
             font-weight: bold;
             color: white;
             background: linear-gradient(45deg, #FF073A, #D90429);
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: 0.3s ease-in-out;
-            text-decoration: none;
-            box-shadow: 0 0 15px rgba(255, 7, 58, 0.8);
+            transition: 0.3s;
+            box-shadow: 0 0 15px rgba(255, 7, 58, 0.4);
         }
 
-        .profile-container button:hover {
-            background: white;
+        .btn-update:hover {
+            box-shadow: 0 0 20px rgba(255, 7, 58, 0.7);
+            transform: scale(1.02);
+        }
+
+        .btn-logout {
+            display: block;
+            margin: 30px auto 0;
+            padding: 10px 30px;
+            font-size: 14px;
             color: #FF073A;
-            box-shadow: 0 0 20px rgba(255, 7, 58, 1);
+            background: transparent;
+            border: 1px solid #FF073A;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #FF073A;
+            color: white;
+        }
+
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 7, 58, 0.1);
+            border-top: 4px solid #FF073A;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
     <!-- Header -->
     <div class="header">
-        <div class="logo">MTALK</div>
+        <div class="logo" onclick="window.location.href='../index.html'" style="cursor:pointer">MTALK</div>
         <div class="nav-links">
-            <a href="index.html">Home</a>
+            <a href="../index.html">Home</a>
             <a href="profile.html">profile</a>
             <a href="location.html">Location</a>
             <a href="about.html">About</a>
@@ -154,47 +237,123 @@
 
     <!-- Profile Section -->
     <div class="profile-container">
-        <!-- Clickable Profile Image -->
-        <label for="image-upload">
-            <img id="profile-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png" alt="User Image">
-        </label>
-        <!-- Hidden File Input -->
-        <input type="file" id="image-upload" accept="image/*">
+        <img id="profile-img" class="profile-img"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png"
+            alt="User">
 
-        <h2 id="user-name">No name yet</h2>
-        <input type="text" id="user-name-input" class="input-field" placeholder="Enter your name">
-        <input type="text" id="actor-input" class="input-field" placeholder="Favourite Actor">
-        <input type="text" id="actress-input" class="input-field" placeholder="Favourite Actress">
-        <input type="text" id="director-input" class="input-field" placeholder="Favourite Director">
-        
-        <select id="cinephile">
-            <option value="casual">Casual Cinephile</option>
-            <option value="enthusiast">Cinephile Enthusiast</option>
-            <option value="expert">Cinephile Expert</option>
-            <option value="veteran">Veteran Cinephile</option>
-        </select>
-        
-        <button onclick="updateProfile()">Update Profile</button>
+        <div class="user-info">
+            <div id="auth-badge" class="badge">-</div>
+            <h2 id="display-name">Loading...</h2>
+            <p id="display-contact">-</p>
+        </div>
+
+        <div class="input-group">
+            <label>Name</label>
+            <input type="text" id="user-name-input" placeholder="Your Name">
+        </div>
+
+        <div class="input-group">
+            <label>Favourite Actor</label>
+            <input type="text" id="actor-input" placeholder="Favourite Actor">
+        </div>
+
+        <div class="input-group">
+            <label>Cinephile Level</label>
+            <select id="cinephile">
+                <option value="casual">Casual Cinephile</option>
+                <option value="enthusiast">Cinephile Enthusiast</option>
+                <option value="expert">Cinephile Expert</option>
+                <option value="veteran">Veteran Cinephile</option>
+            </select>
+        </div>
+
+        <button class="btn-update" onclick="updateProfile()">Update Profile</button>
+        <button class="btn-logout" onclick="logout()">Logout Session</button>
     </div>
 
+    <!-- Firebase SDKs for logout -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    <script src="../assets/js/firebase-init.js"></script>
+
     <script>
-        // Function to update the profile with user inputs
-        function updateProfile() {
-            const userName = document.getElementById("user-name-input").value;
-            if (userName) document.getElementById("user-name").textContent = userName;
+        async function fetchUserData() {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (!res.ok) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const user = await res.json();
+
+                document.getElementById('display-name').textContent = user.fullName;
+                document.getElementById('user-name-input').value = user.fullName;
+                document.getElementById('display-contact').textContent = user.email || user.phone;
+                document.getElementById('auth-badge').textContent = (user.provider || 'JWT') + ' authenticated';
+
+                if (user.picture) {
+                    document.getElementById('profile-img').src = user.picture;
+                }
+
+                if (user.actor) {
+                    document.getElementById('actor-input').value = user.actor;
+                }
+                if (user.cinephileLevel) {
+                    document.getElementById('cinephile').value = user.cinephileLevel;
+                }
+
+                document.getElementById('loading-overlay').style.display = 'none';
+            } catch (err) {
+                console.error(err);
+                window.location.href = 'login.html';
+            }
         }
 
-        // Image Upload on Click
-        document.getElementById("image-upload").addEventListener("change", function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById("profile-image").src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+        async function updateProfile() {
+            const fullName = document.getElementById('user-name-input').value;
+            const actor = document.getElementById('actor-input').value;
+            const cinephileLevel = document.getElementById('cinephile').value;
+
+            try {
+                const res = await fetch('/api/auth/profile', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, actor, cinephileLevel })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('display-name').textContent = data.user.fullName;
+                    alert("Profile updated successfully!");
+                } else {
+                    const error = await res.json();
+                    alert(error.error || "Failed to update profile");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("An error occurred. Please try again.");
             }
-        });
+        }
+
+        async function logout() {
+            try {
+                // 1. Clear backend JWT cookie
+                await fetch('/api/auth/logout', { method: 'POST' });
+
+                // 2. Firebase signOut
+                await firebase.auth().signOut();
+
+                // 3. Redirect
+                window.location.href = 'login.html';
+            } catch (err) {
+                console.error(err);
+                location.reload();
+            }
+        }
+
+        fetchUserData();
     </script>
 </body>
+
 </html>

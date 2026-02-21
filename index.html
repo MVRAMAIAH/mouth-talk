@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
+=======
+
+>>>>>>> exm-recovered
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asli Re - The Ultimate Winner</title>
 
+<<<<<<< HEAD
     <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
+=======
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
+        type="image/png">
+>>>>>>> exm-recovered
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -18,11 +27,16 @@
 
         body {
             background: black;
+<<<<<<< HEAD
             background-image: url("land.jpg");
+=======
+            background-image: url("assets/images/land.jpg");
+>>>>>>> exm-recovered
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
             height: 100vh;
+<<<<<<< HEAD
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
@@ -32,6 +46,11 @@
             color: white;
             overflow: hidden;
             padding-bottom: 60px;
+=======
+            position: relative;
+            color: white;
+            overflow: hidden;
+>>>>>>> exm-recovered
         }
 
         /* HEADER */
@@ -54,6 +73,10 @@
             font-weight: bold;
             color: #FF073A;
             text-transform: uppercase;
+<<<<<<< HEAD
+=======
+            cursor: pointer;
+>>>>>>> exm-recovered
         }
 
         .nav-links a {
@@ -69,6 +92,7 @@
             color: #FF073A;
         }
 
+<<<<<<< HEAD
         /* BOTTOM CONTENT */
         .bottom-content {
             position: absolute;
@@ -80,6 +104,76 @@
         .heading {
             display: flex;
             font-size: 56px;   /* REDUCED */
+=======
+        /* BOTTOM SECTION — fixed to bottom of screen */
+        .bottom-section {
+            position: fixed;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 10;
+        }
+
+        /* MARQUEE */
+        .marquee-wrapper {
+            position: relative;
+            overflow: hidden;
+            width: 60vw;
+            margin: 0 auto 20px;
+            height: 250px;
+            /* Increased from 175px to fit 220px cards */
+        }
+
+        .marquee-fade-left,
+        .marquee-fade-right {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .marquee-fade-left {
+            left: 0;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.5), transparent);
+        }
+
+        .marquee-fade-right {
+            right: 0;
+            background: linear-gradient(to left, rgba(0, 0, 0, 0.5), transparent);
+        }
+
+        .marquee-track {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 15px 0;
+        }
+
+        .marquee-track img {
+            width: 115px;
+            height: 165px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 7, 58, 0.35);
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .marquee-track img:hover {
+            transform: scale(1.12);
+            border-color: #FF073A;
+        }
+
+        /* HEADING */
+        .heading {
+            display: flex;
+            font-size: 56px;
+>>>>>>> exm-recovered
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 4px;
@@ -129,6 +223,7 @@
         }
 
         /* RESPONSIVE */
+<<<<<<< HEAD
         @media (max-width: 768px) {
             .heading { font-size: 40px; }
             .cta-button { font-size: 18px; }
@@ -137,6 +232,193 @@
         @media (max-width: 480px) {
             .heading { font-size: 32px; }
             .cta-button { font-size: 16px; }
+=======
+        /* ADMIN STUFF */
+        .admin-only {
+            display: none;
+            /* Hidden by default */
+        }
+
+        .add-movie-btn {
+            background: #FF073A;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-right: 15px;
+            transition: 0.3s;
+        }
+
+        .add-movie-btn:hover {
+            background: white;
+            color: #FF073A;
+        }
+
+        /* MODAL STYLES */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid #FF073A;
+            box-shadow: 0 0 20px rgba(255, 7, 58, 0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #FF073A;
+            font-size: 24px;
+        }
+
+        .close-btn {
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #FF073A;
+            outline: none;
+        }
+
+        /* MOVIE ITEM IN MARQUEE */
+        .movie-card {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        .movie-card img {
+            width: 150px;
+            height: 220px;
+            border-radius: 10px;
+            object-fit: cover;
+            transition: 0.3s;
+        }
+
+        .movie-card:hover img {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 7, 58, 0.5);
+        }
+
+        .edit-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FF073A;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            display: none;
+            /* Shown dynamically for admin */
+            z-index: 10;
+        }
+
+        .edit-overlay:hover {
+            background: white;
+            color: #FF073A;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: #FF073A;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .heading {
+                font-size: 40px;
+            }
+
+            .cta-button {
+                font-size: 18px;
+            }
+
+            .marquee-wrapper {
+                width: 80vw;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .heading {
+                font-size: 32px;
+            }
+
+            .cta-button {
+                font-size: 16px;
+            }
+
+            .marquee-wrapper {
+                width: 90vw;
+                height: 180px;
+                /* Reduced for mobile */
+            }
+
+            .movie-card img {
+                width: 100px;
+                height: 150px;
+            }
+>>>>>>> exm-recovered
         }
     </style>
 </head>
@@ -144,6 +426,7 @@
 <body>
 
     <div class="header">
+<<<<<<< HEAD
         <div class="logo">MTALK</div>
         <div class="nav-links">
             <a href="index.html">Home</a>
@@ -154,6 +437,32 @@
     </div>
 
     <div class="bottom-content">
+=======
+        <div class="logo" onclick="window.location.href='pages/get-started.html'">MTALK</div>
+        <div class="nav-links">
+            <button class="add-movie-btn admin-only" onclick="openModal()">+ Add Movie</button>
+            <a href="pages/get-started.html">Home</a>
+            <a href="pages/profile.html">Profile</a>
+            <a href="pages/location.html">Location</a>
+            <a href="pages/about.html">About</a>
+        </div>
+    </div>
+
+    <div id="admin-modal-container"></div>
+
+
+    <!-- Everything pinned to bottom of screen -->
+    <div class="bottom-section">
+
+        <!-- MARQUEE -->
+        <div class="marquee-wrapper">
+            <div class="marquee-fade-left"></div>
+            <div class="marquee-fade-right"></div>
+            <div class="marquee-track" id="marqueeTrack"></div>
+        </div>
+
+        <!-- HEADING -->
+>>>>>>> exm-recovered
         <h3 class="heading">
             <span class="letter" data-letter="L">L</span>
             <span class="letter" data-letter="E">E</span>
@@ -175,6 +484,116 @@
         <a href="pages/get-started.html" class="cta-button">Get Started</a>
     </div>
 
+<<<<<<< HEAD
 </body>
 </html>
 
+=======
+    <script src="assets/js/admin.js"></script>
+    <script>
+
+        let globalUser = null;
+
+        async function checkAuth() {
+            try {
+                console.log('Checking auth status...');
+                const res = await fetch('/api/auth/me');
+
+                if (res.ok) {
+                    const user = await res.json();
+                    globalUser = user;
+                    console.log('User authenticated:', user.fullName);
+
+                    const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
+                    if (profileLink) {
+                        profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
+                    }
+
+                    if (user.isAdmin) {
+                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+                    }
+                    return true;
+                } else {
+                    window.location.href = '/pages/login.html';
+                }
+            } catch (e) {
+                window.location.href = '/pages/login.html';
+            }
+            return false;
+        }
+        async function init() {
+            await checkAuth();
+        }
+        init();
+
+
+        // Modal creation handled by admin.js
+        window.addEventListener('DOMContentLoaded', () => {
+            injectAdminModal();
+        });
+
+
+        (function () {
+            var track = document.getElementById('marqueeTrack');
+
+            fetch('/api/movies').then(res => res.json()).then(async movies => {
+                // Wait for globalUser to be set by checkAuth
+                while (globalUser === null) {
+                    await new Promise(r => setTimeout(r, 50));
+                }
+                renderMarquee(movies);
+            });
+
+
+            function renderMarquee(movies) {
+                const isAdmin = globalUser && globalUser.isAdmin;
+
+                for (var r = 0; r < 3; r++) {
+                    for (var i = 0; i < movies.length; i++) {
+                        const m = movies[i];
+
+                        const container = document.createElement('div');
+                        container.className = 'movie-card';
+
+                        const img = document.createElement('img');
+                        img.src = '/assets/images/' + m.poster;
+                        img.alt = m.title;
+                        img.onclick = () => location.href = 'pages/movie.html?id=' + m.id;
+
+                        container.appendChild(img);
+
+                        // Edit overlay removed from marquee as per request
+
+
+                        track.appendChild(container);
+                    }
+                }
+                setTimeout(startScroll, 500);
+            }
+
+            function startScroll() {
+                var pos = 0;
+                var speed = 0.8;
+                var oneSetWidth = track.scrollWidth / 3;
+                var paused = false;
+
+                track.onmouseenter = function () { paused = true; };
+                track.onmouseleave = function () { paused = false; };
+
+                function frame() {
+                    if (!paused && oneSetWidth > 0) {
+                        pos -= speed;
+                        if (Math.abs(pos) >= oneSetWidth) pos = 0;
+                        track.style.transform = 'translateX(' + pos + 'px)';
+                    }
+                    requestAnimationFrame(frame);
+                }
+                frame();
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
+>>>>>>> exm-recovered
