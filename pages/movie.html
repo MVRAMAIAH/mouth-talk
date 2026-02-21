@@ -4,23 +4,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Movie</title>
+  <title>Movie - MTALK</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-<<<<<<< HEAD
-    body{font-family: 'Orbitron', sans-serif;background:#000;color:#fff;margin:0;padding-bottom:60px}
-    .container{max-width:900px;margin:120px auto 40px;padding:20px}
-    .poster{width:300px;height:500px;object-fit:cover;border-radius:10px}
-    .synopsis{margin-top:20px;font-size:1.1rem;line-height:1.6rem}
-    .info{font-size:1.05rem;line-height:1.8rem;margin-top:16px}
-    .highlight{color:#FF073A;font-weight:700}
-    .trailer-container{display:flex;justify-content:center;margin-top:40px}
-    .trailer-video{width:100%;max-width:700px;aspect-ratio:16/9;border:4px solid #FF073A;border-radius:12px}
-    .notfound{padding:60px;text-align:center}
-    a.back{display:inline-block;margin-top:16px;color:#FF073A;text-decoration:none}
-    .header{position:fixed;left:0;top:0;right:0;padding:18px 40px;background:rgba(0,0,0,0.2);display:flex;justify-content:space-between;align-items:center}
-    .logo{font-weight:700;cursor:pointer}
-=======
     body {
       font-family: 'Orbitron', sans-serif;
       background: #000;
@@ -139,19 +125,11 @@
       font-weight: 700;
       cursor: pointer
     }
->>>>>>> exm-recovered
   </style>
 </head>
 
 <body>
 
-<<<<<<< HEAD
-  <div class="header">
-    <div class="logo" onclick="location.href='../index.html'">MTALK</div>
-    <div>
-      <a href="../index.html" style="color:white;text-decoration:none;margin-right:12px">Home</a>
-      <a href="../pages/profile.html" style="color:white;text-decoration:none">Profile</a>
-=======
   <div class="header" style="backdrop-filter:blur(10px);z-index:1000">
     <div class="logo" onclick="location.href='get-started.html'" style="color:#FF073A;text-transform:uppercase">MTALK
     </div>
@@ -160,7 +138,6 @@
       <a href="profile.html" style="color:white;text-decoration:none;transition:color 0.3s">Profile</a>
       <a href="location.html" style="color:white;text-decoration:none;transition:color 0.3s">Location</a>
       <a href="about.html" style="color:white;text-decoration:none;transition:color 0.3s">About</a>
->>>>>>> exm-recovered
     </div>
   </div>
 
@@ -168,22 +145,6 @@
     <div id="loading" style="text-align:center;padding:60px">Loading movie...</div>
   </div>
 
-<<<<<<< HEAD
-  <script>
-    // Parse movie id from query string: pages/movie.html?id=hit3
-    function getMovieId(){const p=new URLSearchParams(location.search);return p.get('id')||p.get('movie')}
-
-    function renderNotFound(){document.getElementById('content').innerHTML=`<div class="notfound"><h2>Movie not found</h2><p>Return <a class="back" href="../index.html">Home</a></p></div>`}
-
-    async function loadMovie(){
-      const id=getMovieId();
-      try{
-        const res=await fetch('/api/movies');
-        if(!res.ok) throw new Error('data fetch failed');
-        const movies=await res.json();
-        const movie = movies.find(m=>m.id===id) || movies[0];
-        if(!movie){renderNotFound();return}
-=======
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -198,7 +159,8 @@
         if (!res.ok) window.location.href = 'login.html';
         else {
           const user = await res.json();
-          const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.textContent === 'Profile');
+          const navLinks = document.querySelectorAll('.header a');
+          const profileLink = Array.from(navLinks).find(a => a.href.includes('profile.html'));
           if (profileLink) profileLink.textContent = user.fullName.split(' ')[0];
         }
       } catch (e) {
@@ -220,34 +182,24 @@
         const movies = await res.json();
         const movie = movies.find(m => m.id === id) || movies[0];
         if (!movie) { renderNotFound(); return }
->>>>>>> exm-recovered
 
         document.title = movie.title + ' · MTALK';
 
         const html = `
           <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
-            <img class="poster" src="../assets/images/${movie.poster}" alt="${movie.title} Poster" />
+            <img class="poster" src="${movie.poster.startsWith('http') ? movie.poster : '../assets/images/' + movie.poster}" alt="${movie.title} Poster" />
             <div style="flex:1;min-width:260px">
               <h1 style="font-size:1.8rem;margin-bottom:8px">${movie.title}</h1>
               <p class="synopsis"><span class="highlight">Synopsis:</span> ${movie.synopsis}</p>
               <div class="info">
                 <p><span class="highlight">Actor:</span> ${movie.actor}</p>
-<<<<<<< HEAD
-                <p><span class="highlight">Actress:</span> ${movie.actress||'—'}</p>
-                <p><span class="highlight">Director:</span> ${movie.director||'—'}</p>
-                <p><span class="highlight">Producer:</span> ${movie.producer||'—'}</p>
-                <p><span class="highlight">Music:</span> ${movie.music||'—'}</p>
-              </div>
-              <a class="back" href="../index.html">← Back to Home</a>
-=======
                 <p><span class="highlight">Actress:</span> ${movie.actress || '—'}</p>
                 <p><span class="highlight">Director:</span> ${movie.director || '—'}</p>
                 <p><span class="highlight">Producer:</span> ${movie.producer || '—'}</p>
                 <p><span class="highlight">Music:</span> ${movie.music || '—'}</p>
               </div>
-              <a class="back" href="get-started.html">← Back to Home</a>
-              <a class="review-btn" href="review.html">✍ Write a Review</a>
->>>>>>> exm-recovered
+              <a class="back" href="get-started.html">← Back to Category</a>
+              <a class="review-btn" href="review.html?movieId=${movie.id}">✍ Write a Review</a>
             </div>
           </div>
           <div class="trailer-container">
@@ -256,11 +208,7 @@
         `;
 
         document.getElementById('content').innerHTML = html;
-<<<<<<< HEAD
-      }catch(err){console.error(err);renderNotFound()}
-=======
       } catch (err) { console.error(err); renderNotFound() }
->>>>>>> exm-recovered
     }
 
     loadMovie();

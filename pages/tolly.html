@@ -9,16 +9,6 @@
     type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-<<<<<<< HEAD
-    body { margin:0; font-family:'Orbitron',sans-serif; background:#000; color:#fff;}
-    nav { display:flex; justify-content:space-between; padding:50px; background:#000; position:sticky; top:0; z-index:100;}
-    nav a { color:#fff; margin-left:15px; text-decoration:none; text-transform:uppercase; font-weight:600; font-size:0.85rem;}
-    h1 { text-align:center; font-size:2rem; margin-top:30px;}
-    .movie-grid { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; padding:25px;}
-    .movie-box { width:150px; height:200px; border:2px solid #ff4d4d; border-radius:6px; overflow:hidden; cursor:pointer; transition:.3s ease; text-decoration:none; color:#fff;}
-    .movie-box:hover { border-color:#ff073a; box-shadow:0 0 10px #ff073a,0 0 20px #ff073a33; transform:scale(1.05);}
-    .movie-box img { width:100%; height:100%; object-fit:cover; display:block;}
-=======
     * {
       margin: 0;
       padding: 0;
@@ -82,7 +72,7 @@
     h1 {
       text-align: center;
       font-size: 2rem;
-      margin-top: 100px;
+      margin-top: 140px;
       margin-bottom: 10px;
       text-shadow: 0 0 10px #FF073A;
     }
@@ -107,7 +97,6 @@
       text-decoration: none;
       color: #fff;
       position: relative;
-      /* Added for edit button positioning */
     }
 
     .movie-box:hover {
@@ -140,6 +129,26 @@
       padding: 40px;
       color: #888;
       font-size: 1.1rem;
+    }
+
+    .edit-overlay {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #FF073A;
+      color: white;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: bold;
+      border-radius: 4px;
+      z-index: 5;
+      opacity: 0.8;
+      transition: 0.3s;
+    }
+
+    .edit-overlay:hover {
+      opacity: 1;
+      transform: scale(1.1);
     }
 
     @media (max-width: 768px) {
@@ -177,12 +186,11 @@
         margin: 8px 0;
       }
     }
->>>>>>> exm-recovered
   </style>
 </head>
 
 <body>
-  <div class="header">
+  <div class="header" style="backdrop-filter:blur(10px);z-index:1000">
     <div class="logo" onclick="window.location.href='get-started.html'">MTALK</div>
     <div class="nav-links">
       <a href="get-started.html">Home</a>
@@ -190,44 +198,6 @@
       <a href="location.html">Location</a>
       <a href="about.html">About</a>
     </div>
-<<<<<<< HEAD
-  </nav>
-
-  <h1>Running Movies – (Tollywood)</h1>
-
-  <div id="movieGrid" class="movie-grid"></div>
-
-  <script>
-    async function loadMovies(){
-      try{
-        const res = await fetch('/api/movies');
-        if(!res.ok) throw new Error('API fetch failed');
-
-        const movies = await res.json();
-        const grid = document.getElementById('movieGrid');
-        grid.innerHTML = '';
-
-        movies.forEach(m => {
-          const a = document.createElement('a');
-          a.className = 'movie-box';
-          a.href = `movie.html?id=${encodeURIComponent(m.id)}`;
-
-          const img = document.createElement('img');
-          img.alt = m.title || 'Poster';
-          img.src = `assets/images/${m.poster}`; // fixed path
-
-          a.appendChild(img);
-          grid.appendChild(a);
-        });
-      }catch(err){
-        console.error('loadMovies error', err);
-        document.getElementById('movieGrid').innerHTML =
-          '<p style="padding:20px;color:#f55">Could not load movies.</p>';
-      }
-    }
-
-    loadMovies();
-=======
   </div>
 
   <h1>Running Movies – Tollywood</h1>
@@ -250,10 +220,11 @@
         else {
           const user = await res.json();
           globalUser = user;
-          const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
+          const navLinks = document.querySelectorAll('.header a');
+          const profileLink = Array.from(navLinks).find(a => a.href.includes('profile.html'));
           if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
 
-          if (user.isAdmin) {
+          if (user.isAdmin && typeof injectAdminModal === 'function') {
             injectAdminModal();
           }
         }
@@ -261,7 +232,6 @@
         window.location.href = 'login.html';
       }
     }
-    checkAuth();
 
     const CATEGORY = 'tollywood';
 
@@ -269,7 +239,7 @@
       try {
         const res = await fetch('/api/movies');
         if (!res.ok) throw new Error('API fetch failed');
-        const movies = (await res.json()).filter(m => m.category === CATEGORY);
+        const movies = (await res.json()).filter(m => (m.category || '').toLowerCase() === CATEGORY);
         const grid = document.getElementById('movieGrid');
         grid.innerHTML = '';
 
@@ -290,7 +260,7 @@
 
           const img = document.createElement('img');
           img.alt = m.title || 'Poster';
-          img.src = `/assets/images/${m.poster}`;
+          img.src = m.poster.startsWith('http') ? m.poster : `../assets/images/${m.poster}`;
 
           const title = document.createElement('span');
           title.className = 'movie-title';
@@ -308,7 +278,7 @@
             editBtn.onclick = (e) => {
               e.preventDefault();
               e.stopPropagation();
-              openModal(m);
+              if (typeof openModal === 'function') openModal(m);
             };
             container.appendChild(editBtn);
           }
@@ -321,13 +291,12 @@
           '<p class="empty-msg" style="color:#f55">Could not load movies.</p>';
       }
     }
+
     async function init() {
       await checkAuth();
       await loadMovies();
     }
     init();
-
->>>>>>> exm-recovered
   </script>
 </body>
 
