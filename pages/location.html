@@ -1,13 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Location - Asli Review</title>
-    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
+    <title>Find Theatres - MTALK</title>
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
+        type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
             margin: 0;
@@ -16,19 +18,14 @@
             font-family: 'Orbitron', sans-serif;
         }
 
-        /* Enable Scrolling */
         body {
-            background: black;
+            background: #0a0a0a;
             color: white;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-bottom: 60px;
             overflow-y: auto;
         }
 
-        /* Header (Same as Previous Pages) */
+        /* HEADER */
         .header {
             width: 100%;
             padding: 20px 50px;
@@ -48,6 +45,7 @@
             font-weight: bold;
             color: #FF073A;
             text-transform: uppercase;
+            cursor: pointer;
         }
 
         .nav-links a {
@@ -63,170 +61,687 @@
             color: #FF073A;
         }
 
-        /* Centered Content */
-        .centered-content {
-            text-align: center;
-            padding-top: 120px;
-            width: 80%;
-            max-width: 600px;
+        /* PAGE CONTAINER */
+        .page-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 100px 20px 60px;
         }
 
         h1 {
-            font-size: 40px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #FF073A;
-        }
-
-        /* Dropdown Styling */
-        .dropdown-container {
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        label {
-            font-size: 22px;
-            font-weight: bold;
-            color: #FF073A;
-            display: block;
-            margin-bottom: 10px;
-            text-shadow: 0 0 5px black;
-        }
-
-        select {
-            width: 100%;
-            padding: 12px;
-            font-size: 18px;
-            border: 2px solid #FF073A;
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.8);
-            color: #333;
-            transition: 0.3s ease-in-out;
-        }
-
-        select:hover {
-            background-color: #FF073A;
-            color: white;
-            box-shadow: 0 0 10px rgba(255, 7, 58, 1);
-        }
-
-        /* Submit Button */
-        .submit-container {
-            margin-top: 30px;
+            font-size: 36px;
             text-align: center;
+            margin-bottom: 8px;
+            text-shadow: 0 0 15px rgba(255, 7, 58, 0.5);
         }
 
-        .hover-button {
-            display: inline-block;
-            padding: 15px 30px;
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            margin-bottom: 30px;
+            font-family: sans-serif;
+        }
+
+        /* TOGGLE BUTTONS */
+        .location-toggle {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .toggle-btn {
+            padding: 14px 28px;
+            border: 2px solid rgba(255, 7, 58, 0.4);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-btn:hover {
+            border-color: #FF073A;
+            background: rgba(255, 7, 58, 0.1);
+            box-shadow: 0 0 20px rgba(255, 7, 58, 0.3);
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(45deg, #FF073A, #D90429);
+            border-color: #FF073A;
+            box-shadow: 0 0 25px rgba(255, 7, 58, 0.6);
+        }
+
+        .toggle-icon {
+            font-size: 20px;
+        }
+
+        /* SEARCH BOX */
+        .search-box {
+            display: none;
+            margin-bottom: 24px;
+        }
+
+        .search-box.visible {
+            display: block;
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid rgba(255, 7, 58, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 16px;
+            font-family: 'Orbitron', sans-serif;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #FF073A;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .search-btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
             background: linear-gradient(45deg, #FF073A, #D90429);
             color: white;
-            font-size: 22px;
+            font-size: 15px;
             font-weight: bold;
-            text-decoration: none;
-            border: none;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(255, 7, 58, 0.8);
             cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            transition: transform 0.2s, box-shadow 0.3s;
         }
 
-        .hover-button:hover {
-            background-color: white;
+        .search-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 7, 58, 0.6);
+        }
+
+        /* STATUS */
+        .status-msg {
+            text-align: center;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 10px;
+            font-family: sans-serif;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-msg.info {
+            display: block;
+            background: rgba(255, 7, 58, 0.1);
+            border: 1px solid rgba(255, 7, 58, 0.3);
+            color: #ff9999;
+        }
+
+        .status-msg.loading {
+            display: block;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .status-msg.error {
+            display: block;
+            background: rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 50, 50, 0.3);
+            color: #ff6666;
+        }
+
+        /* MAP */
+        #map {
+            width: 100%;
+            height: 400px;
+            border-radius: 16px;
+            border: 2px solid rgba(255, 7, 58, 0.3);
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        #map.visible {
+            display: block;
+        }
+
+        /* THEATRE CARDS */
+        .results-heading {
+            font-size: 20px;
+            margin-bottom: 16px;
             color: #FF073A;
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255, 7, 58, 1);
+            display: none;
+        }
+
+        .results-heading.visible {
+            display: block;
+        }
+
+        .theatre-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .theatre-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 7, 58, 0.2);
+            border-radius: 14px;
+            padding: 20px;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .theatre-card:hover {
+            transform: translateY(-4px);
+            border-color: #FF073A;
+            box-shadow: 0 8px 30px rgba(255, 7, 58, 0.15);
+        }
+
+        .theatre-name {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .theatre-address {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: sans-serif;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .theatre-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .theatre-distance {
+            font-size: 14px;
+            color: #FF073A;
+            font-weight: 700;
+        }
+
+        .theatre-screens {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            font-family: sans-serif;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.4);
+            font-family: sans-serif;
+            font-size: 15px;
+        }
+
+        /* RADIUS SLIDER */
+        .radius-control {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .radius-control.visible {
+            display: flex;
+        }
+
+        .radius-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: sans-serif;
+        }
+
+        .radius-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 200px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+        }
+
+        .radius-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #FF073A;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(255, 7, 58, 0.5);
+        }
+
+        .radius-value {
+            font-size: 14px;
+            color: #FF073A;
+            font-weight: 700;
+            min-width: 50px;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .header { padding: 15px; }
-            .logo { font-size: 22px; }
-            .nav-links a { font-size: 16px; margin: 0 10px; }
-            .centered-content { width: 90%; }
-        }
+            .header {
+                padding: 15px 20px;
+            }
 
-        @media (max-width: 480px) {
-            .header { flex-direction: column; align-items: center; padding: 10px; }
-            .nav-links { flex-direction: column; gap: 10px; }
-            .centered-content { width: 95%; padding: 30px; }
+            .logo {
+                font-size: 22px;
+            }
+
+            .nav-links a {
+                font-size: 14px;
+                margin: 0 8px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .location-toggle {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #map {
+                height: 300px;
+            }
+
+            .theatre-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <div class="header">
-        <div class="logo">MTALK</div>
+        <div class="logo" onclick="window.location.href='get-started.html'">MTALK</div>
         <div class="nav-links">
-            <a href="index.html">Home</a>
+            <a href="get-started.html">Home</a>
             <a href="profile.html">Profile</a>
             <a href="location.html">Location</a>
             <a href="about.html">About</a>
         </div>
     </div>
 
-    <!-- Page Content -->
-    <div class="centered-content">
-        <h1>Select Location</h1>
+    <div class="page-container">
+        <h1>🎬 Find Theatres Near You</h1>
+        <p class="subtitle">Use your live location or search for a city to discover nearby cinemas</p>
 
-        <!-- State Dropdown -->
-        <div class="dropdown-container">
-            <label for="state">Choose Your State:</label>
-            <select id="state" name="state" onchange="updateMandals()">
-                <option value="none">Select State</option>
-                <option value="Andhra Pradesh">Andhra Pradesh</option>
-                <option value="Tamil Nadu">Tamil Nadu</option>
-                <option value="Uttar Pradesh">Uttar Pradesh</option>
-                <option value="Karnataka">Karnataka</option>
-            </select>
+        <!-- Location Toggle -->
+        <div class="location-toggle">
+            <button class="toggle-btn" id="btnLive" onclick="useLiveLocation()">
+                <span class="toggle-icon">📍</span> Live Location
+            </button>
+            <button class="toggle-btn" id="btnSearch" onclick="showSearchBox()">
+                <span class="toggle-icon">🔍</span> Search Location
+            </button>
         </div>
 
-        <!-- Mandal Dropdown -->
-        <div class="dropdown-container">
-            <label for="mandal">Choose Your Mandal:</label>
-            <select id="mandal" name="mandal">
-                <option value="none">Select Mandal</option>
-            </select>
+        <!-- Search Box -->
+        <div class="search-box" id="searchBox">
+            <div class="search-input-wrapper">
+                <input type="text" class="search-input" id="searchInput" placeholder="Enter city or area name..."
+                    onkeydown="if(event.key==='Enter') searchLocation()">
+                <button class="search-btn" onclick="searchLocation()">Search</button>
+            </div>
         </div>
 
-        <div class="submit-container">
-            <button class="hover-button" onclick="submitLocation()">Submit</button>
+        <!-- Status Message -->
+        <div class="status-msg" id="statusMsg"></div>
+
+        <!-- Radius Slider -->
+        <div class="radius-control" id="radiusControl">
+            <span class="radius-label">Radius:</span>
+            <input type="range" class="radius-slider" id="radiusSlider" min="1" max="50" value="10"
+                oninput="updateRadius()">
+            <span class="radius-value" id="radiusValue">10 km</span>
         </div>
+
+        <!-- Map -->
+        <div id="map"></div>
+
+        <!-- Results -->
+        <h2 class="results-heading" id="resultsHeading">Nearby Theatres</h2>
+        <div class="theatre-grid" id="theatreGrid"></div>
     </div>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script>
-        function updateMandals() {
-            const state = document.getElementById("state").value;
-            const mandalDropdown = document.getElementById("mandal");
+        var map = null;
+        var userMarker = null;
+        var radiusCircle = null;
+        var theatreMarkers = [];
+        var currentLat = null;
+        var currentLng = null;
+        var currentRadius = 10;
 
-            mandalDropdown.innerHTML = "<option value='none'>Select Mandal</option>";
+        // Custom marker icons
+        var userIcon = L.divIcon({
+            html: '<div style="background:#FF073A;width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 0 12px rgba(255,7,58,0.8);"></div>',
+            iconSize: [16, 16],
+            iconAnchor: [8, 8],
+            className: ''
+        });
 
-            const mandals = {
-                "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur"],
-                "Tamil Nadu": ["Chennai", "Madurai", "Coimbatore"],
-                "Uttar Pradesh": ["Lucknow", "Varanasi", "Agra"],
-                "Karnataka": ["Bengaluru", "Mysore", "Hubli"]
-            };
+        var theatreIcon = L.divIcon({
+            html: '<div style="background:#FFD700;width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 0 8px rgba(255,215,0,0.6);"></div>',
+            iconSize: [12, 12],
+            iconAnchor: [6, 6],
+            className: ''
+        });
 
-            if (mandals[state]) {
-                mandals[state].forEach(function(mandal) {
-                    const option = document.createElement("option");
-                    option.value = mandal;
-                    option.textContent = mandal;
-                    mandalDropdown.appendChild(option);
+        function initMap(lat, lng) {
+            var mapEl = document.getElementById('map');
+            mapEl.classList.add('visible');
+
+            if (map) { map.remove(); }
+
+            map = L.map('map', {
+                center: [lat, lng],
+                zoom: 13,
+                zoomControl: true
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap',
+                maxZoom: 18
+            }).addTo(map);
+
+            // User marker
+            userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map);
+            userMarker.bindPopup('<b style="color:#FF073A;">📍 Your Location</b>').openPopup();
+
+            // Radius circle
+            radiusCircle = L.circle([lat, lng], {
+                radius: currentRadius * 1000,
+                color: '#FF073A',
+                fillColor: '#FF073A',
+                fillOpacity: 0.08,
+                weight: 2,
+                dashArray: '8, 6'
+            }).addTo(map);
+
+            // Fit to circle
+            map.fitBounds(radiusCircle.getBounds());
+        }
+
+        function setStatus(text, type) {
+            var el = document.getElementById('statusMsg');
+            el.textContent = text;
+            el.className = 'status-msg ' + type;
+        }
+
+        function clearStatus() {
+            document.getElementById('statusMsg').className = 'status-msg';
+        }
+
+        // LIVE LOCATION
+        function useLiveLocation() {
+            document.getElementById('btnLive').classList.add('active');
+            document.getElementById('btnSearch').classList.remove('active');
+            document.getElementById('searchBox').classList.remove('visible');
+
+            if (!navigator.geolocation) {
+                setStatus('Geolocation is not supported by your browser.', 'error');
+                return;
+            }
+
+            setStatus('📡 Getting your location...', 'loading');
+
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    currentLat = pos.coords.latitude;
+                    currentLng = pos.coords.longitude;
+                    clearStatus();
+                    setStatus('📍 Location found! Searching for nearby theatres...', 'info');
+                    initMap(currentLat, currentLng);
+                    document.getElementById('radiusControl').classList.add('visible');
+                    fetchTheatres();
+                },
+                function (err) {
+                    var msg = 'Unable to get your location. ';
+                    if (err.code === 1) msg += 'Permission denied. Please allow location access.';
+                    else if (err.code === 2) msg += 'Position unavailable.';
+                    else msg += 'Request timed out.';
+                    setStatus(msg, 'error');
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        // SEARCH LOCATION
+        function showSearchBox() {
+            document.getElementById('btnSearch').classList.add('active');
+            document.getElementById('btnLive').classList.remove('active');
+            document.getElementById('searchBox').classList.add('visible');
+            document.getElementById('searchInput').focus();
+        }
+
+        function searchLocation() {
+            var query = document.getElementById('searchInput').value.trim();
+            if (!query) { setStatus('Please enter a city or area name.', 'error'); return; }
+
+            setStatus('🔍 Searching for "' + query + '"...', 'loading');
+
+            // Use Nominatim (OpenStreetMap) for geocoding — free, no API key
+            fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&countrycodes=in&limit=1', {
+                headers: { 'Accept': 'application/json' }
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (!data.length) {
+                        setStatus('❌ Location not found. Try a different search term.', 'error');
+                        return;
+                    }
+
+                    currentLat = parseFloat(data[0].lat);
+                    currentLng = parseFloat(data[0].lon);
+                    var displayName = data[0].display_name.split(',').slice(0, 3).join(', ');
+
+                    setStatus('📍 Found: ' + displayName + ' — Searching for nearby theatres...', 'info');
+                    initMap(currentLat, currentLng);
+                    document.getElementById('radiusControl').classList.add('visible');
+                    fetchTheatres();
+                })
+                .catch(function (err) {
+                    setStatus('❌ Search failed. Please check your internet connection.', 'error');
                 });
+        }
+
+        // Haversine formula (client-side)
+        function haversineKm(lat1, lng1, lat2, lng2) {
+            var R = 6371;
+            var dLat = (lat2 - lat1) * Math.PI / 180;
+            var dLng = (lng2 - lng1) * Math.PI / 180;
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        // FETCH REAL THEATRES FROM OPENSTREETMAP OVERPASS API
+        function fetchTheatres() {
+            if (currentLat === null) return;
+
+            setStatus('🔍 Searching for real cinemas nearby...', 'loading');
+
+            var radiusMeters = currentRadius * 1000;
+            var query = '[out:json][timeout:15];(' +
+                'node["amenity"="cinema"](around:' + radiusMeters + ',' + currentLat + ',' + currentLng + ');' +
+                'way["amenity"="cinema"](around:' + radiusMeters + ',' + currentLat + ',' + currentLng + ');' +
+                ');out center body;';
+
+            fetch('https://overpass-api.de/api/interpreter', {
+                method: 'POST',
+                body: 'data=' + encodeURIComponent(query),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    var theatres = data.elements.map(function (el) {
+                        var lat = el.lat || (el.center && el.center.lat);
+                        var lng = el.lon || (el.center && el.center.lon);
+                        if (!lat || !lng) return null;
+
+                        var tags = el.tags || {};
+                        var name = tags.name || tags['name:en'] || 'Unnamed Cinema';
+                        var addr = [];
+                        if (tags['addr:street']) addr.push(tags['addr:street']);
+                        if (tags['addr:city']) addr.push(tags['addr:city']);
+                        if (tags['addr:state']) addr.push(tags['addr:state']);
+                        var address = addr.length ? addr.join(', ') : (tags['addr:full'] || tags.description || 'Location on map');
+
+                        var dist = haversineKm(currentLat, currentLng, lat, lng);
+
+                        return {
+                            name: name,
+                            address: address,
+                            lat: lat,
+                            lng: lng,
+                            distance: Math.round(dist * 10) / 10,
+                            screens: tags.screens || tags['screen'] || '—'
+                        };
+                    }).filter(function (t) { return t !== null; });
+
+                    // Sort by distance
+                    theatres.sort(function (a, b) { return a.distance - b.distance; });
+
+                    renderTheatres(theatres);
+                    plotTheatresOnMap(theatres);
+
+                    if (theatres.length > 0) {
+                        setStatus('🎬 Found ' + theatres.length + ' real cinema' + (theatres.length > 1 ? 's' : '') + ' within ' + currentRadius + ' km', 'info');
+                    } else {
+                        setStatus('No cinemas found within ' + currentRadius + ' km. Try increasing the radius.', 'info');
+                    }
+                })
+                .catch(function (err) {
+                    console.error('Overpass error:', err);
+                    setStatus('❌ Failed to fetch theatres. Try again in a moment.', 'error');
+                });
+        }
+
+        // RENDER THEATRE CARDS
+        function renderTheatres(theatres) {
+            var grid = document.getElementById('theatreGrid');
+            var heading = document.getElementById('resultsHeading');
+
+            if (!theatres.length) {
+                grid.innerHTML = '<div class="no-results">🎭 No theatres found nearby.<br>Try increasing the search radius using the slider above.</div>';
+                heading.classList.add('visible');
+                return;
+            }
+
+            heading.classList.add('visible');
+            heading.textContent = 'Nearby Theatres (' + theatres.length + ')';
+
+            grid.innerHTML = theatres.map(function (t) {
+                var screensHtml = t.screens !== '—' ? '<span class="theatre-screens">🎥 ' + t.screens + ' screens</span>' : '';
+                return '<div class="theatre-card">' +
+                    '<div class="theatre-name">🎬 ' + t.name + '</div>' +
+                    '<div class="theatre-address">📍 ' + t.address + '</div>' +
+                    '<div class="theatre-meta">' +
+                    '<span class="theatre-distance">' + t.distance + ' km away</span>' +
+                    screensHtml +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+        }
+
+        // PLOT ON MAP
+        function plotTheatresOnMap(theatres) {
+            // Clear old markers
+            theatreMarkers.forEach(function (m) { map.removeLayer(m); });
+            theatreMarkers = [];
+
+            theatres.forEach(function (t) {
+                var marker = L.marker([t.lat, t.lng], { icon: theatreIcon }).addTo(map);
+                marker.bindPopup(
+                    '<div style="font-family:sans-serif;min-width:160px;">' +
+                    '<b style="color:#333;">' + t.name + '</b><br>' +
+                    '<span style="font-size:12px;color:#666;">' + t.address + '</span><br>' +
+                    '<span style="font-size:12px;color:#FF073A;font-weight:bold;">' + t.distance + ' km • ' + t.screens + ' screens</span>' +
+                    '</div>'
+                );
+                theatreMarkers.push(marker);
+            });
+
+            // Fit bounds to include all markers + user
+            if (theatres.length) {
+                var group = L.featureGroup([userMarker].concat(theatreMarkers));
+                map.fitBounds(group.getBounds().pad(0.1));
             }
         }
 
-        function submitLocation() {
-            const state = document.getElementById("state").value;
-            const mandal = document.getElementById("mandal").value;
+        // RADIUS SLIDER
+        function updateRadius() {
+            currentRadius = parseInt(document.getElementById('radiusSlider').value);
+            document.getElementById('radiusValue').textContent = currentRadius + ' km';
 
-            if (state !== "none" && mandal !== "none") {
-                alert(`You selected: ${state}, ${mandal}`);
-            } else {
-                alert("Please select both State and Mandal.");
+            // Update circle
+            if (radiusCircle) {
+                radiusCircle.setRadius(currentRadius * 1000);
+                map.fitBounds(radiusCircle.getBounds());
             }
+
+            // Re-fetch
+            fetchTheatres();
         }
     </script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    <script src="../assets/js/firebase-init.js"></script>
+
+    <script>
+        // Auth Guard
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (!res.ok) window.location.href = 'login.html';
+                else {
+                    const user = await res.json();
+                    const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
+                    if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+            }
+        }
+        checkAuth();
+    </script>
 </body>
+
 </html>

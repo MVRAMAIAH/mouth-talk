@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mouth Talk – Mollywood</title>
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
+        type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        body {
+            background: black;
+            color: #fff;
+            min-height: 100vh;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px 50px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+        .header:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #FF073A;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #FF073A;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-top: 100px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #FF073A;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            padding: 25px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .movie-box {
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #ff4d4d;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.3s ease;
+            text-decoration: none;
+            color: #fff;
+            position: relative;
+            /* Added for edit button positioning */
+        }
+
+        .movie-box:hover {
+            border-color: #ff073a;
+            box-shadow: 0 0 12px #ff073a, 0 0 24px #ff073a33;
+            transform: scale(1.04);
+        }
+
+        .movie-box img {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            display: block;
+        }
+
+        .movie-title {
+            text-align: center;
+            padding: 8px 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(20, 20, 20, 0.95);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: capitalize;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 30px;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .nav-links a {
+                font-size: 16px;
+            }
+
+            .movie-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px 20px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-links a {
+                display: block;
+                margin: 8px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo" onclick="window.location.href='get-started.html'">MTALK</div>
+        <div class="nav-links">
+            <a href="get-started.html">Home</a>
+            <a href="profile.html">Profile</a>
+            <a href="location.html">Location</a>
+            <a href="about.html">About</a>
+        </div>
+    </div>
+
+    <h1>Running Movies – Mollywood</h1>
+    <div id="movieGrid" class="movie-grid"></div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    <script src="../assets/js/firebase-init.js"></script>
+    <script src="../assets/js/admin.js"></script>
+
+    <script>
+        let globalUser = null;
+        // Auth Guard
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (!res.ok) window.location.href = 'login.html';
+                else {
+                    const user = await res.json();
+                    globalUser = user;
+                    const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
+                    if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
+
+                    if (user.isAdmin) {
+                        injectAdminModal();
+                    }
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+            }
+        }
+        checkAuth();
+
+        const CATEGORY = 'mollywood';
+
+        async function loadMovies() {
+            try {
+                const res = await fetch('/api/movies');
+                if (!res.ok) throw new Error('API fetch failed');
+                const movies = (await res.json()).filter(m => m.category === CATEGORY);
+                const grid = document.getElementById('movieGrid');
+                grid.innerHTML = '';
+
+                if (movies.length === 0) {
+                    grid.innerHTML = '<p class="empty-msg">No movies found in this category yet.</p>';
+                    return;
+                }
+
+                movies.forEach(m => {
+                    const container = document.createElement('div');
+                    container.className = 'movie-box';
+                    container.style.display = 'block';
+
+                    const a = document.createElement('a');
+                    a.href = `movie.html?id=${encodeURIComponent(m.id)}`;
+                    a.style.textDecoration = 'none';
+                    a.style.color = 'inherit';
+
+                    const img = document.createElement('img');
+                    img.alt = m.title || 'Poster';
+                    img.src = `/assets/images/${m.poster}`;
+
+                    const title = document.createElement('span');
+                    title.className = 'movie-title';
+                    title.textContent = m.title || 'Untitled';
+                    title.style.display = 'block';
+
+                    a.appendChild(img);
+                    a.appendChild(title);
+                    container.appendChild(a);
+
+                    if (globalUser && globalUser.isAdmin) {
+                        const editBtn = document.createElement('div');
+                        editBtn.className = 'edit-overlay';
+                        editBtn.textContent = 'EDIT';
+                        editBtn.onclick = (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openModal(m);
+                        };
+                        container.appendChild(editBtn);
+                    }
+
+                    grid.appendChild(container);
+                });
+            } catch (err) {
+                console.error('loadMovies error', err);
+                document.getElementById('movieGrid').innerHTML =
+                    '<p class="empty-msg" style="color:#f55">Could not load movies.</p>';
+            }
+        }
+        async function init() {
+            await checkAuth();
+            await loadMovies();
+        }
+        init();
+
+    </script>
+</body>
+
+</html>

@@ -1,49 +1,462 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - MTALK</title>
+  <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
+    type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    body {
+      background: black;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+    }
+
+    /* HEADER */
+    .header {
+      width: 100%;
+      padding: 20px 50px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: bold;
+      color: #FF073A;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: white;
+      font-size: 18px;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #FF073A;
+    }
+
+    /* LOGIN CONTAINER */
+    .login-container {
+      margin-top: 140px;
+      text-align: center;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(255, 7, 58, 0.6);
+      width: 90%;
+      max-width: 450px;
+      border: 1px solid rgba(255, 7, 58, 0.3);
+    }
+
+    .login-container h2 {
+      font-size: 28px;
+      margin-bottom: 25px;
+      text-shadow: 0 0 10px #FF073A;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      margin-bottom: 25px;
+      border-bottom: 2px solid rgba(255, 7, 58, 0.2);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .tab.active {
+      color: #FF073A;
+      border-bottom: 2px solid #FF073A;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* FORMS */
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #FF073A;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid rgba(255, 7, 58, 0.5);
+      border-radius: 10px;
+      background: transparent;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #FF073A;
+      box-shadow: 0 0 10px rgba(255, 7, 58, 0.4);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(45deg, #FF073A, #D90429);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 0 15px rgba(255, 7, 58, 0.6);
+    }
+
+    button:hover {
+      background: white;
+      color: #FF073A;
+      box-shadow: 0 0 20px rgba(255, 7, 58, 0.8);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .google-btn {
+      background: white;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .google-btn:hover {
+      background: #f1f1f1;
+      color: #000;
+    }
+
+    .google-btn img {
+      width: 24px;
+    }
+
+    /* UTILS */
+    .error-msg {
+      color: #ff4d4d;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .loading-spinner {
+      display: none;
+      margin: 20px auto;
+      width: 30px;
+      height: 30px;
+      border: 4px solid rgba(255, 7, 58, 0.1);
+      border-top: 4px solid #FF073A;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    #recaptcha-container {
+      margin: 15px 0;
+    }
+  </style>
 </head>
-<body style="background:black;color:white;text-align:center;">
 
-<h2>Login</h2>
+<body>
 
-<input id="email" placeholder="Email"><br><br>
-<input id="password" type="password" placeholder="Password"><br><br>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo" onclick="window.location.href='../index.html'">MTALK</div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="profile.html">Profile</a>
+      <a href="location.html">Location</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
 
-<button onclick="login()">Login</button>
-<p onclick="signup()" style="cursor:pointer;color:red;">Create account</p>
+  <!-- LOGIN FORM -->
+  <div class="login-container">
+    <h2>Access MTALK</h2>
 
-<script>
-async function login() {
-  const res = await fetch("http://localhost:5000/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email: email.value,
-      password: password.value
-    })
-  });
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('google')">Google</div>
+      <div class="tab" onclick="switchTab('phone')">Phone OTP</div>
+    </div>
 
+<<<<<<< HEAD
   const data = await res.json();
   if (data.token) {
     localStorage.setItem("token", data.token);
     window.location.href = "../index.html";
   }
 }
+=======
+    <!-- Google Tab Content -->
+    <div id="google-tab" class="tab-content active">
+      <p style="margin-bottom: 20px; color: rgba(255,255,255,0.7);">Sign in quick with your Google account</p>
+      <button class="google-btn" onclick="signInWithGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+        Sign in with Google
+      </button>
+    </div>
+>>>>>>> exm-recovered
 
-async function signup() {
-  await fetch("http://localhost:5000/api/auth/signup", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name: "User",
-      email: email.value,
-      password: password.value
-    })
-  });
-  alert("Account created. Login now.");
-}
-</script>
+    <!-- Phone Tab Content -->
+    <div id="phone-tab" class="tab-content">
+      <div id="phone-step-1">
+        <div class="input-group">
+          <label>Full Name</label>
+          <input type="text" id="phone-name" placeholder="E.g. John Doe">
+        </div>
+        <div class="input-group">
+          <label>Mobile Number</label>
+          <input type="tel" id="phoneNumber" placeholder="+91 9876543210">
+        </div>
+        <div id="recaptcha-container"></div>
+        <button id="send-otp-btn" onclick="sendOTP()">Send OTP</button>
+      </div>
+
+      <div id="phone-step-2" style="display: none;">
+        <div class="input-group">
+          <label>Enter 6-digit OTP</label>
+          <input type="text" id="otp-input" maxlength="6"
+            style="letter-spacing: 5px; font-size: 20px; text-align: center;">
+        </div>
+        <button onclick="verifyOTP()">Verify & Login</button>
+        <p style="margin-top: 15px; font-size: 12px; cursor: pointer; color: #FF073A;" onclick="resetPhoneStep()">Change
+          Number</p>
+      </div>
+    </div>
+
+    <div class="loading-spinner" id="loader"></div>
+    <div id="error-box" class="error-msg"></div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+  <script src="../assets/js/firebase-init.js"></script>
+
+  <script>
+    let confirmationResult = null;
+
+    // UI State Utils
+    function switchTab(type) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      if (type === 'google') {
+        document.querySelector('.tab:nth-child(1)').classList.add('active');
+        document.getElementById('google-tab').classList.add('active');
+      } else {
+        document.querySelector('.tab:nth-child(2)').classList.add('active');
+        document.getElementById('phone-tab').classList.add('active');
+        initRecaptcha();
+      }
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('error-box');
+      box.textContent = msg;
+      box.style.display = 'block';
+      setTimeout(() => box.style.display = 'none', 5000);
+    }
+
+    function toggleLoader(show) {
+      document.getElementById('loader').style.display = show ? 'block' : 'none';
+      document.querySelectorAll('button').forEach(b => b.disabled = show);
+    }
+
+    // Auth Flows
+    async function signInWithGoogle() {
+      toggleLoader(true);
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        const result = await auth.signInWithPopup(provider);
+        const idToken = await result.user.getIdToken();
+
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken })
+        });
+
+        if (res.ok) {
+          window.location.href = '../index.html';
+        } else {
+          const data = await res.json();
+          showError(data.error || 'Login failed');
+        }
+      } catch (error) {
+        console.error(error);
+        showError(error.message);
+      } finally {
+        toggleLoader(false);
+      }
+    }
+
+    function initRecaptcha() {
+      if (window.recaptchaVerifier) return;
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        'size': 'normal',
+        'callback': (response) => { }
+      });
+    }
+
+    async function sendOTP() {
+      let phone = document.getElementById('phoneNumber').value.trim();
+      const name = document.getElementById('phone-name').value.trim();
+
+      if (!name) return showError("Please enter your name");
+
+      // Clean up phone number: remove spaces, dashes, parentheses
+      phone = phone.replace(/\D/g, '');
+
+      // Auto-format for India (+91) if it's 10 digits
+      if (phone.length === 10) {
+        phone = '+91' + phone;
+      } else if (!phone.startsWith('+')) {
+        // If it doesn't start with +, assume it needs one but warn if not 10 digits
+        if (phone.length > 0) phone = '+' + phone;
+      }
+
+      if (phone.length < 12) {
+        return showError("Please enter a valid phone number with country code (e.g. +91...)");
+      }
+
+      toggleLoader(true);
+      try {
+        console.log('Sending OTP to:', phone);
+        const appVerifier = window.recaptchaVerifier;
+        confirmationResult = await auth.signInWithPhoneNumber(phone, appVerifier);
+        document.getElementById('phone-step-1').style.display = 'none';
+        document.getElementById('phone-step-2').style.display = 'block';
+      } catch (error) {
+        console.error('Firebase Check Satus OTP Error:', error);
+        showError(error.message);
+      } finally {
+        toggleLoader(false);
+      }
+    }
+
+    async function verifyOTP() {
+      const code = document.getElementById('otp-input').value;
+      const name = document.getElementById('phone-name').value;
+
+      if (code.length !== 6) return showError("6-digit code required");
+
+      toggleLoader(true);
+      try {
+        const result = await confirmationResult.confirm(code);
+        const idToken = await result.user.getIdToken();
+
+        const res = await fetch('/api/auth/phone', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken, fullName: name })
+        });
+
+        if (res.ok) {
+          window.location.href = '../index.html';
+        } else {
+          const data = await res.json();
+          showError(data.error || 'Verification failed');
+        }
+      } catch (error) {
+        console.error(error);
+        showError(error.message);
+      } finally {
+        toggleLoader(false);
+      }
+    }
+
+    function resetPhoneStep() {
+      document.getElementById('phone-step-1').style.display = 'block';
+      document.getElementById('phone-step-2').style.display = 'none';
+      confirmationResult = null;
+    }
+
+    // Auto-login check
+    async function checkCurrentSession() {
+      try {
+        console.log('Checking existing session...');
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          console.log('Session exists, redirecting to home...');
+          window.location.href = '/index.html';
+        }
+      } catch (e) {
+        console.log('No active session.');
+      }
+    }
+    setTimeout(checkCurrentSession, 100);
+
+  </script>
 
 </body>
+
 </html>

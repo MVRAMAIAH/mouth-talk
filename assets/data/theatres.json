@@ -1,0 +1,227 @@
+[
+    {
+        "id": "th01",
+        "name": "PVR ICON GVK One",
+        "address": "GVK One Mall, Banjara Hills, Hyderabad",
+        "lat": 17.4239,
+        "lng": 78.4488,
+        "screens": 7,
+        "city": "Hyderabad"
+    },
+    {
+        "id": "th02",
+        "name": "INOX Hyderabad Central",
+        "address": "Panjagutta, Hyderabad",
+        "lat": 17.4319,
+        "lng": 78.4510,
+        "screens": 5,
+        "city": "Hyderabad"
+    },
+    {
+        "id": "th03",
+        "name": "AMB Cinemas",
+        "address": "Gachibowli, Hyderabad",
+        "lat": 17.4401,
+        "lng": 78.3489,
+        "screens": 12,
+        "city": "Hyderabad"
+    },
+    {
+        "id": "th04",
+        "name": "Prasads Multiplex",
+        "address": "NTR Marg, Necklace Road, Hyderabad",
+        "lat": 17.4107,
+        "lng": 78.4736,
+        "screens": 9,
+        "city": "Hyderabad"
+    },
+    {
+        "id": "th05",
+        "name": "Sandhya 70MM",
+        "address": "RTC Cross Roads, Hyderabad",
+        "lat": 17.4022,
+        "lng": 78.4884,
+        "screens": 3,
+        "city": "Hyderabad"
+    },
+    {
+        "id": "th06",
+        "name": "Asian Mukta A2 Cinemas",
+        "address": "Ameerpet, Hyderabad",
+        "lat": 17.4374,
+        "lng": 78.4482,
+        "screens": 4,
+        "city": "Hyderabad"
+    },
+    {
+        "id": "th07",
+        "name": "Sudarshan 35MM",
+        "address": "RTC Cross Roads, Hyderabad",
+        "lat": 17.4018,
+        "lng": 78.4891,
+        "screens": 2,
+        "city": "Hyderabad"
+    },
+    {
+        "id": "th08",
+        "name": "PVR Cinemas Forum Mall",
+        "address": "Kukatpally, Hyderabad",
+        "lat": 17.4935,
+        "lng": 78.3901,
+        "screens": 6,
+        "city": "Hyderabad"
+    },
+    {
+        "id": "th09",
+        "name": "Sathyam Cinemas",
+        "address": "Royapettah, Chennai",
+        "lat": 13.0558,
+        "lng": 80.2619,
+        "screens": 6,
+        "city": "Chennai"
+    },
+    {
+        "id": "th10",
+        "name": "PVR Grand Galada",
+        "address": "T Nagar, Chennai",
+        "lat": 13.0418,
+        "lng": 80.2341,
+        "screens": 5,
+        "city": "Chennai"
+    },
+    {
+        "id": "th11",
+        "name": "AGS Cinemas Navalur",
+        "address": "OMR, Chennai",
+        "lat": 12.8458,
+        "lng": 80.2263,
+        "screens": 8,
+        "city": "Chennai"
+    },
+    {
+        "id": "th12",
+        "name": "Devi Cineplex",
+        "address": "Anna Salai, Chennai",
+        "lat": 13.0502,
+        "lng": 80.2584,
+        "screens": 4,
+        "city": "Chennai"
+    },
+    {
+        "id": "th13",
+        "name": "INOX Lido",
+        "address": "MG Road, Bangalore",
+        "lat": 12.9742,
+        "lng": 77.6093,
+        "screens": 6,
+        "city": "Bangalore"
+    },
+    {
+        "id": "th14",
+        "name": "PVR Orion Mall",
+        "address": "Rajajinagar, Bangalore",
+        "lat": 13.0107,
+        "lng": 77.5544,
+        "screens": 9,
+        "city": "Bangalore"
+    },
+    {
+        "id": "th15",
+        "name": "Cinepolis Royal Meenakshi",
+        "address": "Bannerghatta Road, Bangalore",
+        "lat": 12.9015,
+        "lng": 77.5963,
+        "screens": 7,
+        "city": "Bangalore"
+    },
+    {
+        "id": "th16",
+        "name": "PVR Phoenix Marketcity",
+        "address": "Whitefield, Bangalore",
+        "lat": 12.9943,
+        "lng": 77.7541,
+        "screens": 8,
+        "city": "Bangalore"
+    },
+    {
+        "id": "th17",
+        "name": "CMR Central Vizag",
+        "address": "Dwaraka Nagar, Visakhapatnam",
+        "lat": 17.7174,
+        "lng": 83.3056,
+        "screens": 4,
+        "city": "Visakhapatnam"
+    },
+    {
+        "id": "th18",
+        "name": "INOX CMR Central",
+        "address": "Siripuram, Visakhapatnam",
+        "lat": 17.7273,
+        "lng": 83.3145,
+        "screens": 5,
+        "city": "Visakhapatnam"
+    },
+    {
+        "id": "th19",
+        "name": "Jagadamba Theatre",
+        "address": "Jagadamba Centre, Visakhapatnam",
+        "lat": 17.7134,
+        "lng": 83.3008,
+        "screens": 3,
+        "city": "Visakhapatnam"
+    },
+    {
+        "id": "th20",
+        "name": "PVR ICON Vijayawada",
+        "address": "MG Road, Vijayawada",
+        "lat": 16.5062,
+        "lng": 80.6480,
+        "screens": 5,
+        "city": "Vijayawada"
+    },
+    {
+        "id": "th21",
+        "name": "Leela Mahal Theatre",
+        "address": "Governorpet, Vijayawada",
+        "lat": 16.5143,
+        "lng": 80.6211,
+        "screens": 2,
+        "city": "Vijayawada"
+    },
+    {
+        "id": "th22",
+        "name": "PVR Juhu",
+        "address": "Juhu, Mumbai",
+        "lat": 19.0989,
+        "lng": 72.8265,
+        "screens": 6,
+        "city": "Mumbai"
+    },
+    {
+        "id": "th23",
+        "name": "INOX R-City",
+        "address": "Ghatkopar, Mumbai",
+        "lat": 19.0919,
+        "lng": 72.9168,
+        "screens": 8,
+        "city": "Mumbai"
+    },
+    {
+        "id": "th24",
+        "name": "PVR Select Citywalk",
+        "address": "Saket, New Delhi",
+        "lat": 28.5270,
+        "lng": 77.2195,
+        "screens": 6,
+        "city": "Delhi"
+    },
+    {
+        "id": "th25",
+        "name": "PVR Priya",
+        "address": "Vasant Vihar, New Delhi",
+        "lat": 28.5579,
+        "lng": 77.1585,
+        "screens": 4,
+        "city": "Delhi"
+    }
+]
