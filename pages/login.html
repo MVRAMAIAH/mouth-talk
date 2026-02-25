@@ -8,6 +8,7 @@
   <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
     type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/premium-buttons.css">
   <style>
     * {
       margin: 0;
@@ -72,7 +73,8 @@
       text-align: center;
       padding: 40px;
       background: rgba(0, 0, 0, 0.8);
-      border-radius: 15px;
+      border-radius: 8px;
+      /* Changed from 15px */
       box-shadow: 0 4px 20px rgba(255, 7, 58, 0.6);
       width: 90%;
       max-width: 450px;
@@ -127,43 +129,8 @@
       color: #FF073A;
     }
 
-    input {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: 2px solid rgba(255, 7, 58, 0.5);
-      border-radius: 10px;
-      background: transparent;
-      color: white;
-      font-family: 'Orbitron', sans-serif;
-      transition: 0.3s;
-    }
-
     input:focus {
       outline: none;
-      border-color: #FF073A;
-      box-shadow: 0 0 10px rgba(255, 7, 58, 0.4);
-    }
-
-    button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 15px;
-      font-size: 18px;
-      font-weight: bold;
-      color: white;
-      background: linear-gradient(45deg, #FF073A, #D90429);
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 0 15px rgba(255, 7, 58, 0.6);
-    }
-
-    button:hover {
-      background: white;
-      color: #FF073A;
-      box-shadow: 0 0 20px rgba(255, 7, 58, 0.8);
     }
 
     button:disabled {
@@ -172,21 +139,17 @@
     }
 
     .google-btn {
-      background: white;
-      color: #000;
-      display: flex;
+      display: flex !important;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-    }
-
-    .google-btn:hover {
-      background: #f1f1f1;
-      color: #000;
+      gap: 15px;
+      width: 100%;
+      /* Aesthetics handled by .premium-btn */
     }
 
     .google-btn img {
-      width: 24px;
+      width: 22px;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
     }
 
     /* UTILS */
@@ -248,9 +211,9 @@
 
     <!-- Google Tab Content -->
     <div id="google-tab" class="tab-content active">
-      <p style="margin-bottom: 20px; color: rgba(255,255,255,0.7);">Sign in quick with your Google account</p>
-      <button class="google-btn" onclick="signInWithGoogle()">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+      <p style="margin-bottom: 25px; color: rgba(255,255,255,0.7); font-size: 14px;">One-click secure access</p>
+      <button class="google-btn premium-btn" onclick="signInWithGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
         Sign in with Google
       </button>
     </div>
@@ -259,24 +222,24 @@
     <div id="phone-tab" class="tab-content">
       <div id="phone-step-1">
         <div class="input-group">
-          <label>Full Name</label>
-          <input type="text" id="phone-name" placeholder="E.g. John Doe">
+          <label style="display:block; margin-bottom:8px; font-size:14px; color:#FF073A;">Full Name</label>
+          <input type="text" id="phone-name" class="premium-input" placeholder="E.g. John Doe">
         </div>
         <div class="input-group">
-          <label>Mobile Number</label>
-          <input type="tel" id="phoneNumber" placeholder="+91 9876543210">
+          <label style="display:block; margin-bottom:8px; font-size:14px; color:#FF073A;">Mobile Number</label>
+          <input type="tel" id="phoneNumber" class="premium-input" placeholder="+91 9876543210">
         </div>
         <div id="recaptcha-container"></div>
-        <button id="send-otp-btn" onclick="sendOTP()">Send OTP</button>
+        <button id="send-otp-btn" class="premium-btn" style="width:100%" onclick="sendOTP()">Send OTP</button>
       </div>
 
       <div id="phone-step-2" style="display: none;">
         <div class="input-group">
-          <label>Enter 6-digit OTP</label>
-          <input type="text" id="otp-input" maxlength="6"
+          <label style="display:block; margin-bottom:8px; font-size:14px; color:#FF073A;">Enter 6-digit OTP</label>
+          <input type="text" id="otp-input" class="premium-input" maxlength="6"
             style="letter-spacing: 5px; font-size: 20px; text-align: center;">
         </div>
-        <button onclick="verifyOTP()">Verify & Login</button>
+        <button class="premium-btn" style="width:100%" onclick="verifyOTP()">Verify & Login</button>
         <p style="margin-top: 15px; font-size: 12px; cursor: pointer; color: #FF073A;" onclick="resetPhoneStep()">Change
           Number</p>
       </div>
@@ -291,6 +254,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
   <script src="../assets/js/firebase-init.js"></script>
+  <script src="../assets/js/premium-buttons.js"></script>
 
   <script>
     let confirmationResult = null;
@@ -337,7 +301,12 @@
         });
 
         if (res.ok) {
-          window.location.href = '../index.html';
+          const data = await res.json();
+          if (data.isNewUser) {
+            window.location.href = 'onboarding.html';
+          } else {
+            window.location.href = '../index.html';
+          }
         } else {
           const data = await res.json();
           showError(data.error || 'Login failed');
@@ -412,7 +381,12 @@
         });
 
         if (res.ok) {
-          window.location.href = '../index.html';
+          const data = await res.json();
+          if (data.isNewUser) {
+            window.location.href = 'onboarding.html';
+          } else {
+            window.location.href = '../index.html';
+          }
         } else {
           const data = await res.json();
           showError(data.error || 'Verification failed');

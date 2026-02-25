@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Movie - MTALK</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/premium-buttons.css">
   <style>
     body {
       font-family: 'Orbitron', sans-serif;
@@ -68,33 +69,10 @@
       display: inline-block;
       margin-top: 16px;
       color: #FF073A;
-      text-decoration: none
-    }
-
-    .review-btn {
-      display: inline-block;
-      margin-top: 16px;
-      margin-left: 16px;
-      padding: 10px 28px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #fff;
-      background: linear-gradient(135deg, #FF073A, #D90429);
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      text-decoration: none;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      font-family: 'Orbitron', sans-serif;
-      box-shadow: 0 0 14px rgba(255, 7, 58, 0.5);
-      transition: all 0.3s;
-      animation: pulse-review 2s infinite;
-    }
-
-    .review-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 24px rgba(255, 7, 58, 0.8);
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 0.8rem;
     }
 
     @keyframes pulse-review {
@@ -150,6 +128,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
   <script src="../assets/js/firebase-init.js"></script>
+  <script src="../assets/js/premium-buttons.js"></script>
 
   <script>
     // Auth Guard
@@ -198,8 +177,8 @@
                 <p><span class="highlight">Producer:</span> ${movie.producer || '—'}</p>
                 <p><span class="highlight">Music:</span> ${movie.music || '—'}</p>
               </div>
-              <a class="back" href="get-started.html">← Back to Category</a>
-              <a class="review-btn" href="review.html?movieId=${movie.id}">✍ Write a Review</a>
+              <a class="back premium-btn" style="padding: 10px 20px; font-size: 0.75rem;" href="get-started.html">← Back</a>
+              <a class="review-btn premium-btn" style="padding: 10px 20px; font-size: 0.75rem;" href="review.html?movieId=${movie.id}">✍ Write a Review</a>
             </div>
           </div>
           <div class="trailer-container">

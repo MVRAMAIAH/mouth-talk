@@ -13,6 +13,9 @@ const authMiddleware = (req, res, next) => {
         next();
     } catch (error) {
         console.error('JWT verification error:', error.message);
+        if (error.name === 'JsonWebTokenError') {
+            console.error('Hint: This usually means the JWT_SECRET changed. Clear your cookies or log out.');
+        }
         res.clearCookie('token');
         return res.status(401).json({ error: 'Session expired or invalid. Please log in again.' });
     }

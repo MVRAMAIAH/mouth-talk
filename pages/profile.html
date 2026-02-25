@@ -8,6 +8,7 @@
     <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
         type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/premium-buttons.css">
     <style>
         * {
             margin: 0;
@@ -65,7 +66,8 @@
         /* Profile Container */
         .profile-container {
             text-align: center;
-            padding: 50px;
+            padding: 70px 50px;
+            /* Increased top/bottom padding */
             background-color: rgba(0, 0, 0, 0.8);
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(255, 7, 58, 0.5);
@@ -114,72 +116,215 @@
             margin-bottom: 15px;
         }
 
-        /* Inputs */
-        .input-group {
-            text-align: left;
-            margin-bottom: 15px;
+        /* Username with verified badge */
+        .username-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 26px;
+            margin-bottom: 5px;
         }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
+        .verified-badge {
+            display: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF073A, #ff4d6d, #FF073A);
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+            line-height: 1;
+            box-shadow: 0 0 10px rgba(255, 7, 58, 0.5), inset 0 0 6px rgba(255, 255, 255, 0.15);
+            animation: verifiedPulse 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        .verified-badge::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #FF073A, #ffd700, #FF073A, #ffd700, #FF073A);
+            z-index: -1;
+            animation: verifiedSpin 4s linear infinite;
+        }
+
+        .verified-badge::after {
+            content: '';
+            position: absolute;
+            inset: 1px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF073A, #cc0030);
+            z-index: -1;
+        }
+
+        .verified-badge.visible {
+            display: inline-flex;
+        }
+
+        @keyframes verifiedPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(255, 7, 58, 0.4);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 18px rgba(255, 7, 58, 0.7), 0 0 30px rgba(255, 215, 0, 0.2);
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes verifiedSpin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Read-only info display */
+        .info-display {
+            width: 100%;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .info-display-title {
             font-size: 12px;
             color: #FF073A;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
-        input,
-        select {
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #FF073A;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 400;
+        }
+
+        /* Edit/Update toggle */
+        .edit-section {
+            display: none;
             width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid rgba(255, 7, 58, 0.3);
-            border-radius: 10px;
-            background: transparent;
-            color: white;
+        }
+
+        .edit-section.visible {
+            display: block;
+        }
+
+        .btn-edit {
+            margin-top: 20px;
+            padding: 10px 30px;
+            background: none;
+            border: 1px solid rgba(255, 7, 58, 0.4);
+            color: rgba(255, 7, 58, 0.8);
             font-family: 'Orbitron', sans-serif;
-            transition: 0.3s;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 4px;
+        }
+
+        .btn-edit:hover {
+            border-color: #FF073A;
+            color: #FF073A;
+            box-shadow: 0 0 15px rgba(255, 7, 58, 0.3);
+        }
+
+        /* Preferences */
+        .prefs-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 7, 58, 0.15);
+            text-align: left;
+        }
+
+        .prefs-section h3 {
+            font-size: 12px;
+            color: #FF073A;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .pref-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 11px;
+        }
+
+        .pref-item .pref-label {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .pref-item .pref-value {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn-retake {
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: none;
+            border: 1px solid rgba(255, 7, 58, 0.3);
+            color: rgba(255, 7, 58, 0.7);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 4px;
+            display: block;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-retake:hover {
+            border-color: #FF073A;
+            color: #FF073A;
         }
 
         input:focus {
             outline: none;
-            border-color: #FF073A;
-            box-shadow: 0 0 10px rgba(255, 7, 58, 0.3);
         }
 
         /* Buttons */
-        .btn-update {
-            width: 100%;
-            margin-top: 20px;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(45deg, #FF073A, #D90429);
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 0 15px rgba(255, 7, 58, 0.4);
-        }
-
-        .btn-update:hover {
-            box-shadow: 0 0 20px rgba(255, 7, 58, 0.7);
-            transform: scale(1.02);
-        }
-
-        .btn-logout {
-            display: block;
-            margin: 30px auto 0;
-            padding: 10px 30px;
-            font-size: 14px;
-            color: #FF073A;
-            background: transparent;
-            border: 1px solid #FF073A;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
         .btn-logout:hover {
             background: #FF073A;
             color: white;
@@ -243,117 +388,226 @@
 
         <div class="user-info">
             <div id="auth-badge" class="badge">-</div>
-            <h2 id="display-name">Loading...</h2>
+            <h2 class="username-row">
+                <span id="name-text">Loading...</span>
+                <span class="verified-badge" id="verified-badge"></span>
+            </h2>
             <p id="display-contact">-</p>
         </div>
 
-        <div class="input-group">
-            <label>Name</label>
-            <input type="text" id="user-name-input" placeholder="Your Name">
+        <!-- Read-only info display -->
+        <div class="info-display" id="info-display" style="display:none;">
+            <div class="info-display-title">Your Movie DNA</div>
+            <div class="info-row">
+                <span class="info-label">Name</span>
+                <span class="info-value" id="ro-name">—</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Mother Tongue</span>
+                <span class="info-value" id="ro-tongue">—</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Fav Actor</span>
+                <span class="info-value" id="ro-actor">—</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Fav Actress</span>
+                <span class="info-value" id="ro-actress">—</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Fav Director</span>
+                <span class="info-value" id="ro-director">—</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Fav Composer</span>
+                <span class="info-value" id="ro-composer">—</span>
+            </div>
         </div>
 
-        <div class="input-group">
-            <label>Favourite Actor</label>
-            <input type="text" id="actor-input" placeholder="Favourite Actor">
+        <button class="btn-edit" id="btn-edit" onclick="toggleEdit()">✎ Edit Profile</button>
+
+        <div class="edit-section" id="edit-section">
+            <div class="input-group">
+                <label style="display:block; margin-bottom:8px; font-size:12px; color:#FF073A;">Name</label>
+                <input type="text" id="user-name-input" class="premium-input" style="width:100%"
+                    placeholder="Your Name">
+            </div>
+            <div class="input-group" id="edit-prefs" style="display:none;">
+                <label style="display:block; margin-bottom:8px; font-size:12px; color:#FF073A;">Mother Tongue</label>
+                <input type="text" id="tongue-input" class="premium-input" style="width:100%"
+                    placeholder="Mother Tongue">
+            </div>
+            <div class="input-group" id="edit-actor-wrap" style="display:none;">
+                <label style="display:block; margin-bottom:8px; font-size:12px; color:#FF073A;">Favourite
+                    Actor</label>
+                <input type="text" id="actor-input" class="premium-input" style="width:100%"
+                    placeholder="Favourite Actor">
+            </div>
+            <div class="input-group" id="edit-actress-wrap" style="display:none;">
+                <label style="display:block; margin-bottom:8px; font-size:12px; color:#FF073A;">Favourite
+                    Actress</label>
+                <input type="text" id="actress-input" class="premium-input" style="width:100%"
+                    placeholder="Favourite Actress">
+            </div>
+            <div class="input-group" id="edit-director-wrap" style="display:none;">
+                <label style="display:block; margin-bottom:8px; font-size:12px; color:#FF073A;">Favourite
+                    Director</label>
+                <input type="text" id="director-input" class="premium-input" style="width:100%"
+                    placeholder="Favourite Director">
+            </div>
+            <div class="input-group" id="edit-composer-wrap" style="display:none;">
+                <label style="display:block; margin-bottom:8px; font-size:12px; color:#FF073A;">Favourite
+                    Composer</label>
+                <input type="text" id="composer-input" class="premium-input" style="width:100%"
+                    placeholder="Favourite Composer">
+            </div>
+            <button class="btn-update premium-btn" style="margin-top: 20px;" onclick="updateProfile()">Update
+                Profile</button>
         </div>
 
-        <div class="input-group">
-            <label>Cinephile Level</label>
-            <select id="cinephile">
-                <option value="casual">Casual Cinephile</option>
-                <option value="enthusiast">Cinephile Enthusiast</option>
-                <option value="expert">Cinephile Expert</option>
-                <option value="veteran">Veteran Cinephile</option>
-            </select>
-        </div>
+        <button class="btn-logout premium-btn" style="margin-top: 15px;" onclick="logout()">Logout Session</button>
 
-        <button class="btn-update" onclick="updateProfile()">Update Profile</button>
-        <button class="btn-logout" onclick="logout()">Logout Session</button>
-    </div>
+        <!-- Firebase SDKs for logout -->
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+        <script src="../assets/js/firebase-init.js"></script>
+        <script src="../assets/js/premium-buttons.js"></script>
 
-    <!-- Firebase SDKs for logout -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
-    <script src="../assets/js/firebase-init.js"></script>
+        <script>
+            const BADGE_MAP = {
+                rocky: { emoji: '💪', name: 'ROCKY' },
+                ram: { emoji: '🌸', name: 'RAM' },
+                shivaji: { emoji: '🏛️', name: 'SHIVAJI' },
+                anil: { emoji: '👨‍👩‍👧‍👦', name: 'ANIL' }
+            };
 
-    <script>
-        async function fetchUserData() {
-            try {
-                const res = await fetch('/api/auth/me');
-                if (!res.ok) {
+            async function fetchUserData() {
+                try {
+                    const res = await fetch('/api/auth/me');
+                    if (!res.ok) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    const user = await res.json();
+
+                    document.getElementById('name-text').textContent = user.fullName;
+                    document.getElementById('user-name-input').value = user.fullName;
+                    document.getElementById('display-contact').textContent = user.email || user.phone;
+                    document.getElementById('auth-badge').textContent = (user.provider || 'JWT') + ' authenticated';
+
+                    if (user.picture) {
+                        document.getElementById('profile-img').src = user.picture;
+                    }
+
+                    // Verified badge with emoji
+                    if (user.badge && BADGE_MAP[user.badge]) {
+                        const vb = document.getElementById('verified-badge');
+                        vb.textContent = BADGE_MAP[user.badge].emoji;
+                        vb.classList.add('visible');
+                    }
+
+                    // Read-only display + Edit inputs
+                    if (user.onboardingComplete) {
+                        document.getElementById('info-display').style.display = 'block';
+                        document.getElementById('ro-name').textContent = user.fullName || '—';
+                        document.getElementById('ro-tongue').textContent = user.motherTongue || '—';
+                        document.getElementById('ro-actor').textContent = user.actor || '—';
+                        document.getElementById('ro-actress').textContent = user.favouriteActress || '—';
+                        document.getElementById('ro-director').textContent = user.favouriteDirector || '—';
+                        document.getElementById('ro-composer').textContent = user.favouriteComposer || '—';
+
+                        // Show edit pref inputs
+                        document.getElementById('edit-prefs').style.display = 'block';
+                        document.getElementById('edit-actor-wrap').style.display = 'block';
+                        document.getElementById('edit-actress-wrap').style.display = 'block';
+                        document.getElementById('edit-director-wrap').style.display = 'block';
+                        document.getElementById('edit-composer-wrap').style.display = 'block';
+
+                        if (user.motherTongue) document.getElementById('tongue-input').value = user.motherTongue;
+                        if (user.actor) document.getElementById('actor-input').value = user.actor;
+                        if (user.favouriteActress) document.getElementById('actress-input').value = user.favouriteActress;
+                        if (user.favouriteDirector) document.getElementById('director-input').value = user.favouriteDirector;
+                        if (user.favouriteComposer) document.getElementById('composer-input').value = user.favouriteComposer;
+                    }
+
+                    document.getElementById('loading-overlay').style.display = 'none';
+                } catch (err) {
+                    console.error(err);
                     window.location.href = 'login.html';
-                    return;
                 }
-                const user = await res.json();
-
-                document.getElementById('display-name').textContent = user.fullName;
-                document.getElementById('user-name-input').value = user.fullName;
-                document.getElementById('display-contact').textContent = user.email || user.phone;
-                document.getElementById('auth-badge').textContent = (user.provider || 'JWT') + ' authenticated';
-
-                if (user.picture) {
-                    document.getElementById('profile-img').src = user.picture;
-                }
-
-                if (user.actor) {
-                    document.getElementById('actor-input').value = user.actor;
-                }
-                if (user.cinephileLevel) {
-                    document.getElementById('cinephile').value = user.cinephileLevel;
-                }
-
-                document.getElementById('loading-overlay').style.display = 'none';
-            } catch (err) {
-                console.error(err);
-                window.location.href = 'login.html';
             }
-        }
 
-        async function updateProfile() {
-            const fullName = document.getElementById('user-name-input').value;
-            const actor = document.getElementById('actor-input').value;
-            const cinephileLevel = document.getElementById('cinephile').value;
-
-            try {
-                const res = await fetch('/api/auth/profile', {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ fullName, actor, cinephileLevel })
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    document.getElementById('display-name').textContent = data.user.fullName;
-                    alert("Profile updated successfully!");
+            function toggleEdit() {
+                const section = document.getElementById('edit-section');
+                const btn = document.getElementById('btn-edit');
+                const infoDisplay = document.getElementById('info-display');
+                if (section.classList.contains('visible')) {
+                    section.classList.remove('visible');
+                    if (infoDisplay && infoDisplay.textContent.trim()) infoDisplay.style.display = 'block';
+                    btn.innerHTML = '✎ Edit Profile';
                 } else {
-                    const error = await res.json();
-                    alert(error.error || "Failed to update profile");
+                    section.classList.add('visible');
+                    if (infoDisplay) infoDisplay.style.display = 'none';
+                    btn.innerHTML = '✕ Cancel';
                 }
-            } catch (err) {
-                console.error(err);
-                alert("An error occurred. Please try again.");
             }
-        }
 
-        async function logout() {
-            try {
-                // 1. Clear backend JWT cookie
-                await fetch('/api/auth/logout', { method: 'POST' });
+            async function updateProfile() {
+                const fullName = document.getElementById('user-name-input').value;
 
-                // 2. Firebase signOut
-                await firebase.auth().signOut();
+                const motherTongue = document.getElementById('tongue-input') ? document.getElementById('tongue-input').value : undefined;
+                const actor = document.getElementById('actor-input') ? document.getElementById('actor-input').value : undefined;
+                const favouriteActress = document.getElementById('actress-input') ? document.getElementById('actress-input').value : undefined;
+                const favouriteDirector = document.getElementById('director-input') ? document.getElementById('director-input').value : undefined;
+                const favouriteComposer = document.getElementById('composer-input') ? document.getElementById('composer-input').value : undefined;
 
-                // 3. Redirect
-                window.location.href = 'login.html';
-            } catch (err) {
-                console.error(err);
-                location.reload();
+                try {
+                    const res = await fetch('/api/auth/profile', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fullName, motherTongue, actor, favouriteActress, favouriteDirector, favouriteComposer })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        document.getElementById('name-text').textContent = data.user.fullName;
+                        document.getElementById('ro-name').textContent = data.user.fullName || '—';
+                        if (motherTongue) document.getElementById('ro-tongue').textContent = motherTongue;
+                        if (actor) document.getElementById('ro-actor').textContent = actor;
+                        if (favouriteActress) document.getElementById('ro-actress').textContent = favouriteActress;
+                        if (favouriteDirector) document.getElementById('ro-director').textContent = favouriteDirector;
+                        if (favouriteComposer) document.getElementById('ro-composer').textContent = favouriteComposer;
+                        toggleEdit();
+                        alert("Profile updated successfully!");
+                    } else {
+                        const error = await res.json();
+                        alert(error.error || "Failed to update profile");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("An error occurred. Please try again.");
+                }
             }
-        }
 
-        fetchUserData();
-    </script>
+            async function logout() {
+                try {
+                    // 1. Clear backend JWT cookie
+                    await fetch('/api/auth/logout', { method: 'POST' });
+
+                    // 2. Firebase signOut
+                    await firebase.auth().signOut();
+
+                    // 3. Redirect
+                    window.location.href = 'login.html';
+                } catch (err) {
+                    console.error(err);
+                    location.reload();
+                }
+            }
+
+            fetchUserData();
+        </script>
 </body>
 
 </html>

@@ -56,7 +56,8 @@ router.post('/google', async (req, res) => {
             path: '/'
         });
 
-        res.json({ success: true, user });
+        const isNewUser = !user.onboardingComplete;
+        res.json({ success: true, user, isNewUser });
     } catch (error) {
         console.error('Google Auth Error:', error);
         res.status(401).json({ error: 'Invalid Google token' });
@@ -100,7 +101,8 @@ router.post('/phone', async (req, res) => {
             path: '/'
         });
 
-        res.json({ success: true, user });
+        const isNewUser = !user.onboardingComplete;
+        res.json({ success: true, user, isNewUser });
     } catch (error) {
         console.error('Phone Auth Error:', error);
         res.status(401).json({ error: 'Invalid Phone token' });
@@ -134,7 +136,7 @@ router.post('/logout', (req, res) => {
 // PATCH /api/auth/profile - Update user profile
 router.patch('/profile', authMiddleware, async (req, res) => {
     try {
-        const { fullName, actor, cinephileLevel } = req.body;
+        const { fullName, actor, cinephileLevel, motherTongue, favouriteActress, favouriteDirector, favouriteComposer } = req.body;
         const db = req.app.get('db');
         const usersCollection = db.collection('users');
 
@@ -145,6 +147,10 @@ router.patch('/profile', authMiddleware, async (req, res) => {
         if (fullName) updateData.fullName = fullName;
         if (actor) updateData.actor = actor;
         if (cinephileLevel) updateData.cinephileLevel = cinephileLevel;
+        if (motherTongue) updateData.motherTongue = motherTongue;
+        if (favouriteActress) updateData.favouriteActress = favouriteActress;
+        if (favouriteDirector) updateData.favouriteDirector = favouriteDirector;
+        if (favouriteComposer) updateData.favouriteComposer = favouriteComposer;
 
         const result = await usersCollection.findOneAndUpdate(
             { uid: req.user.uid },
@@ -156,6 +162,59 @@ router.patch('/profile', authMiddleware, async (req, res) => {
         res.json({ success: true, user: result });
     } catch (error) {
         console.error('Update Profile Error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// POST /api/auth/onboarding - Save onboarding data and badge
+router.post('/onboarding', authMiddleware, async (req, res) => {
+    try {
+        const { fullName, motherTongue, favouriteActor, favouriteActress, favouriteDirector, favouriteComposer, profilePicture, badge, quizAnswers } = req.body;
+        const db = req.app.get('db');
+        const usersCollection = db.collection('users');
+
+        const updateData = {
+            onboardingComplete: true,
+            badge: badge || 'rocky',
+            quizAnswers: quizAnswers || [],
+            updatedAt: new Date()
+        };
+
+        if (fullName) updateData.fullName = fullName;
+        if (motherTongue) updateData.motherTongue = motherTongue;
+        if (favouriteActor) updateData.actor = favouriteActor;
+        if (favouriteActress) updateData.favouriteActress = favouriteActress;
+        if (favouriteDirector) updateData.favouriteDirector = favouriteDirector;
+        if (favouriteComposer) updateData.favouriteComposer = favouriteComposer;
+        if (profilePicture) updateData.picture = profilePicture;
+
+        const result = await usersCollection.findOneAndUpdate(
+            { uid: req.user.uid },
+            { $set: updateData },
+            { returnDocument: 'after' }
+        );
+
+        if (!result) return res.status(404).json({ error: 'User not found' });
+        res.json({ success: true, user: result });
+    } catch (error) {
+        console.error('Onboarding Error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// GET /api/auth/user/:uid - Get public user info (for badge display)
+router.get('/user/:uid', async (req, res) => {
+    try {
+        const db = req.app.get('db');
+        const user = await db.collection('users').findOne({ uid: req.params.uid });
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        // Return only public fields
+        res.json({
+            fullName: user.fullName,
+            badge: user.badge || null,
+            picture: user.picture || null
+        });
+    } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
 });

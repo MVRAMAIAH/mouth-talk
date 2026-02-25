@@ -10,6 +10,7 @@
     <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
         type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/premium-buttons.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <style>
@@ -253,7 +254,8 @@
     <div class="header">
         <div class="logo" onclick="window.location.href='get-started.html'">MTALK</div>
         <div class="nav-links">
-            <button class="add-movie-btn admin-only" onclick="openModal()" style="display: none;">+ Add Movie</button>
+            <button class="add-movie-btn admin-only premium-btn" onclick="openModal()" style="display: none;">+ Add
+                Movie</button>
             <a href="get-started.html">Home</a>
             <a href="profile.html">Profile</a>
             <a href="location.html">Location</a>
@@ -308,15 +310,13 @@
         <div class="box" onclick="window.location.href='hollywood.html'">
             <div class="category-label">Hollywood</div>
             <div class="box-inner">
-                <img src="https://m.media-amazon.com/images/M/MV5BNmY5NjI5ZTQtNDAyZi00NjgyLWE3NzItODE4OGYxNmFkN2E2XkEyXkFqcGc@._V1_.jpg"
-                    alt="Hollywood Movies" loading="lazy">
+                <img src="../assets/images/hollywood.jpg" alt="Hollywood Movies" loading="lazy">
             </div>
         </div>
         <div class="box" onclick="window.location.href='webseries.html'">
             <div class="category-label">Web Series</div>
             <div class="box-inner">
-                <img src="https://beyondmychrysalis.wordpress.com/wp-content/uploads/2022/10/fb_img_1664634124823.jpg"
-                    alt="Web Series" loading="lazy">
+                <img src="../assets/images/webseries.jpg" alt="Web Series" loading="lazy">
             </div>
         </div>
     </div>
@@ -327,6 +327,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
     <script src="../assets/js/firebase-init.js"></script>
     <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/premium-buttons.js"></script>
 
     <!-- Page Scripts -->
     <script>

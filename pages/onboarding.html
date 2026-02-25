@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to MTALK</title>
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
+        type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/premium-buttons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        body {
+            background: black;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FF073A, #ff4d6d, #FF073A);
+            transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1000;
+            box-shadow: 0 0 15px rgba(255, 7, 58, 0.8);
+        }
+
+        /* Step Counter */
+        .step-counter {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            font-size: 12px;
+            color: rgba(255, 7, 58, 0.7);
+            letter-spacing: 2px;
+            z-index: 1000;
+        }
+
+        /* Logo */
+        .brand {
+            position: fixed;
+            top: 20px;
+            left: 30px;
+            font-size: 22px;
+            font-weight: 900;
+            color: #FF073A;
+            text-transform: uppercase;
+            z-index: 1000;
+            cursor: default;
+        }
+
+        /* Wizard Container */
+        .wizard {
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Each Step */
+        .step {
+            display: none;
+            animation: fadeSlideIn 0.5s ease forwards;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeSlideOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: rgba(255, 7, 58, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .step h2 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255, 7, 58, 0.5);
+            line-height: 1.3;
+        }
+
+        .step h2 span {
+            color: #FF073A;
+        }
+
+        /* Input Styling */
+        .onboard-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 7, 58, 0.08);
+            border: 2px solid rgba(255, 7, 58, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .onboard-input:focus {
+            border-color: #FF073A;
+            box-shadow: 0 0 20px rgba(255, 7, 58, 0.3);
+            background: rgba(255, 7, 58, 0.12);
+        }
+
+        .onboard-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+        }
+
+        /* Buttons */
+        .btn-next {
+            margin-top: 30px;
+            padding: 14px 50px;
+            background: transparent;
+            border: 2px solid #FF073A;
+            color: #FF073A;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .btn-next:hover {
+            background: #FF073A;
+            color: white;
+            box-shadow: 0 0 25px rgba(255, 7, 58, 0.6);
+        }
+
+        .btn-next:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-skip {
+            margin-top: 15px;
+            padding: 10px 30px;
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .btn-skip:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+        }
+
+        /* Profile Picture Upload */
+        .pic-upload-area {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px dashed rgba(255, 7, 58, 0.4);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pic-upload-area:hover {
+            border-color: #FF073A;
+            box-shadow: 0 0 30px rgba(255, 7, 58, 0.3);
+        }
+
+        .pic-upload-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pic-upload-area .upload-icon {
+            font-size: 40px;
+            color: rgba(255, 7, 58, 0.5);
+        }
+
+        .pic-upload-area input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Quiz Styles */
+        .quiz-question {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+        }
+
+        .quiz-progress {
+            font-size: 13px;
+            color: rgba(255, 7, 58, 0.5);
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .quiz-option {
+            padding: 14px 20px;
+            background: rgba(255, 7, 58, 0.06);
+            border: 1px solid rgba(255, 7, 58, 0.2);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .quiz-option:hover {
+            border-color: #FF073A;
+            background: rgba(255, 7, 58, 0.15);
+            color: white;
+        }
+
+        .quiz-option.selected {
+            border-color: #FF073A;
+            background: rgba(255, 7, 58, 0.25);
+            color: #FF073A;
+            box-shadow: 0 0 15px rgba(255, 7, 58, 0.2);
+        }
+
+        /* Badge Reveal */
+        .badge-reveal {
+            display: none;
+            text-align: center;
+            animation: fadeSlideIn 0.8s ease forwards;
+        }
+
+        .badge-reveal.active {
+            display: block;
+        }
+
+        .badge-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 10px rgba(255, 7, 58, 0.5));
+            }
+
+            50% {
+                transform: scale(1.1);
+                filter: drop-shadow(0 0 30px rgba(255, 7, 58, 0.8));
+            }
+        }
+
+        .badge-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #FF073A;
+            text-shadow: 0 0 30px rgba(255, 7, 58, 0.6);
+            margin-bottom: 10px;
+        }
+
+        .badge-subtitle {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
+        }
+
+        /* Floating particles BG */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 7, 58, 0.3);
+            border-radius: 50%;
+            animation: floatParticle 8s infinite ease-in-out;
+        }
+
+        @keyframes floatParticle {
+
+            0%,
+            100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+
+            25% {
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(-200px) translateX(50px);
+                opacity: 0.5;
+            }
+
+            75% {
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: translateY(-400px) translateX(-30px);
+                opacity: 0;
+            }
+        }
+
+        /* Error shake */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-8px);
+            }
+
+            40% {
+                transform: translateX(8px);
+            }
+
+            60% {
+                transform: translateX(-5px);
+            }
+
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.4s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+
+    <!-- Top UI -->
+    <div class="brand">MTALK</div>
+    <div class="step-counter" id="step-counter">STEP 1 / 8</div>
+
+    <!-- Wizard -->
+    <div class="wizard" id="wizard">
+
+        <!-- Step 1: Name -->
+        <div class="step active" id="step-1">
+            <div class="step-label">Let's get to know you</div>
+            <h2>What should we <span>call you</span>?</h2>
+            <input type="text" class="onboard-input" id="input-name" placeholder="Your name" autocomplete="off">
+            <br>
+            <button class="btn-next" onclick="nextStep(1)">NEXT →</button>
+        </div>
+
+        <!-- Step 2: Mother Tongue -->
+        <div class="step" id="step-2">
+            <div class="step-label">Language</div>
+            <h2>What is your <span>mother tongue</span>?</h2>
+            <input type="text" class="onboard-input" id="input-tongue" placeholder="e.g. Telugu, Hindi, Tamil..."
+                autocomplete="off">
+            <br>
+            <button class="btn-next" onclick="nextStep(2)">NEXT →</button>
+        </div>
+
+        <!-- Step 3: Favourite Actor -->
+        <div class="step" id="step-3">
+            <div class="step-label">Favourites</div>
+            <h2>Who is your favourite <span>actor</span>?</h2>
+            <input type="text" class="onboard-input" id="input-actor" placeholder="e.g. NTR, Shah Rukh Khan..."
+                autocomplete="off">
+            <br>
+            <button class="btn-next" onclick="nextStep(3)">NEXT →</button>
+        </div>
+
+        <!-- Step 4: Favourite Actress -->
+        <div class="step" id="step-4">
+            <div class="step-label">Favourites</div>
+            <h2>Who is your favourite <span>actress</span>?</h2>
+            <input type="text" class="onboard-input" id="input-actress" placeholder="e.g. Samantha, Deepika..."
+                autocomplete="off">
+            <br>
+            <button class="btn-next" onclick="nextStep(4)">NEXT →</button>
+        </div>
+
+        <!-- Step 5: Favourite Director -->
+        <div class="step" id="step-5">
+            <div class="step-label">Favourites</div>
+            <h2>Who is your favourite <span>director</span>?</h2>
+            <input type="text" class="onboard-input" id="input-director" placeholder="e.g. Rajamouli, Nolan..."
+                autocomplete="off">
+            <br>
+            <button class="btn-next" onclick="nextStep(5)">NEXT →</button>
+        </div>
+
+        <!-- Step 6: Favourite Music Composer -->
+        <div class="step" id="step-6">
+            <div class="step-label">Favourites</div>
+            <h2>Who is your favourite <span>music composer</span>?</h2>
+            <input type="text" class="onboard-input" id="input-composer" placeholder="e.g. Thaman, AR Rahman..."
+                autocomplete="off">
+            <br>
+            <button class="btn-next" onclick="nextStep(6)">NEXT →</button>
+        </div>
+
+        <!-- Step 7: Profile Picture -->
+        <div class="step" id="step-7">
+            <div class="step-label">Almost there</div>
+            <h2>Upload your <span>profile picture</span></h2>
+            <div class="pic-upload-area" id="pic-area">
+                <span class="upload-icon" id="upload-icon">📷</span>
+                <img id="pic-preview" style="display:none" alt="Preview">
+                <input type="file" id="pic-input" accept="image/*" onchange="previewPic(this)">
+            </div>
+            <p style="font-size:11px; color:rgba(255,255,255,0.4); margin-bottom:10px;">Click the circle to upload</p>
+            <button class="btn-next" onclick="nextStep(7)">NEXT →</button>
+            <br>
+            <button class="btn-skip" onclick="skipPic()">SKIP FOR NOW</button>
+        </div>
+
+        <!-- Step 8: Quiz -->
+        <div class="step" id="step-8">
+            <div class="step-label">Final Step</div>
+            <h2>Discover your <span>movie personality</span></h2>
+            <div class="quiz-progress" id="quiz-progress">QUESTION 1 / 10</div>
+            <div class="quiz-question" id="quiz-question"></div>
+            <div class="quiz-options" id="quiz-options"></div>
+        </div>
+
+        <!-- Badge Reveal -->
+        <div class="badge-reveal" id="badge-reveal">
+            <div class="badge-icon" id="reveal-icon"></div>
+            <div class="badge-title" id="reveal-title"></div>
+            <div class="badge-subtitle" id="reveal-subtitle"></div>
+            <button class="btn-next" onclick="finishOnboarding()">ENTER MTALK →</button>
+        </div>
+
+    </div>
+
+    <script>
+        // ─── DATA ───────────────────────────────────────────
+        const TOTAL_STEPS = 8;
+        let currentStep = 1;
+        let profilePicBase64 = null;
+
+        // Collected data
+        const onboardingData = {
+            fullName: '',
+            motherTongue: '',
+            favouriteActor: '',
+            favouriteActress: '',
+            favouriteDirector: '',
+            favouriteComposer: '',
+            profilePicture: null,
+            badge: '',
+            quizAnswers: []
+        };
+
+        // Badge info
+        const BADGES = {
+            rocky: { icon: '💪', title: 'ROCKY', subtitle: 'The Action King — You live for the thrill!', color: '#ff4444' },
+            ram: { icon: '🌸', title: 'RAM', subtitle: 'The Melody Soul — Calm, poetic, and artistic.', color: '#ff9ff3' },
+            shivaji: { icon: '🏛️', title: 'SHIVAJI', subtitle: 'The History Buff — Epics & legends call you.', color: '#ffd700' },
+            anil: { icon: '👨‍👩‍👧‍👦', title: 'ANIL', subtitle: 'The Family Heart — Emotions hit you hardest.', color: '#54a0ff' }
+        };
+
+        // ─── QUIZ QUESTION POOL (20 questions, 10 are randomly selected) ───
+        const QUESTION_POOL = [
+            {
+                q: "What scene excites you the most in a movie?",
+                options: [
+                    { text: "A high-octane fight sequence", badge: "rocky" },
+                    { text: "A melodious romantic song", badge: "ram" },
+                    { text: "An epic historical battle", badge: "shivaji" },
+                    { text: "An emotional family reunion", badge: "anil" }
+                ]
+            },
+            {
+                q: "Pick your ideal movie backdrop:",
+                options: [
+                    { text: "A gritty street showdown", badge: "rocky" },
+                    { text: "A serene hillside with music", badge: "ram" },
+                    { text: "An ancient kingdom with forts", badge: "shivaji" },
+                    { text: "A warm village house", badge: "anil" }
+                ]
+            },
+            {
+                q: "Your hero is surrounded by enemies. You want him to:",
+                options: [
+                    { text: "Destroy them all single-handedly", badge: "rocky" },
+                    { text: "Win them over with wisdom", badge: "ram" },
+                    { text: "Lead an army into war", badge: "shivaji" },
+                    { text: "Protect his family at all costs", badge: "anil" }
+                ]
+            },
+            {
+                q: "What kind of movie intro excites you?",
+                options: [
+                    { text: "Slow-mo hero walk with mass BGM", badge: "rocky" },
+                    { text: "A poetic voice-over with visuals", badge: "ram" },
+                    { text: "Ancient scrolls and period setup", badge: "shivaji" },
+                    { text: "A family gathering scene", badge: "anil" }
+                ]
+            },
+            {
+                q: "Your favourite kind of movie climax?",
+                options: [
+                    { text: "The hero defeating the villain in combat", badge: "rocky" },
+                    { text: "A heart-touching song montage ending", badge: "ram" },
+                    { text: "A grand coronation or victory speech", badge: "shivaji" },
+                    { text: "Everyone together happily ever after", badge: "anil" }
+                ]
+            },
+            {
+                q: "Pick a movie theme that resonates with you:",
+                options: [
+                    { text: "Revenge and justice", badge: "rocky" },
+                    { text: "Love and longing", badge: "ram" },
+                    { text: "Honour and sacrifice for the nation", badge: "shivaji" },
+                    { text: "Bonds and relationships", badge: "anil" }
+                ]
+            },
+            {
+                q: "Which character trait do you admire most?",
+                options: [
+                    { text: "Raw strength and fearlessness", badge: "rocky" },
+                    { text: "Calm composure and artistic soul", badge: "ram" },
+                    { text: "Strategic mind and leadership", badge: "shivaji" },
+                    { text: "Kindness and dedication to family", badge: "anil" }
+                ]
+            },
+            {
+                q: "What kind of BGM gives you goosebumps?",
+                options: [
+                    { text: "Heavy drums and electric guitar riffs", badge: "rocky" },
+                    { text: "Flute and violin melodies", badge: "ram" },
+                    { text: "War horns and epic orchestra", badge: "shivaji" },
+                    { text: "Soft piano with emotional strings", badge: "anil" }
+                ]
+            },
+            {
+                q: "If you were in a movie, your role would be:",
+                options: [
+                    { text: "The unstoppable fighter", badge: "rocky" },
+                    { text: "The thoughtful poet/lover", badge: "ram" },
+                    { text: "The wise king or warrior", badge: "shivaji" },
+                    { text: "The caring parent or sibling", badge: "anil" }
+                ]
+            },
+            {
+                q: "What do you watch a movie for?",
+                options: [
+                    { text: "Adrenaline rush and action stunts", badge: "rocky" },
+                    { text: "Beautiful visuals and soothing music", badge: "ram" },
+                    { text: "Learning about history and culture", badge: "shivaji" },
+                    { text: "A good cry and emotional release", badge: "anil" }
+                ]
+            },
+            {
+                q: "Your idea of a perfect hero is:",
+                options: [
+                    { text: "Someone who fights for the streets", badge: "rocky" },
+                    { text: "Someone who expresses through art", badge: "ram" },
+                    { text: "Someone who builds an empire", badge: "shivaji" },
+                    { text: "Someone who holds the family together", badge: "anil" }
+                ]
+            },
+            {
+                q: "Pick your favourite movie setting:",
+                options: [
+                    { text: "A boxing ring or battlefield", badge: "rocky" },
+                    { text: "A rain-soaked city at night", badge: "ram" },
+                    { text: "A majestic palace with elephants", badge: "shivaji" },
+                    { text: "A cozy home during a festival", badge: "anil" }
+                ]
+            },
+            {
+                q: "What makes a movie director great?",
+                options: [
+                    { text: "Choreographing intense action scenes", badge: "rocky" },
+                    { text: "Creating surreal visual poetry", badge: "ram" },
+                    { text: "Building a grand period world", badge: "shivaji" },
+                    { text: "Telling relatable family stories", badge: "anil" }
+                ]
+            },
+            {
+                q: "Choose your movie snack vibe:",
+                options: [
+                    { text: "Spicy popcorn — fiery like the movie", badge: "rocky" },
+                    { text: "Ice cream — smooth and sweet", badge: "ram" },
+                    { text: "Royal dry fruits — regal taste", badge: "shivaji" },
+                    { text: "Homemade samosa — comfort food", badge: "anil" }
+                ]
+            },
+            {
+                q: "Dialogue style you love the most:",
+                options: [
+                    { text: "Powerful mass punchlines", badge: "rocky" },
+                    { text: "Philosophical and poetic lines", badge: "ram" },
+                    { text: "Inspirational leadership speeches", badge: "shivaji" },
+                    { text: "Heart-touching emotional dialogues", badge: "anil" }
+                ]
+            },
+            {
+                q: "Which movie poster catches your eye?",
+                options: [
+                    { text: "Hero surrounded by fire and weapons", badge: "rocky" },
+                    { text: "Silhouette in a sunset landscape", badge: "ram" },
+                    { text: "A grand throne room or fortress", badge: "shivaji" },
+                    { text: "A family portrait with warm tones", badge: "anil" }
+                ]
+            },
+            {
+                q: "Pick a real-life inspiration:",
+                options: [
+                    { text: "Muhammad Ali — The Greatest Fighter", badge: "rocky" },
+                    { text: "Rumi — The Poet of Love", badge: "ram" },
+                    { text: "Chanakya — The Master Strategist", badge: "shivaji" },
+                    { text: "Mother Teresa — Heart of Service", badge: "anil" }
+                ]
+            },
+            {
+                q: "A movie trailer should hook you with:",
+                options: [
+                    { text: "Explosive stunts and a mass intro", badge: "rocky" },
+                    { text: "A hauntingly beautiful song snippet", badge: "ram" },
+                    { text: "Grand VFX shots of an ancient world", badge: "shivaji" },
+                    { text: "An emotional voice-over about love", badge: "anil" }
+                ]
+            },
+            {
+                q: "If your life was a movie genre:",
+                options: [
+                    { text: "Action / Thriller", badge: "rocky" },
+                    { text: "Musical / Romance", badge: "ram" },
+                    { text: "Historical / Epic Drama", badge: "shivaji" },
+                    { text: "Family Drama / Slice of Life", badge: "anil" }
+                ]
+            },
+            {
+                q: "You want your next movie to leave you feeling:",
+                options: [
+                    { text: "Pumped up and energized", badge: "rocky" },
+                    { text: "Peaceful and inspired", badge: "ram" },
+                    { text: "Proud and in awe", badge: "shivaji" },
+                    { text: "Emotional and connected", badge: "anil" }
+                ]
+            }
+        ];
+
+        // Quiz state
+        let quizQuestions = [];
+        let currentQuizIndex = 0;
+        let quizScores = { rocky: 0, ram: 0, shivaji: 0, anil: 0 };
+
+        // ─── PARTICLES ──────────────────────────────────────
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = (60 + Math.random() * 40) + '%';
+                p.style.animationDelay = Math.random() * 8 + 's';
+                p.style.animationDuration = (6 + Math.random() * 6) + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // ─── STEP NAVIGATION ────────────────────────────────
+        function updateProgress() {
+            const pct = (currentStep / TOTAL_STEPS) * 100;
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('step-counter').textContent = `STEP ${currentStep} / ${TOTAL_STEPS}`;
+        }
+
+        function nextStep(fromStep) {
+            // Validate input
+            const inputMap = {
+                1: 'input-name',
+                2: 'input-tongue',
+                3: 'input-actor',
+                4: 'input-actress',
+                5: 'input-director',
+                6: 'input-composer'
+            };
+
+            if (inputMap[fromStep]) {
+                const el = document.getElementById(inputMap[fromStep]);
+                if (!el.value.trim()) {
+                    el.classList.add('shake');
+                    el.style.borderColor = '#ff4444';
+                    setTimeout(() => {
+                        el.classList.remove('shake');
+                        el.style.borderColor = 'rgba(255, 7, 58, 0.3)';
+                    }, 500);
+                    return;
+                }
+            }
+
+            // Save data
+            switch (fromStep) {
+                case 1: onboardingData.fullName = document.getElementById('input-name').value.trim(); break;
+                case 2: onboardingData.motherTongue = document.getElementById('input-tongue').value.trim(); break;
+                case 3: onboardingData.favouriteActor = document.getElementById('input-actor').value.trim(); break;
+                case 4: onboardingData.favouriteActress = document.getElementById('input-actress').value.trim(); break;
+                case 5: onboardingData.favouriteDirector = document.getElementById('input-director').value.trim(); break;
+                case 6: onboardingData.favouriteComposer = document.getElementById('input-composer').value.trim(); break;
+                case 7: onboardingData.profilePicture = profilePicBase64; break;
+            }
+
+            // Animate out
+            const currentEl = document.getElementById(`step-${fromStep}`);
+            currentEl.style.animation = 'fadeSlideOut 0.3s ease forwards';
+
+            setTimeout(() => {
+                currentEl.classList.remove('active');
+                currentEl.style.animation = '';
+
+                currentStep = fromStep + 1;
+                updateProgress();
+
+                if (currentStep === 8) {
+                    initQuiz();
+                }
+
+                const nextEl = document.getElementById(`step-${currentStep}`);
+                nextEl.classList.add('active');
+
+                // Auto-focus input
+                const nextInput = nextEl.querySelector('.onboard-input');
+                if (nextInput) setTimeout(() => nextInput.focus(), 300);
+            }, 300);
+        }
+
+        function skipPic() {
+            onboardingData.profilePicture = null;
+            nextStep(7);
+        }
+
+        // ─── PROFILE PIC PREVIEW ────────────────────────────
+        function previewPic(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    profilePicBase64 = e.target.result;
+                    document.getElementById('pic-preview').src = e.target.result;
+                    document.getElementById('pic-preview').style.display = 'block';
+                    document.getElementById('upload-icon').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // ─── QUIZ ───────────────────────────────────────────
+        function initQuiz() {
+            // Shuffle and pick 10
+            const shuffled = [...QUESTION_POOL].sort(() => Math.random() - 0.5);
+            quizQuestions = shuffled.slice(0, 10);
+            currentQuizIndex = 0;
+            quizScores = { rocky: 0, ram: 0, shivaji: 0, anil: 0 };
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const q = quizQuestions[currentQuizIndex];
+            document.getElementById('quiz-progress').textContent = `QUESTION ${currentQuizIndex + 1} / 10`;
+            document.getElementById('quiz-question').textContent = q.q;
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            // Shuffle options
+            const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.textContent = opt.text;
+                btn.onclick = () => selectQuizOption(opt.badge, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectQuizOption(badge, btnEl) {
+            // Visual feedback
+            document.querySelectorAll('.quiz-option').forEach(b => b.classList.remove('selected'));
+            btnEl.classList.add('selected');
+
+            // Record answer
+            quizScores[badge]++;
+            onboardingData.quizAnswers.push({ question: currentQuizIndex, badge });
+
+            // Next question after short delay
+            setTimeout(() => {
+                currentQuizIndex++;
+                if (currentQuizIndex >= 10) {
+                    calculateBadge();
+                } else {
+                    // Animate out current question
+                    const step8 = document.getElementById('step-8');
+                    step8.style.animation = 'fadeSlideOut 0.2s ease forwards';
+                    setTimeout(() => {
+                        step8.style.animation = 'fadeSlideIn 0.4s ease forwards';
+                        renderQuizQuestion();
+                    }, 200);
+                }
+            }, 400);
+        }
+
+        function calculateBadge() {
+            // Find the badge type with the highest score
+            let maxBadge = 'rocky';
+            let maxScore = 0;
+            for (const [badge, score] of Object.entries(quizScores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    maxBadge = badge;
+                }
+            }
+            onboardingData.badge = maxBadge;
+            showBadgeReveal(maxBadge);
+        }
+
+        function showBadgeReveal(badgeType) {
+            const badge = BADGES[badgeType];
+
+            // Hide quiz step
+            document.getElementById('step-8').classList.remove('active');
+            document.getElementById('step-counter').textContent = 'COMPLETE';
+            document.getElementById('progress-bar').style.width = '100%';
+
+            // Show reveal
+            document.getElementById('reveal-icon').textContent = badge.icon;
+            document.getElementById('reveal-title').textContent = `You are ${badge.title}!`;
+            document.getElementById('reveal-title').style.color = badge.color;
+            document.getElementById('reveal-subtitle').textContent = badge.subtitle;
+            document.getElementById('badge-reveal').classList.add('active');
+        }
+
+        // ─── SUBMIT ONBOARDING ──────────────────────────────
+        async function finishOnboarding() {
+            const btn = document.querySelector('.badge-reveal .btn-next');
+            btn.textContent = 'SAVING...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/auth/onboarding', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(onboardingData)
+                });
+
+                if (res.ok) {
+                    window.location.href = '../index.html';
+                } else {
+                    alert('Something went wrong. Please try again.');
+                    btn.textContent = 'ENTER MTALK →';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error. Please try again.');
+                btn.textContent = 'ENTER MTALK →';
+                btn.disabled = false;
+            }
+        }
+
+        // ─── KEYBOARD SUPPORT ───────────────────────────────
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && currentStep >= 1 && currentStep <= 7) {
+                nextStep(currentStep);
+            }
+        });
+
+        // Init progress
+        updateProgress();
+
+        // Auto-focus first input
+        setTimeout(() => document.getElementById('input-name').focus(), 300);
+    </script>
+
+</body>
+
+</html>

@@ -8,6 +8,7 @@
   <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
     type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/premium-buttons.css" />
   <style>
     * {
       margin: 0;
@@ -91,20 +92,8 @@
 
     .opinion-btn {
       display: inline-block;
-      padding: 16px 50px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #fff;
-      background: linear-gradient(135deg, #FF073A, #D90429);
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      box-shadow: 0 0 20px rgba(255, 7, 58, 0.6), 0 0 60px rgba(255, 7, 58, 0.2);
-      transition: all 0.3s ease;
-      animation: pulse-glow 2s infinite;
-      font-family: 'Orbitron', sans-serif;
+      margin-top: 10px;
+      /* Aesthetics handled by .premium-btn */
     }
 
     .opinion-btn:hover {
@@ -169,6 +158,27 @@
       font-size: 0.7rem;
       color: #888;
       margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .review-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 8px;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 7, 58, 0.08));
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 12px;
+      font-size: 0.55rem;
+      color: rgba(255, 215, 0, 0.9);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .review-badge-emoji {
+      font-size: 0.7rem;
     }
 
     .review-text {
@@ -303,27 +313,6 @@
     .modal input,
     .modal textarea {
       width: 100%;
-      padding: 12px 14px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.04);
-      color: #fff;
-      font-size: 0.85rem;
-      font-family: 'Orbitron', sans-serif;
-      transition: border-color 0.3s;
-    }
-
-    .modal input:focus,
-    .modal textarea:focus {
-      outline: none;
-      border-color: #FF073A;
-    }
-
-    .modal textarea {
-      min-height: 100px;
-      resize: vertical;
-      font-family: Arial, sans-serif;
     }
 
     .modal .info-row {
@@ -378,18 +367,7 @@
 
     .modal-btn {
       width: 100%;
-      padding: 14px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #fff;
-      background: linear-gradient(135deg, #FF073A, #D90429);
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      font-family: 'Orbitron', sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all 0.3s;
+      margin-top: 10px;
     }
 
     .modal-btn:hover {
@@ -478,10 +456,10 @@
 
   <!-- PAGE -->
   <div class="page-wrapper">
-    <h1 class="page-title">Movie Reviews</h1>
+    <h1 class="page-title" id="movieHeading">Movie Reviews</h1>
 
     <div class="opinion-bar">
-      <button class="opinion-btn" onclick="openVerifyModal()">🎬 My Opinion</button>
+      <button class="opinion-btn premium-btn" onclick="openVerifyModal()">🎬 My Opinion</button>
     </div>
 
     <div id="reviewsFeed" class="reviews-feed">
@@ -494,11 +472,12 @@
     <div class="modal">
       <button class="modal-close" onclick="closeModals()">&times;</button>
       <h2>Verify Your Booking</h2>
+      <p style="color:#aaa;font-size:0.7rem;margin-bottom:12px" id="verifyMovieLabel">Movie: —</p>
       <label for="bookingInput">Booking ID (10 characters)</label>
-      <input type="text" id="bookingInput" maxlength="10" placeholder="e.g. AB12CD34EF"
+      <input type="text" id="bookingInput" class="premium-input" maxlength="10" placeholder="e.g. AB12CD34EF"
         oninput="this.value = this.value.toUpperCase()" autocomplete="off" />
       <p id="verifyError" class="modal-error"></p>
-      <button class="modal-btn" id="verifyBtn" onclick="verifyBooking()">Verify</button>
+      <button class="modal-btn premium-btn" id="verifyBtn" onclick="verifyBooking()">Verify</button>
     </div>
   </div>
 
@@ -508,14 +487,19 @@
       <button class="modal-close" onclick="closeModals()">&times;</button>
       <h2>Write Your Review</h2>
 
-      <label for="rmName">Your Name</label>
-      <input type="text" id="rmName" placeholder="Enter your name" autocomplete="off" />
+      <div class="info-row">
+        <div class="info-box">
+          <div class="info-label">Movie</div>
+          <div class="info-value" id="rmMovieName">—</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">Booking</div>
+          <div class="info-value" id="rmBookingId" style="font-size:0.65rem">—</div>
+        </div>
+      </div>
 
-      <label for="rmMovieSelect">Select Movie</label>
-      <select id="rmMovieSelect"
-        style="width:100%;padding:12px 14px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.12);border-radius:10px;background:rgba(255,255,255,0.04);color:#fff;font-size:0.85rem;font-family:'Orbitron',sans-serif;">
-        <option value="" disabled selected>Choose a movie...</option>
-      </select>
+      <label for="rmName">Your Name</label>
+      <input type="text" id="rmName" class="premium-input" placeholder="Enter your name" autocomplete="off" />
 
       <label>Your Rating</label>
       <div class="star-picker" id="starPicker">
@@ -527,10 +511,10 @@
       </div>
 
       <label for="reviewText">Your Review</label>
-      <textarea id="reviewText" placeholder="Share your thoughts about the movie..."></textarea>
+      <textarea id="reviewText" class="premium-input" placeholder="Share your thoughts about the movie..."></textarea>
 
       <p id="reviewError" class="modal-error"></p>
-      <button class="modal-btn" id="submitReviewBtn" onclick="submitReview()">Post Review</button>
+      <button class="modal-btn premium-btn" id="submitReviewBtn" onclick="submitReview()">Post Review</button>
     </div>
   </div>
 
@@ -541,6 +525,14 @@
   <script src="../assets/js/firebase-init.js"></script>
 
   <script>
+    // Badge map
+    const BADGE_MAP = {
+      rocky: { emoji: '💪', name: 'ROCKY' },
+      ram: { emoji: '🌸', name: 'RAM' },
+      shivaji: { emoji: '🏛️', name: 'SHIVAJI' },
+      anil: { emoji: '👨‍👩‍👧‍👦', name: 'ANIL' }
+    };
+
     // Auth Guard
     let currentUser = null;
     async function checkAuth() {
@@ -560,31 +552,48 @@
 
     // ─── STATE ───
     let verifiedBookingId = null;
+    let verifiedMovieId = null;
+    let verifiedMovieTitle = null;
     let selectedRating = 0;
-    let moviesList = [];
+    let pageMovieId = null;
+    let pageMovieTitle = null;
 
-    // ─── LOAD MOVIES (for dropdown) ───
-    async function loadMovies() {
-      try {
-        const res = await fetch('/api/movies');
-        moviesList = await res.json();
-        const sel = document.getElementById('rmMovieSelect');
-        moviesList.forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m.id;
-          opt.textContent = m.title;
-          sel.appendChild(opt);
-        });
-      } catch (err) {
-        console.error('Load movies error:', err);
-      }
+    // ─── GET MOVIE FROM URL ───
+    function getMovieIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('movieId') || params.get('movie') || null;
     }
 
-    // ─── LOAD REVIEWS ───
+    // ─── INIT MOVIE CONTEXT ───
+    async function initMovieContext() {
+      pageMovieId = getMovieIdFromUrl();
+      if (!pageMovieId) {
+        document.getElementById('reviewsFeed').innerHTML = '<p class="empty-state" style="color:#f55">No movie selected. Please open this page from a movie page.</p>';
+        const opBtn = document.querySelector('[onclick="openVerifyModal()"]');
+        if (opBtn) opBtn.style.display = 'none';
+        return;
+      }
+      try {
+        const res = await fetch('/api/movies');
+        const movies = await res.json();
+        const movie = movies.find(m => m.id === pageMovieId);
+        pageMovieTitle = movie ? movie.title : pageMovieId;
+      } catch (e) {
+        pageMovieTitle = pageMovieId;
+      }
+      // Update page title and header
+      document.title = pageMovieTitle + ' Reviews · MTALK';
+      const heading = document.getElementById('movieHeading');
+      if (heading) heading.textContent = pageMovieTitle + ' — Reviews';
+      loadReviews();
+    }
+
+    // ─── LOAD REVIEWS (filtered by movie) ───
     async function loadReviews() {
       const feed = document.getElementById('reviewsFeed');
+      if (!pageMovieId) return;
       try {
-        const res = await fetch('/api/reviews');
+        const res = await fetch(`/api/reviews?movieId=${encodeURIComponent(pageMovieId)}`);
         if (!res.ok) throw new Error('Failed');
         const reviews = await res.json();
 
@@ -593,13 +602,17 @@
           return;
         }
 
-        feed.innerHTML = reviews.map(r => `
+        feed.innerHTML = reviews.map(r => {
+          const badgeHtml = r.userBadge && BADGE_MAP[r.userBadge]
+            ? `<span class="review-badge"><span class="review-badge-emoji">${BADGE_MAP[r.userBadge].emoji}</span> ${BADGE_MAP[r.userBadge].name}</span>`
+            : '';
+          return `
                     <div class="review-card" data-id="${r._id}">
                         <div class="review-header">
                             <span class="review-movie">${esc(r.movieTitle)}</span>
                             <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
                         </div>
-                        <div class="review-user">by ${esc(r.userName)}</div>
+                        <div class="review-user">by ${esc(r.userName)} ${badgeHtml}</div>
                         <div class="review-text">${esc(r.text)}</div>
                         <div class="review-actions">
                             <button class="react-btn" onclick="react('${r._id}','like', this)">
@@ -611,7 +624,8 @@
                             <span class="review-date">${formatDate(r.createdAt)}</span>
                         </div>
                     </div>
-                `).join('');
+                `;
+        }).join('');
       } catch (err) {
         console.error(err);
         feed.innerHTML = '<p class="empty-state" style="color:#f55">Could not load reviews.</p>';
@@ -645,10 +659,14 @@
 
     // ─── VERIFY BOOKING ───
     function openVerifyModal() {
+      if (!pageMovieId) {
+        alert('No movie selected. Please open this page from a movie page.');
+        return;
+      }
       document.getElementById('verifyModal').classList.add('active');
+      document.getElementById('verifyMovieLabel').textContent = 'Movie: ' + (pageMovieTitle || pageMovieId);
       document.getElementById('bookingInput').value = '';
       document.getElementById('verifyError').textContent = '';
-      document.getElementById('bookingInput').focus();
     }
 
     async function verifyBooking() {
@@ -669,7 +687,7 @@
         const res = await fetch('/api/verify-booking', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ bookingId: id })
+          body: JSON.stringify({ bookingId: id, movieId: pageMovieId })
         });
         const data = await res.json();
 
@@ -681,8 +699,9 @@
         }
 
         verifiedBookingId = data.bookingId;
+        verifiedMovieId = data.movieId;
+        verifiedMovieTitle = data.movieTitle;
 
-        // Close verify modal, open review modal
         document.getElementById('verifyModal').classList.remove('active');
         openReviewModal();
       } catch (err) {
@@ -695,7 +714,8 @@
     // ─── REVIEW FORM ───
     function openReviewModal() {
       document.getElementById('rmName').value = currentUser ? currentUser.fullName : '';
-      document.getElementById('rmMovieSelect').selectedIndex = 0;
+      document.getElementById('rmMovieName').textContent = verifiedMovieTitle || '—';
+      document.getElementById('rmBookingId').textContent = verifiedBookingId || '—';
       document.getElementById('reviewText').value = '';
       document.getElementById('reviewError').textContent = '';
       selectedRating = 0;
@@ -719,13 +739,11 @@
 
     async function submitReview() {
       const userName = document.getElementById('rmName').value.trim();
-      const movieId = document.getElementById('rmMovieSelect').value;
       const text = document.getElementById('reviewText').value.trim();
       const errEl = document.getElementById('reviewError');
       const btn = document.getElementById('submitReviewBtn');
 
       if (!userName) { errEl.textContent = 'Please enter your name'; return; }
-      if (!movieId) { errEl.textContent = 'Please select a movie'; return; }
       if (selectedRating === 0) { errEl.textContent = 'Please select a rating'; return; }
       if (text.length < 10) { errEl.textContent = 'Review must be at least 10 characters'; return; }
 
@@ -739,10 +757,12 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             bookingId: verifiedBookingId,
-            movieId,
+            movieId: verifiedMovieId,
+            movieTitle: verifiedMovieTitle,
             userName,
             rating: selectedRating,
-            text
+            text,
+            userBadge: currentUser ? currentUser.badge : null
           })
         });
         const data = await res.json();
@@ -768,6 +788,8 @@
     function closeModals() {
       document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
       verifiedBookingId = null;
+      verifiedMovieId = null;
+      verifiedMovieTitle = null;
     }
 
     // Close on overlay click
@@ -796,8 +818,7 @@
     }
 
     // ─── INIT ───
-    loadMovies();
-    loadReviews();
+    initMovieContext();
   </script>
 </body>
 

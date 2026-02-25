@@ -1,0 +1,141 @@
+/* 
+  Premium Global UI System
+  Standardized high-end components
+*/
+
+:root {
+    --premium-red: #FF073A;
+    --premium-dark-red: #700B1A;
+    --premium-glass: rgba(255, 255, 255, 0.05);
+    --premium-border: rgba(255, 7, 58, 0.3);
+}
+
+/* Global Premium Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 7, 58, 0.3);
+    border-radius: 10px;
+    border: 2px solid #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--premium-red);
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 7, 58, 0.3) #0a0a0a;
+}
+
+.premium-btn {
+    position: relative;
+    display: inline-block;
+    padding: 14px 36px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white !important;
+    background: linear-gradient(135deg, var(--premium-red) 0%, var(--premium-dark-red) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 4px 15px rgba(255, 7, 58, 0.3);
+    z-index: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+.premium-btn:hover {
+    box-shadow: 0 8px 25px rgba(255, 7, 58, 0.6);
+    transform: translateY(-2px) scale(1.02);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.premium-btn:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 10px rgba(255, 7, 58, 0.4);
+}
+
+/* Enhanced Shimmer - Faster, subtle, and non-obscuring */
+.premium-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg,
+            transparent,
+            rgba(255, 255, 255, 0.15),
+            transparent);
+    transition: 0.5s;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.premium-btn:hover::before {
+    left: 150%;
+}
+
+/* Premium Form Controls */
+.premium-select,
+.premium-input {
+    background: rgba(0, 0, 0, 0.6) !important;
+    border: 2px solid var(--premium-border) !important;
+    border-radius: 8px !important;
+    color: white !important;
+    padding: 12px 16px !important;
+    font-family: 'Orbitron', sans-serif !important;
+    transition: all 0.3s ease !important;
+    outline: none !important;
+}
+
+.premium-select:focus,
+.premium-input:focus {
+    border-color: var(--premium-red) !important;
+    box-shadow: 0 0 15px rgba(255, 7, 58, 0.3) !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.premium-select option {
+    background: #1a1a1a;
+    color: white;
+}
+
+/* Specific size adjustments */
+.cta-button {
+    padding: 16px 48px;
+    font-size: 18px;
+    border-radius: 8px;
+    /* Reinforcing the rectangular look */
+}
+
+.add-movie-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+}
+
+.edit-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 8px;
+    /* Standard rectangular look */
+    z-index: 10;
+    opacity: 0.9;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}

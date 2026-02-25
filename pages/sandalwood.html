@@ -8,6 +8,7 @@
     <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
         type="image/png" />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/css/premium-buttons.css">
     <style>
         * {
             margin: 0;
@@ -190,6 +191,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
     <script src="../assets/js/firebase-init.js"></script>
     <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/premium-buttons.js"></script>
 
     <script>
         let globalUser = null;
@@ -254,7 +256,7 @@
 
                     if (globalUser && globalUser.isAdmin) {
                         const editBtn = document.createElement('div');
-                        editBtn.className = 'edit-overlay';
+                        editBtn.className = 'edit-overlay premium-btn';
                         editBtn.textContent = 'EDIT';
                         editBtn.onclick = (e) => {
                             e.preventDefault();

@@ -16,60 +16,62 @@ function injectAdminModal() {
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
                         <label>Movie ID (slug)</label>
-                        <input type="text" id="movieId" placeholder="e.g. hit3" required>
+                        <input type="text" id="movieId" class="premium-input" placeholder="e.g. hit3" required>
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label>Category</label>
-                        <select id="movieCategory" required>
+                        <select id="movieCategory" class="premium-select" required>
                             <option value="tollywood">Tollywood</option>
                             <option value="kollywood">Kollywood</option>
                             <option value="bollywood">Bollywood</option>
                             <option value="mollywood">Mollywood</option>
                             <option value="sandalwood">Sandalwood</option>
+                            <option value="hollywood">Hollywood</option>
+                            <option value="webseries">Web Series</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Movie Title</label>
-                    <input type="text" id="movieTitle" placeholder="e.g. Hit: The Third Case" required>
+                    <input type="text" id="movieTitle" class="premium-input" placeholder="e.g. Hit: The Third Case" required>
                 </div>
                 <div class="form-group">
                     <label>Poster Filename (e.g. hits4k.jpg)</label>
-                    <input type="text" id="moviePoster" required>
+                    <input type="text" id="moviePoster" class="premium-input" required>
                 </div>
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
                         <label>Actor</label>
-                        <input type="text" id="movieActor">
+                        <input type="text" id="movieActor" class="premium-input">
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label>Actress</label>
-                        <input type="text" id="movieActress">
+                        <input type="text" id="movieActress" class="premium-input">
                     </div>
                 </div>
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
                         <label>Director</label>
-                        <input type="text" id="movieDirector">
+                        <input type="text" id="movieDirector" class="premium-input">
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label>Music Director</label>
-                        <input type="text" id="movieMusic">
+                        <input type="text" id="movieMusic" class="premium-input">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Producer</label>
-                    <input type="text" id="movieProducer">
+                    <input type="text" id="movieProducer" class="premium-input">
                 </div>
                 <div class="form-group">
                     <label>Trailer URL (YouTube Embed)</label>
-                    <input type="text" id="movieTrailer">
+                    <input type="text" id="movieTrailer" class="premium-input">
                 </div>
                 <div class="form-group">
                     <label>Synopsis</label>
-                    <textarea id="movieSynopsis" rows="3"></textarea>
+                    <textarea id="movieSynopsis" class="premium-input" rows="3"></textarea>
                 </div>
-                <button type="submit" class="submit-btn" id="saveBtn">Save Movie</button>
+                <button type="submit" class="submit-btn premium-btn" id="saveBtn">Save Movie</button>
             </form>
         </div>
     </div>
@@ -128,48 +130,22 @@ function injectAdminModal() {
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            border-radius: 5px;
-            font-family: inherit;
         }
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
-            border-color: #FF073A;
             outline: none;
         }
         .submit-btn {
             width: 100%;
-            padding: 12px;
-            background: #FF073A;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            font-family: inherit;
+            margin-top: 20px;
         }
         .edit-overlay {
+            /* Handled globally via premium-buttons.css */
             position: absolute;
             top: 10px;
             right: 10px;
-            background: #FF073A;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
             z-index: 10;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .edit-overlay:hover {
-            background: white;
-            color: #FF073A;
         }
     </style>
     `;
@@ -177,6 +153,10 @@ function injectAdminModal() {
     const div = document.createElement('div');
     div.innerHTML = modalHTML;
     document.body.appendChild(div);
+
+    // Apply premium-btn class to injected buttons
+    const btns = div.querySelectorAll('.submit-btn, .edit-overlay');
+    btns.forEach(b => b.classList.add('premium-btn'));
 
     document.getElementById('addMovieForm').addEventListener('submit', handleMovieSubmit);
 }
@@ -186,7 +166,7 @@ function openModal(movieData = null) {
     if (!form) {
         injectAdminModal();
     }
-    
+
     document.getElementById('addMovieForm').reset();
 
     if (movieData) {

@@ -1,0 +1,107 @@
+/* 
+  Interactive Heading Styles
+  Senior Frontend Animation Engineer Specification
+*/
+
+.interactive-heading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    user-select: none;
+    padding: 30px 0;
+    will-change: transform;
+    perspective: 1000px;
+}
+
+/* Container scale on hover */
+.interactive-heading:hover {
+    transform: scale(1.02) translateY(-5px);
+}
+
+.interactive-letter {
+    display: inline-block;
+    position: relative;
+    font-size: 64px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    color: rgba(255, 255, 255, 0.15);
+
+    /* Premium Gradient Base */
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    transition:
+        transform 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+        color 0.4s ease,
+        filter 0.4s ease,
+        letter-spacing 0.4s ease;
+
+    will-change: transform, filter, letter-spacing;
+    animation: floating 4s ease-in-out infinite;
+    animation-delay: var(--delay);
+}
+
+/* Shimmer Animation Effect */
+.interactive-heading::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 7, 58, 0.1),
+            transparent);
+    animation: shimmer 8s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 200%;
+    }
+}
+
+@keyframes floating {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Base "active" letter state (zoomed in) */
+.interactive-letter.active {
+    color: #ffffff;
+    background: linear-gradient(180deg, #FFFFFF, #FF073A);
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: drop-shadow(0 0 15px rgba(255, 7, 58, 0.9));
+    z-index: 10;
+    animation-play-state: paused;
+}
+
+@media (max-width: 768px) {
+    .interactive-letter {
+        font-size: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+    .interactive-letter {
+        font-size: 36px;
+    }
+}

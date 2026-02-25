@@ -9,6 +9,9 @@
     <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
         type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/interactive-heading.css">
+    <link rel="stylesheet" href="assets/css/premium-buttons.css">
+    <script src="assets/js/auth-guard.js"></script>
 
     <style>
         * {
@@ -72,17 +75,31 @@
             bottom: 40px;
             left: 0;
             right: 0;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             z-index: 10;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
         }
 
         /* MARQUEE */
         .marquee-wrapper {
             position: relative;
             overflow: hidden;
-            width: 60vw;
-            margin: 0 auto 20px;
-            height: 250px;
+            /* Focus the view within the 75vw lens */
+            width: 75vw;
+            margin: 0 auto 30px;
+            height: 320px;
+            /* Ample height for the 1.4x zoom expansion */
+            display: flex;
+            align-items: center;
         }
 
         .marquee-fade-left,
@@ -108,78 +125,40 @@
         .marquee-track {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 15px 0;
+            gap: 30px;
+            padding: 50px 0;
+            will-change: transform;
         }
 
         .marquee-track img {
-            width: 115px;
-            height: 165px;
-            border-radius: 8px;
+            width: 140px;
+            height: 200px;
+            border-radius: 12px;
             object-fit: cover;
             flex-shrink: 0;
-            border: 2px solid rgba(255, 7, 58, 0.35);
+            border: 2px solid rgba(255, 7, 58, 0.2);
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s, border-color 0.3s;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            /* Removed transform transition to allow frame-by-frame JS control without lag */
+            transition: border-color 0.4s, box-shadow 0.4s;
+            will-change: transform;
         }
 
         .marquee-track img:hover {
-            transform: scale(1.12);
             border-color: #FF073A;
+            box-shadow: 0 0 20px rgba(255, 7, 58, 0.6);
+            z-index: 10;
         }
 
-        /* HEADING */
-        .heading {
-            display: flex;
-            font-size: 56px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            color: rgba(255, 255, 255, 0.2);
-            justify-content: center;
-        }
 
-        .letter {
-            display: inline-block;
-            position: relative;
-        }
-
-        .letter::before {
-            content: attr(data-letter);
-            position: absolute;
-            top: 0;
-            left: 0;
-            color: transparent;
-            opacity: 0;
-            transition: 0.3s ease-in-out;
-        }
-
-        .letter:hover::before {
-            opacity: 1;
-            text-shadow: 0 0 10px #D54748, 0 0 20px #D54748;
-            -webkit-text-stroke: 1px #D54748;
-        }
 
         /* CTA BUTTON */
         .cta-button {
             display: inline-block;
             margin-top: 20px;
-            padding: 15px 40px;
-            font-size: 22px;
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(45deg, #FF073A, #D90429);
-            border-radius: 50px;
-            text-decoration: none;
-            box-shadow: 0 0 20px rgba(255, 7, 58, 0.8);
-            transition: 0.4s;
+            /* All aesthetics now handled by .premium-btn */
         }
 
-        .cta-button:hover {
-            background: white;
-            color: #FF073A;
-        }
 
         /* ADMIN STUFF */
         .admin-only {
@@ -187,21 +166,8 @@
         }
 
         .add-movie-btn {
-            background: #FF073A;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
+            /* Aesthetics now handled by .premium-btn */
             margin-right: 15px;
-            transition: 0.3s;
-        }
-
-        .add-movie-btn:hover {
-            background: white;
-            color: #FF073A;
         }
 
         @media (max-width: 768px) {
@@ -245,7 +211,7 @@
     <div class="header">
         <div class="logo" onclick="window.location.href='pages/get-started.html'">MTALK</div>
         <div class="nav-links">
-            <button class="add-movie-btn admin-only" onclick="openModal()">+ Add Movie</button>
+            <button class="add-movie-btn admin-only premium-btn" onclick="openModal()">+ Add Movie</button>
             <a href="pages/get-started.html">Home</a>
             <a href="pages/profile.html">Profile</a>
             <a href="pages/location.html">Location</a>
@@ -262,28 +228,15 @@
             <div class="marquee-track" id="marqueeTrack"></div>
         </div>
 
-        <h3 class="heading">
-            <span class="letter" data-letter="L">L</span>
-            <span class="letter" data-letter="E">E</span>
-            <span class="letter" data-letter="T">T</span>
-            <span class="letter" data-letter="'">'</span>
-            <span class="letter" data-letter="S">S</span>
-            <span class="letter" data-letter="-">-</span>
-            <span class="letter" data-letter="M">M</span>
-            <span class="letter" data-letter="A">A</span>
-            <span class="letter" data-letter="K">K</span>
-            <span class="letter" data-letter="E">E</span>
-            <span class="letter" data-letter="-">-</span>
-            <span class="letter" data-letter="H">H</span>
-            <span class="letter" data-letter="I">I</span>
-            <span class="letter" data-letter="G">G</span>
-            <span class="letter" data-letter="H">H</span>
-        </h3>
-
-        <a href="pages/get-started.html" class="cta-button">Get Started</a>
+        <div class="hero-content">
+            <h3 class="interactive-heading heading-interactive-trigger" data-text="Its word of mouth"></h3>
+            <a href="pages/get-started.html" class="cta-button premium-btn">Get Started</a>
+        </div>
     </div>
 
     <script src="assets/js/admin.js"></script>
+    <script src="assets/js/interactive-heading.js"></script>
+    <script src="assets/js/premium-buttons.js"></script>
     <script>
         let globalUser = null;
 
@@ -344,15 +297,7 @@
                     const img = document.createElement('img');
                     img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + m.poster;
                     img.alt = m.title;
-                    img.style.width = '150px';
-                    img.style.height = '220px';
-                    img.style.borderRadius = '10px';
-                    img.style.objectFit = 'cover';
-                    img.style.transition = '0.3s';
-                    img.style.cursor = 'pointer';
-
-                    img.onmouseenter = () => { img.style.transform = 'scale(1.05)'; img.style.boxShadow = '0 0 15px rgba(255, 7, 58, 0.5)'; };
-                    img.onmouseleave = () => { img.style.transform = 'scale(1)'; img.style.boxShadow = 'none'; };
+                    img.className = 'marquee-img';
                     img.onclick = () => location.href = 'pages/movie.html?id=' + m.id;
 
                     container.appendChild(img);
@@ -365,12 +310,69 @@
 
         function startScroll(track) {
             let pos = 0;
-            const speed = 0.8;
+            const speed = 0.5; // Slightly slower for cinematic feel
             const oneSetWidth = track.scrollWidth / 3;
             let paused = false;
 
+            const wrapper = document.querySelector('.marquee-wrapper');
+            const images = Array.from(track.querySelectorAll('.marquee-img'));
+
+            // Pre-calculate base positions and initialize per-image state
+            const imgData = images.map(img => ({
+                el: img,
+                baseCenter: img.parentElement.offsetLeft + img.parentElement.offsetWidth / 2,
+                currentScale: 1
+            }));
+
             track.onmouseenter = () => { paused = true; };
             track.onmouseleave = () => { paused = false; };
+
+            function updateZoom() {
+                const wrapperRect = wrapper.getBoundingClientRect();
+                const centerX = wrapperRect.left + wrapperRect.width / 2;
+                const trackLeft = track.getBoundingClientRect().left;
+                const lerpFactor = 0.15; // Smoothness control
+
+                imgData.forEach(data => {
+                    const img = data.el;
+                    // Current absolute center on page
+                    const currentCenter = trackLeft + data.baseCenter;
+                    const distance = Math.abs(centerX - currentCenter);
+                    const maxDist = 300; // Zoom effective range
+
+                    let targetScale = 1;
+
+                    if (img.matches(':hover')) {
+                        targetScale = 1.45;
+                        img.style.zIndex = '100';
+                        img.style.borderColor = '#FF073A';
+                        img.style.boxShadow = '0 0 35px rgba(255, 7, 58, 0.8)';
+                    } else if (distance < maxDist) {
+                        // Cosine curve for smoother zoom falloff
+                        const relDist = distance / maxDist;
+                        targetScale = 1 + (0.35 * Math.cos(relDist * Math.PI / 2));
+
+                        // Z-index based on proximity to center
+                        img.style.zIndex = distance < 60 ? '50' : Math.floor(10 - distance / 30);
+
+                        // Dynamic glow
+                        if (distance < 100) {
+                            img.style.borderColor = `rgba(255, 7, 58, ${0.4 * (1 - distance / 100)})`;
+                        } else {
+                            img.style.borderColor = 'rgba(255, 7, 58, 0.2)';
+                        }
+                    } else {
+                        targetScale = 1;
+                        img.style.zIndex = '1';
+                        img.style.borderColor = 'rgba(255, 7, 58, 0.2)';
+                        img.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.5)';
+                    }
+
+                    // Smoothly transition scale
+                    data.currentScale += (targetScale - data.currentScale) * lerpFactor;
+                    img.style.transform = `scale(${data.currentScale})`;
+                });
+            }
 
             function frame() {
                 if (!paused && oneSetWidth > 0) {
@@ -378,6 +380,7 @@
                     if (Math.abs(pos) >= oneSetWidth) pos = 0;
                     track.style.transform = 'translateX(' + pos + 'px)';
                 }
+                updateZoom();
                 requestAnimationFrame(frame);
             }
             frame();

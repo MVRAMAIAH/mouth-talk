@@ -10,7 +10,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 
 // Import Auth Routes
@@ -124,7 +124,7 @@ async function syncTheatres() {
   }
 }
 
-// Sync bookings.json → MongoDB bookings collection
+// Sync bookings.json → MongoDB bookings collection (movie-keyed structure)
 async function syncBookings() {
   if (!bookingsCollection) return;
   try {
@@ -132,19 +132,27 @@ async function syncBookings() {
     if (!fs.existsSync(jsonPath)) return;
 
     const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-    if (!Array.isArray(data)) return;
+    if (typeof data !== 'object' || Array.isArray(data)) return;
 
     const now = new Date();
+    const allKeys = [];
 
-    for (const bookingId of data) {
-      await bookingsCollection.updateOne(
-        { bookingId },
-        { $set: { bookingId, updatedAt: now }, $setOnInsert: { createdAt: now } },
-        { upsert: true }
-      );
+    for (const [movieId, ids] of Object.entries(data)) {
+      for (const bookingId of ids) {
+        const key = `${movieId}:${bookingId}`;
+        allKeys.push(key);
+        await bookingsCollection.updateOne(
+          { movieId, bookingId },
+          { $set: { movieId, bookingId, updatedAt: now }, $setOnInsert: { createdAt: now, used: false } },
+          { upsert: true }
+        );
+      }
     }
-    await bookingsCollection.deleteMany({ bookingId: { $nin: data } });
-    console.log(`✅ Synced bookings.json → bookings (${data.length} docs)`);
+    // Remove bookings no longer in JSON
+    const allBookingIds = Object.values(data).flat();
+    await bookingsCollection.deleteMany({ bookingId: { $nin: allBookingIds } });
+    const totalCount = Object.values(data).reduce((sum, arr) => sum + arr.length, 0);
+    console.log(`✅ Synced bookings.json → bookings (${totalCount} docs across ${Object.keys(data).length} movies)`);
   } catch (err) {
     console.error('❌ Error syncing bookings:', err);
   }
@@ -281,14 +289,33 @@ app.post('/api/movies', authMiddleware, async (req, res) => {
 
 app.post('/api/verify-booking', async (req, res) => {
   try {
-    const { bookingId } = req.body;
-    if (!bookingId || bookingId.length !== 10) {
-      return res.status(400).json({ error: 'Booking ID must be 10 characters' });
+    const { bookingId, movieId } = req.body;
+    if (!bookingId || !movieId) {
+      return res.status(400).json({ error: 'Booking ID and Movie are required' });
     }
-    const bookings = loadLocalJSON('bookings.json');
-    const found = bookings.includes(bookingId.toUpperCase());
-    if (!found) return res.status(404).json({ error: 'Invalid booking ID' });
-    res.json({ valid: true, bookingId: bookingId.toUpperCase() });
+    const upperBookingId = bookingId.toUpperCase();
+
+    // Check in MongoDB first, fallback to local JSON
+    if (bookingsCollection) {
+      const doc = await bookingsCollection.findOne({ movieId, bookingId: upperBookingId });
+      if (!doc) return res.status(404).json({ error: 'Invalid booking ID' });
+      if (doc.used) return res.status(400).json({ error: 'This booking ID has already been used for a review' });
+    } else {
+      const bookings = loadLocalJSON('bookings.json');
+      const movieBookings = bookings[movieId];
+      if (!movieBookings || !movieBookings.includes(upperBookingId)) {
+        return res.status(404).json({ error: 'Invalid booking ID' });
+      }
+      const reviews = loadLocalJSON('reviews.json');
+      if (reviews.some(r => r.bookingId === upperBookingId)) {
+        return res.status(400).json({ error: 'This booking ID has already been used for a review' });
+      }
+    }
+
+    // Find movie title
+    const allMovies = loadLocalJSON('movies.json');
+    const movie = allMovies.find(m => m.id === movieId);
+    res.json({ valid: true, bookingId: upperBookingId, movieId, movieTitle: movie ? movie.title : movieId });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
@@ -296,10 +323,13 @@ app.post('/api/verify-booking', async (req, res) => {
 
 app.get('/api/reviews', async (req, res) => {
   try {
+    const { movieId } = req.query;
+    const filter = movieId ? { movieId } : {};
     if (reviewsCollection) {
-      return res.json(await reviewsCollection.find({}).sort({ createdAt: -1 }).toArray());
+      return res.json(await reviewsCollection.find(filter).sort({ createdAt: -1 }).toArray());
     }
-    const reviews = loadLocalJSON('reviews.json');
+    let reviews = loadLocalJSON('reviews.json');
+    if (movieId) reviews = reviews.filter(r => r.movieId === movieId);
     reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json(reviews);
   } catch (err) {
@@ -309,28 +339,51 @@ app.get('/api/reviews', async (req, res) => {
 
 app.post('/api/reviews', async (req, res) => {
   try {
-    const { bookingId, movieId, userName, rating, text } = req.body;
+    const { bookingId, movieId, movieTitle, userName, rating, text, userBadge } = req.body;
     if (!bookingId || !movieId || !userName || !rating || !text) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    const bookings = loadLocalJSON('bookings.json');
-    if (!bookings.includes(bookingId.toUpperCase())) {
-      return res.status(404).json({ error: 'Invalid booking ID' });
+    const upperBookingId = bookingId.toUpperCase();
+
+    // Validate booking ID belongs to this movie and not used
+    if (bookingsCollection) {
+      const doc = await bookingsCollection.findOne({ movieId, bookingId: upperBookingId });
+      if (!doc) return res.status(404).json({ error: 'Invalid booking ID' });
+      if (doc.used) return res.status(400).json({ error: 'This booking ID has already been used for a review' });
+    } else {
+      const bookings = loadLocalJSON('bookings.json');
+      const movieBookings = bookings[movieId];
+      if (!movieBookings || !movieBookings.includes(upperBookingId)) {
+        return res.status(404).json({ error: 'Invalid booking ID' });
+      }
+      const existingReviews = loadLocalJSON('reviews.json');
+      if (existingReviews.some(r => r.bookingId === upperBookingId)) {
+        return res.status(400).json({ error: 'This booking ID has already been used for a review' });
+      }
     }
+
     const review = {
       _id: generateId(),
-      bookingId: bookingId.toUpperCase(),
+      bookingId: upperBookingId,
       movieId,
+      movieTitle: movieTitle || movieId,
       userName: userName.trim(),
+      userBadge: userBadge || null,
       rating: parseInt(rating),
       text: text.trim(),
       likes: 0,
       dislikes: 0,
       createdAt: new Date()
     };
+
     if (reviewsCollection) {
       const result = await reviewsCollection.insertOne(review);
       review._id = result.insertedId;
+      // Mark booking as used in MongoDB
+      await bookingsCollection.updateOne(
+        { movieId, bookingId: upperBookingId },
+        { $set: { used: true, usedAt: new Date() } }
+      );
     } else {
       const reviews = loadLocalJSON('reviews.json');
       reviews.push(review);
