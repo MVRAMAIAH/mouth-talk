@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/interactive-heading.css">
     <link rel="stylesheet" href="assets/css/premium-buttons.css">
-    <script src="assets/js/auth-guard.js"></script>
+
 
     <style>
         * {
@@ -159,6 +159,45 @@
             /* All aesthetics now handled by .premium-btn */
         }
 
+        /* LOGIN TOAST */
+        .login-toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(255, 7, 58, 0.95);
+            color: white;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Orbitron', sans-serif;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s, transform 0.4s;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(255, 7, 58, 0.4);
+            text-align: center;
+        }
+
+        .login-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .login-toast a {
+            color: #fff;
+            text-decoration: underline;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        /* Header login link for unauthenticated users */
+        .nav-login-link {
+            display: none;
+        }
+
 
         /* ADMIN STUFF */
         .admin-only {
@@ -208,14 +247,21 @@
 
 <body>
 
+    <!-- Login toast notification -->
+    <div class="login-toast" id="loginToast">
+        Please log in to access this feature.
+        <a href="pages/login.html">Log In</a>
+    </div>
+
     <div class="header">
-        <div class="logo" onclick="window.location.href='pages/get-started.html'">MTALK</div>
+        <div class="logo" onclick="handleAuthNav('pages/get-started.html')">MTALK</div>
         <div class="nav-links">
             <button class="add-movie-btn admin-only premium-btn" onclick="openModal()">+ Add Movie</button>
-            <a href="pages/get-started.html">Home</a>
-            <a href="pages/profile.html">Profile</a>
-            <a href="pages/location.html">Location</a>
-            <a href="pages/about.html">About</a>
+            <a href="#" onclick="handleAuthNav('pages/get-started.html'); return false;">Home</a>
+            <a href="#" onclick="handleAuthNav('pages/profile.html'); return false;">Profile</a>
+            <a href="#" onclick="handleAuthNav('pages/location.html'); return false;">Location</a>
+            <a href="#" onclick="handleAuthNav('pages/about.html'); return false;">About</a>
+            <a href="pages/login.html" class="nav-login-link" id="navLoginLink">Login</a>
         </div>
     </div>
 
@@ -230,7 +276,8 @@
 
         <div class="hero-content">
             <h3 class="interactive-heading heading-interactive-trigger" data-text="Its word of mouth"></h3>
-            <a href="pages/get-started.html" class="cta-button premium-btn">Get Started</a>
+            <a href="#" onclick="handleAuthNav('pages/get-started.html'); return false;"
+                class="cta-button premium-btn">Get Started</a>
         </div>
     </div>
 
@@ -239,6 +286,23 @@
     <script src="assets/js/premium-buttons.js"></script>
     <script>
         let globalUser = null;
+        let isLoggedIn = false;
+
+        // Show a toast notification prompting login
+        function showLoginToast() {
+            const toast = document.getElementById('loginToast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Gate navigation behind auth check
+        function handleAuthNav(url) {
+            if (isLoggedIn) {
+                window.location.href = url;
+            } else {
+                showLoginToast();
+            }
+        }
 
         async function checkAuth() {
             try {
@@ -246,9 +310,13 @@
                 if (res.ok) {
                     const user = await res.json();
                     globalUser = user;
+                    isLoggedIn = true;
+
+                    // Hide the Login link since user is authenticated
+                    document.getElementById('navLoginLink').style.display = 'none';
 
                     const navLinks = document.querySelectorAll('.nav-links a');
-                    const profileLink = Array.from(navLinks).find(a => a.href.includes('profile.html'));
+                    const profileLink = Array.from(navLinks).find(a => a.textContent === 'Profile');
                     if (profileLink) {
                         profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
                     }
@@ -258,11 +326,12 @@
                     }
                     return true;
                 } else {
-                    // Not a hard redirect for the landing page unless we want it to be protected
-                    // For now, let's just leave it as is.
+                    // Not logged in — show the Login link
+                    document.getElementById('navLoginLink').style.display = 'inline-block';
                 }
             } catch (e) {
                 console.error('Auth check error:', e);
+                document.getElementById('navLoginLink').style.display = 'inline-block';
             }
             return false;
         }
