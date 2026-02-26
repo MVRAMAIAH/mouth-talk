@@ -508,17 +508,17 @@
                         vb.classList.add('visible');
                     }
 
-                    // Read-only display + Edit inputs
-                    if (user.onboardingComplete) {
-                        document.getElementById('info-display').style.display = 'block';
-                        document.getElementById('ro-name').textContent = user.fullName || '—';
-                        document.getElementById('ro-tongue').textContent = user.motherTongue || '—';
-                        document.getElementById('ro-actor').textContent = user.actor || '—';
-                        document.getElementById('ro-actress').textContent = user.favouriteActress || '—';
-                        document.getElementById('ro-director').textContent = user.favouriteDirector || '—';
-                        document.getElementById('ro-composer').textContent = user.favouriteComposer || '—';
+                    // Always show Movie DNA section with available data
+                    document.getElementById('info-display').style.display = 'block';
+                    document.getElementById('ro-name').textContent = user.fullName || '—';
+                    document.getElementById('ro-tongue').textContent = user.motherTongue || '—';
+                    document.getElementById('ro-actor').textContent = user.actor || '—';
+                    document.getElementById('ro-actress').textContent = user.favouriteActress || '—';
+                    document.getElementById('ro-director').textContent = user.favouriteDirector || '—';
+                    document.getElementById('ro-composer').textContent = user.favouriteComposer || '—';
 
-                        // Show edit pref inputs
+                    // Show edit pref inputs only if onboarding was completed
+                    if (user.onboardingComplete) {
                         document.getElementById('edit-prefs').style.display = 'block';
                         document.getElementById('edit-actor-wrap').style.display = 'block';
                         document.getElementById('edit-actress-wrap').style.display = 'block';

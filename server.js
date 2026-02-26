@@ -323,14 +323,17 @@ app.post('/api/verify-booking', async (req, res) => {
 
 app.get('/api/reviews', async (req, res) => {
   try {
-    const { movieId } = req.query;
-    const filter = movieId ? { movieId } : {};
+    const { movieId, badge } = req.query;
+    const filter = {};
+    if (movieId) filter.movieId = movieId;
+    if (badge) filter.userBadge = badge;
     if (reviewsCollection) {
-      return res.json(await reviewsCollection.find(filter).sort({ createdAt: -1 }).toArray());
+      return res.json(await reviewsCollection.find(filter).sort({ likes: -1, createdAt: -1 }).toArray());
     }
     let reviews = loadLocalJSON('reviews.json');
     if (movieId) reviews = reviews.filter(r => r.movieId === movieId);
-    reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    if (badge) reviews = reviews.filter(r => r.userBadge === badge);
+    reviews.sort((a, b) => (b.likes || 0) - (a.likes || 0) || new Date(b.createdAt) - new Date(a.createdAt));
     res.json(reviews);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -391,6 +394,49 @@ app.post('/api/reviews', async (req, res) => {
     }
     res.status(201).json(review);
   } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// React to a review (like/dislike)
+app.post('/api/reviews/:id/react', async (req, res) => {
+  try {
+    const reviewId = req.params.id;
+    const { type } = req.body;
+    if (!['like', 'dislike'].includes(type)) {
+      return res.status(400).json({ error: 'Type must be like or dislike' });
+    }
+    const field = type === 'like' ? 'likes' : 'dislikes';
+
+    if (reviewsCollection) {
+      // Try matching by string _id first, then ObjectId
+      let result = await reviewsCollection.findOneAndUpdate(
+        { _id: reviewId },
+        { $inc: { [field]: 1 } },
+        { returnDocument: 'after' }
+      );
+      if (!result) {
+        try {
+          result = await reviewsCollection.findOneAndUpdate(
+            { _id: new ObjectId(reviewId) },
+            { $inc: { [field]: 1 } },
+            { returnDocument: 'after' }
+          );
+        } catch (e) { /* not a valid ObjectId, ignore */ }
+      }
+      if (!result) return res.status(404).json({ error: 'Review not found' });
+      return res.json({ likes: result.likes || 0, dislikes: result.dislikes || 0 });
+    }
+
+    // Local JSON fallback
+    const reviews = loadLocalJSON('reviews.json');
+    const review = reviews.find(r => r._id === reviewId);
+    if (!review) return res.status(404).json({ error: 'Review not found' });
+    review[field] = (review[field] || 0) + 1;
+    writeLocalJSON('reviews.json', reviews);
+    res.json({ likes: review.likes || 0, dislikes: review.dislikes || 0 });
+  } catch (err) {
+    console.error('React error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });

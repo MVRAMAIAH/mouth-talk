@@ -12,6 +12,8 @@
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Google Maps API -->
     <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACURDS3NO0tj_Q9D7zPz3F1W2FFRGwa04&libraries=places"></script>
@@ -56,6 +58,16 @@
             z-index: 1;
         }
 
+        /* Red tinted map labels */
+        .leaflet-tile-pane {
+            filter: hue-rotate(330deg) saturate(2.5);
+        }
+
+        /* Hide Leaflet white attribution bar */
+        .leaflet-control-attribution {
+            display: none !important;
+        }
+
         /* HEADER */
         .header {
             position: absolute;
@@ -94,19 +106,23 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
-            width: 90%;
-            max-width: 500px;
+            width: 92%;
+            max-width: 560px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .search-glass {
-            background: rgba(15, 15, 15, 0.8);
+            background: rgba(10, 10, 10, 0.85);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(255, 7, 58, 0.25);
             border-radius: 30px;
             display: flex;
             padding: 5px 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
             transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
         }
 
         .search-glass:focus-within {
@@ -115,22 +131,72 @@
         }
 
         .search-input {
-            background: transparent;
+            background: none;
             border: none;
             color: white;
             flex: 1;
             padding: 12px;
             font-size: 16px;
             outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* Kill browser autofill white background */
+        .search-input:-webkit-autofill,
+        .search-input:-webkit-autofill:hover,
+        .search-input:-webkit-autofill:focus,
+        .search-input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 50px rgba(10, 10, 10, 0.85) inset !important;
+            -webkit-text-fill-color: white !important;
+            background-color: transparent !important;
+            transition: background-color 5000s ease-in-out 0s;
         }
 
         .search-btn {
-            background: transparent;
+            background: var(--primary);
             border: none;
-            color: var(--primary);
-            font-size: 18px;
+            color: white;
+            font-size: 16px;
             cursor: pointer;
-            padding: 0 10px;
+            padding: 8px 14px;
+            border-radius: 50%;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .radius-inline {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 7, 58, 0.25);
+            border-radius: 30px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .radius-inline label {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .radius-inline input[type=range] {
+            width: 70px;
+            accent-color: var(--primary);
         }
 
         /* FLOATING ACTION BUTTONS */
@@ -575,18 +641,20 @@
         </div>
     </div>
 
-    <!-- Search -->
+    <!-- Search + Radius -->
     <div class="search-container">
         <div class="search-glass">
             <input type="text" id="searchInput" class="search-input" placeholder="Search city or area...">
             <button onclick="searchPlace()" class="search-btn"><i class="fas fa-search"></i></button>
         </div>
+        <div class="radius-inline">
+            <label><span id="radiusVal">10</span>km</label>
+            <input type="range" id="radiusInput" min="2" max="50" value="10" oninput="updateRadiusText()">
+        </div>
     </div>
 
     <!-- FABs -->
     <div class="fab-group">
-        <button class="fab secondary" onclick="toggleRadiusPanel()" title="Scan Settings"><i
-                class="fas fa-sliders-h"></i></button>
         <button class="fab secondary" onclick="recenterMap()" title="Recenter"><i
                 class="fas fa-location-arrow"></i></button>
         <button id="radarBtn" class="fab" onclick="scanTheatres()" title="Scan for Theatres"><i
@@ -675,7 +743,7 @@
                 attributionControl: false
             }).setView([lat, lng], 14);
 
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 maxZoom: 20
             }).addTo(map);
 
@@ -689,6 +757,19 @@
             startTracking();
             // Initial Scan
             scanTheatres();
+
+            // Auto-scan when user pans/zooms the map
+            var scanTimer = null;
+            map.on('moveend', function () {
+                if (isNavigating) return;
+                clearTimeout(scanTimer);
+                scanTimer = setTimeout(scanTheatres, 1500);
+            });
+
+            // Auto-fetch theatres every 10 seconds
+            setInterval(function () {
+                if (!isNavigating) scanTheatres();
+            }, 10000);
         }
 
         function startTracking() {
@@ -740,9 +821,20 @@
         }
 
         // Scan for Theatres (Overpass API)
+        var fetchTimerInterval = null;
         async function scanTheatres() {
             const radarBtn = document.getElementById('radarBtn');
-            radarBtn.innerHTML = '<i class="fas fa-sync fa-spin"></i>';
+            const startTime = Date.now();
+
+            // Countdown from 20s
+            radarBtn.innerHTML = '20s';
+            radarBtn.style.fontSize = '14px';
+            clearInterval(fetchTimerInterval);
+            var countdown = 200;
+            fetchTimerInterval = setInterval(() => {
+                countdown = Math.max(0, countdown - 1);
+                radarBtn.innerHTML = (countdown / 10).toFixed(1) + 's';
+            }, 100);
 
             // Show skeleton loader in list
             const list = document.getElementById('resultsList');
@@ -754,7 +846,17 @@
             const query = `[out:json];(nwr["amenity"="cinema"](around:${radius},${center.lat},${center.lng});nwr["name"~"Cinema|Talkies|Multiplex|Screens",i](around:${radius},${center.lat},${center.lng}););out center;`;
 
             try {
-                const res = await fetch('https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query));
+                // Try primary Overpass API first
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                let res;
+                try {
+                    res = await fetch('https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query), { signal: controller.signal });
+                } catch (e) {
+                    // Fallback to mirror
+                    res = await fetch('https://overpass.kumi.systems/api/interpreter?data=' + encodeURIComponent(query));
+                }
+                clearTimeout(timeoutId);
                 const data = await res.json();
                 displayTheatres(data.elements);
             } catch (e) {
@@ -762,7 +864,14 @@
                 list.innerHTML = '<p style="padding:20px; text-align:center; color:var(--primary);">Failed to fetch theatres.</p>';
             }
 
-            radarBtn.innerHTML = '<i class="fas fa-satellite-dish"></i>';
+            // Stop timer, show final time briefly then reset
+            clearInterval(fetchTimerInterval);
+            const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
+            radarBtn.innerHTML = totalTime + 's';
+            setTimeout(() => {
+                radarBtn.innerHTML = '<i class="fas fa-satellite-dish"></i>';
+                radarBtn.style.fontSize = '';
+            }, 2000);
         }
 
         function displayTheatres(elements) {
@@ -798,6 +907,7 @@
 
                 // Add to List
                 const dist = (map.distance([userPos.lat, userPos.lng], [lat, lon]) / 1000).toFixed(1);
+                theatreData.dist = parseFloat(dist);
                 const item = document.createElement('div');
                 item.className = 'result-item';
                 item.innerHTML = `
@@ -811,6 +921,12 @@
                 };
                 list.appendChild(item);
             });
+
+            // Sort results by distance
+            const items = Array.from(list.querySelectorAll('.result-item'));
+            items.sort((a, b) => parseFloat(a.querySelector('.dist').textContent) - parseFloat(b.querySelector('.dist').textContent));
+            list.innerHTML = '';
+            items.forEach(item => list.appendChild(item));
         }
 
         function selectTheatre(data) {
@@ -827,7 +943,7 @@
                     L.latLng(data.lat, data.lon)
                 ],
                 router: L.Routing.osrmv1({
-                    serviceUrl: `https://router.project-osrm.org/trip/v1/driving/`
+                    serviceUrl: 'https://router.project-osrm.org/route/v1'
                 }),
                 createMarker: () => null,
                 lineOptions: {
@@ -865,10 +981,10 @@
                 }
             }).addTo(map);
 
-            // Open panel immediately
+            // Open detail panel
             document.getElementById('detailPanel').classList.add('active');
 
-            // Pan map to center both user and theatre
+            // Fit both user and theatre in view
             const bounds = L.latLngBounds([userPos.lat, userPos.lng], [data.lat, data.lon]);
             map.fitBounds(bounds, { padding: [100, 100] });
         }
@@ -879,11 +995,9 @@
         }
 
         function startJourney() {
-            isNavigating = true;
-            document.getElementById('detailPanel').classList.remove('active');
-            document.getElementById('navOverlay').style.display = 'flex';
-            map.setZoom(18);
-            updateNavigation();
+            if (!selectedTheatre) return;
+            const url = `https://www.google.com/maps/dir/?api=1&origin=${userPos.lat},${userPos.lng}&destination=${selectedTheatre.lat},${selectedTheatre.lon}&travelmode=driving`;
+            window.open(url, '_blank');
         }
 
         function stopNavigation() {
@@ -903,7 +1017,9 @@
 
         function viewOnMap() {
             if (selectedTheatre) {
-                map.flyTo([selectedTheatre.lat, selectedTheatre.lon], 17);
+                closeDetails();
+                const bounds = L.latLngBounds([userPos.lat, userPos.lng], [selectedTheatre.lat, selectedTheatre.lon]);
+                map.fitBounds(bounds, { padding: [80, 80] });
             }
         }
 
