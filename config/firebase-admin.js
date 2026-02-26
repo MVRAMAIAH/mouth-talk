@@ -5,9 +5,12 @@ require('dotenv').config();
 
 const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
 const serviceAccountJSON = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY;
+const firebaseProjectId = process.env.FIREBASE_PROJECT_ID;
+const firebaseClientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 
 if (serviceAccountJSON) {
-    // For deployed environments (Render, etc.) — JSON pasted as env var
+    // Method 1: Full JSON pasted as env var
     try {
         const serviceAccount = JSON.parse(serviceAccountJSON);
         admin.initializeApp({
@@ -17,7 +20,22 @@ if (serviceAccountJSON) {
     } catch (error) {
         console.error('❌ Error parsing FIREBASE_SERVICE_ACCOUNT_JSON:', error.message);
     }
+} else if (firebasePrivateKey && firebaseProjectId && firebaseClientEmail) {
+    // Method 2: Individual env vars (common on Render)
+    try {
+        admin.initializeApp({
+            credential: admin.credential.cert({
+                projectId: firebaseProjectId,
+                clientEmail: firebaseClientEmail,
+                privateKey: firebasePrivateKey.replace(/\\\\n/g, '\n')
+            })
+        });
+        console.log('✅ Firebase Admin SDK initialized (from individual env vars)');
+    } catch (error) {
+        console.error('❌ Error initializing with env vars:', error.message);
+    }
 } else if (serviceAccountPath) {
+    // Method 3: File path (local dev)
     try {
         const resolvedPath = path.isAbsolute(serviceAccountPath)
             ? serviceAccountPath
@@ -40,6 +58,7 @@ if (serviceAccountJSON) {
 } else {
     console.warn('⚠️ No Firebase service account configured.');
     console.warn('⚠️ Set FIREBASE_SERVICE_ACCOUNT_JSON or FIREBASE_SERVICE_ACCOUNT_PATH');
+    console.warn('⚠️ Or set FIREBASE_PRIVATE_KEY + FIREBASE_PROJECT_ID + FIREBASE_CLIENT_EMAIL');
 }
 
 module.exports = admin;
