@@ -65,6 +65,9 @@ function generateId() {
 // Initialize MongoDB
 async function initDb() {
   if (!MONGODB_URI) return;
+  // Debug: show masked URI to verify correct config
+  const maskedUri = MONGODB_URI.replace(/:([^@]+)@/, ':***@');
+  console.log('MongoDB URI:', maskedUri);
   try {
     dbClient = new MongoClient(MONGODB_URI);
     await dbClient.connect();
