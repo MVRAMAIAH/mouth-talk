@@ -3,7 +3,6 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
-const chokidar = require('chokidar');
 const { MongoClient, ObjectId } = require('mongodb');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
