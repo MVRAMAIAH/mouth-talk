@@ -65,9 +65,9 @@ function generateId() {
 // Initialize MongoDB
 async function initDb() {
   if (!MONGODB_URI) return;
-  // Debug: show masked URI to verify correct config
-  const maskedUri = MONGODB_URI.replace(/:([^@]+)@/, ':***@');
-  console.log('MongoDB URI:', maskedUri);
+  // Improved Debug: show username and structure while masking password
+  const maskedUri = MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//[USER:$1]:***@');
+  console.log('MongoDB URI Debug:', maskedUri);
   try {
     dbClient = new MongoClient(MONGODB_URI);
     await dbClient.connect();
