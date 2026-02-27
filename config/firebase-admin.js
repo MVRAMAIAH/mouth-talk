@@ -27,7 +27,7 @@ if (serviceAccountJSON) {
             credential: admin.credential.cert({
                 projectId: firebaseProjectId,
                 clientEmail: firebaseClientEmail,
-                privateKey: firebasePrivateKey.replace(/\\\\n/g, '\n')
+                privateKey: firebasePrivateKey.replace(/\\n/g, '\n')
             })
         });
         console.log('✅ Firebase Admin SDK initialized (from individual env vars)');
