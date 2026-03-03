@@ -340,18 +340,24 @@
         }
 
         async function init() {
-            await checkAuth();
-
-            // Fetch movies for marquee
-            fetch('/api/movies').then(res => res.json()).then(movies => {
-                renderMarquee(movies);
-            });
+            // Run auth check and movie fetch in parallel for faster load
+            const [, moviesRes] = await Promise.all([
+                checkAuth(),
+                fetch('/api/movies').then(res => res.json()).catch(() => [])
+            ]);
+            renderMarquee(moviesRes);
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        // Start init immediately, don't wait for DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof injectAdminModal === 'function') injectAdminModal();
+                init();
+            });
+        } else {
             if (typeof injectAdminModal === 'function') injectAdminModal();
             init();
-        });
+        }
 
         function renderMarquee(movies) {
             const track = document.getElementById('marqueeTrack');
