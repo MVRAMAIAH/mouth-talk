@@ -505,7 +505,7 @@
         <div class="step" id="step-8">
             <div class="step-label">Final Step</div>
             <h2>Discover your <span>movie personality</span></h2>
-            <div class="quiz-progress" id="quiz-progress">QUESTION 1 / 10</div>
+            <div class="quiz-progress" id="quiz-progress">QUESTION 1 / 5</div>
             <div class="quiz-question" id="quiz-question"></div>
             <div class="quiz-options" id="quiz-options"></div>
         </div>
@@ -840,7 +840,7 @@
         function initQuiz() {
             // Shuffle and pick 10
             const shuffled = [...QUESTION_POOL].sort(() => Math.random() - 0.5);
-            quizQuestions = shuffled.slice(0, 10);
+            quizQuestions = shuffled.slice(0, 5);
             currentQuizIndex = 0;
             quizScores = { rocky: 0, ram: 0, shivaji: 0, anil: 0 };
             renderQuizQuestion();
@@ -848,7 +848,7 @@
 
         function renderQuizQuestion() {
             const q = quizQuestions[currentQuizIndex];
-            document.getElementById('quiz-progress').textContent = `QUESTION ${currentQuizIndex + 1} / 10`;
+            document.getElementById('quiz-progress').textContent = `QUESTION ${currentQuizIndex + 1} / 5`;
             document.getElementById('quiz-question').textContent = q.q;
 
             const optionsContainer = document.getElementById('quiz-options');
