@@ -12,6 +12,7 @@
         type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/premium-buttons.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <style>
@@ -196,18 +197,6 @@
 
         /* RESPONSIVE DESIGN */
         @media (max-width: 768px) {
-            .header {
-                padding: 15px 30px;
-            }
-
-            .logo {
-                font-size: 22px;
-            }
-
-            .nav-links a {
-                font-size: 16px;
-            }
-
             .box {
                 width: 180px;
                 height: 270px;
@@ -219,25 +208,6 @@
         }
 
         @media (max-width: 480px) {
-            .header {
-                flex-direction: column;
-                align-items: center;
-                padding: 10px 20px;
-            }
-
-
-            .nav-links {
-                flex-direction: column;
-                text-align: center;
-            }
-
-
-            .nav-links a {
-                display: block;
-                margin: 8px 0;
-            }
-
-
             .box {
                 width: 150px;
                 height: 225px;
@@ -254,6 +224,7 @@
     <!-- HEADER -->
     <div class="header">
         <div class="logo" onclick="window.location.href='get-started.html'">MTALK</div>
+        <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
         <div class="nav-links">
             <button class="add-movie-btn admin-only premium-btn" onclick="openModal()" style="display: none;">+ Add
                 Movie</button>
@@ -329,6 +300,7 @@
     <script src="../assets/js/firebase-init.js"></script>
     <script src="../assets/js/admin.js"></script>
     <script src="../assets/js/premium-buttons.js"></script>
+    <script src="../assets/js/responsive.js"></script>
 
     <!-- Page Scripts -->
     <script>

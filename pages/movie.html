@@ -2,12 +2,13 @@
 <html lang="en">
 
 <head>
-    <script src="../assets/js/auth-guard.js"></script>
+  <script src="../assets/js/auth-guard.js"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Movie - MTALK</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/premium-buttons.css">
+  <link rel="stylesheet" href="../assets/css/responsive.css">
   <style>
     body {
       font-family: 'Orbitron', sans-serif;
@@ -112,7 +113,8 @@
   <div class="header" style="backdrop-filter:blur(10px);z-index:1000">
     <div class="logo" onclick="location.href='get-started.html'" style="color:#FF073A;text-transform:uppercase">MTALK
     </div>
-    <div style="display:flex;gap:20px">
+    <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
+    <div class="nav-links" style="display:flex;gap:20px">
       <a href="get-started.html" style="color:white;text-decoration:none;transition:color 0.3s">Home</a>
       <a href="profile.html" style="color:white;text-decoration:none;transition:color 0.3s">Profile</a>
       <a href="location.html" style="color:white;text-decoration:none;transition:color 0.3s">Location</a>
@@ -130,6 +132,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
   <script src="../assets/js/firebase-init.js"></script>
   <script src="../assets/js/premium-buttons.js"></script>
+  <script src="../assets/js/responsive.js"></script>
 
   <script>
     // Auth Guard

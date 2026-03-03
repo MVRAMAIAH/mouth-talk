@@ -1,0 +1,344 @@
+/*
+  MTALK Responsive System
+  Handles mobile navigation (hamburger menu) and common responsive overrides.
+  Desktop styles are untouched — these rules only apply at ≤768px and ≤480px.
+*/
+
+/* ─── HAMBURGER BUTTON (hidden on desktop) ─── */
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: #FF073A;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 4px 8px;
+    z-index: 1001;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+
+.hamburger-btn:hover {
+    transform: scale(1.15);
+}
+
+/* ─── TABLET (≤768px) ─── */
+@media (max-width: 768px) {
+
+    /* Show hamburger */
+    .hamburger-btn {
+        display: block;
+    }
+
+    /* Collapse nav links into a vertical dropdown */
+    .header .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 15px 0;
+        gap: 0;
+        border-bottom: 2px solid rgba(255, 7, 58, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .header .nav-links.active {
+        display: flex;
+    }
+
+    .header .nav-links a,
+    .header .nav-links button {
+        display: block;
+        text-align: center;
+        padding: 14px 20px;
+        margin: 0;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: background 0.3s;
+    }
+
+    .header .nav-links a:hover,
+    .header .nav-links button:hover {
+        background: rgba(255, 7, 58, 0.1);
+    }
+
+    /* Header adjustments */
+    .header {
+        padding: 15px 20px !important;
+        flex-wrap: nowrap;
+    }
+
+    .logo {
+        font-size: 22px !important;
+    }
+
+    /* Common content containers */
+    .login-container {
+        margin-top: 100px;
+        padding: 30px 20px;
+    }
+
+    .profile-container {
+        padding: 50px 25px;
+        margin-top: 90px;
+    }
+
+    .page-wrapper {
+        padding: 90px 15px 40px;
+    }
+
+    /* Movie page flex layout */
+    .container {
+        padding: 15px;
+    }
+
+    /* Movie poster sizing */
+    .poster {
+        width: 100% !important;
+        max-width: 280px;
+        height: auto !important;
+        margin: 0 auto;
+    }
+
+    /* Onboarding */
+    .step h2 {
+        font-size: 24px;
+    }
+
+    .onboard-input {
+        font-size: 16px;
+    }
+
+    /* Profile info rows */
+    .info-row {
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+    }
+
+    .pref-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+
+    /* About page */
+    .profile-img-container {
+        width: 140px;
+        height: 140px;
+    }
+
+    .mission-section h1 {
+        font-size: 22px;
+    }
+
+    .mission-text {
+        font-size: 15px;
+    }
+
+    /* Review page */
+    .review-card {
+        padding: 16px 18px;
+    }
+
+    .modal {
+        padding: 25px 18px;
+        width: 95%;
+    }
+
+    /* Location page */
+    .results-panel {
+        width: 280px;
+    }
+
+    .search-container {
+        width: 95%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .radius-inline {
+        justify-content: center;
+    }
+}
+
+/* ─── MOBILE (≤480px) ─── */
+@media (max-width: 480px) {
+
+    .header {
+        padding: 12px 15px !important;
+    }
+
+    .logo {
+        font-size: 20px !important;
+    }
+
+    /* Marquee adjustments for landing page */
+    .marquee-wrapper {
+        width: 95vw;
+        height: 160px;
+    }
+
+    .marquee-track img {
+        width: 90px;
+        height: 130px;
+    }
+
+    /* Interactive heading */
+    .interactive-heading {
+        padding: 15px 0;
+    }
+
+    /* Bottom section adjustments */
+    .bottom-section {
+        bottom: 20px;
+    }
+
+    /* Login */
+    .login-container {
+        margin-top: 80px;
+        padding: 25px 15px;
+    }
+
+    .login-container h2 {
+        font-size: 22px;
+    }
+
+    /* Profile */
+    .profile-container {
+        padding: 40px 15px;
+        margin-top: 80px;
+    }
+
+    .profile-img {
+        width: 90px;
+        height: 90px;
+    }
+
+    .user-info h2 {
+        font-size: 18px;
+    }
+
+    .username-row {
+        font-size: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    /* About */
+    .glass-card {
+        padding: 20px 15px;
+        border-radius: 16px;
+    }
+
+    .profile-img-container {
+        width: 120px;
+        height: 120px;
+    }
+
+    .ideator-name {
+        font-size: 14px;
+    }
+
+    /* Get-started / category boxes */
+    .page-header h1 {
+        font-size: 28px;
+        letter-spacing: 4px;
+    }
+
+    .page-header {
+        margin-top: 100px;
+    }
+
+    /* Movie detail page */
+    .poster {
+        max-width: 220px;
+    }
+
+    .trailer-video {
+        border-width: 2px;
+    }
+
+    /* Movie grid (category pages) */
+    .movie-grid {
+        padding: 15px;
+        gap: 12px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        margin-top: 100px;
+    }
+
+    /* Review */
+    .page-title {
+        font-size: 1.3rem;
+    }
+
+    .review-header {
+        flex-direction: column;
+    }
+
+    .star-picker span {
+        font-size: 1.5rem;
+    }
+
+    /* Location */
+    .results-panel {
+        width: 85%;
+        left: 7.5%;
+        top: 140px;
+        bottom: 80px;
+    }
+
+    .fab-group {
+        bottom: 80px;
+        right: 15px;
+    }
+
+    .fab {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+
+    .detail-panel {
+        padding: 20px 15px;
+    }
+
+    .theatre-info h2 {
+        font-size: 18px;
+    }
+
+    /* Onboarding */
+    .step h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .btn-next {
+        padding: 12px 35px;
+        font-size: 14px;
+    }
+
+    .badge-title {
+        font-size: 24px;
+    }
+
+    .badge-icon {
+        font-size: 60px;
+    }
+
+    .quiz-option {
+        font-size: 13px;
+        padding: 12px 16px;
+    }
+
+    .wizard {
+        width: 95%;
+    }
+}

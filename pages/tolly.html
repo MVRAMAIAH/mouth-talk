@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <script src="../assets/js/auth-guard.js"></script>
+  <script src="../assets/js/auth-guard.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mouth Talk – Tollywood</title>
@@ -10,6 +10,7 @@
     type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/premium-buttons.css">
+  <link rel="stylesheet" href="../assets/css/responsive.css">
   <style>
     * {
       margin: 0;
@@ -134,38 +135,8 @@
     }
 
     @media (max-width: 768px) {
-      .header {
-        padding: 15px 30px;
-      }
-
-      .logo {
-        font-size: 22px;
-      }
-
-      .nav-links a {
-        font-size: 16px;
-      }
-
       .movie-grid {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      }
-    }
-
-    @media (max-width: 480px) {
-      .header {
-        flex-direction: column;
-        align-items: center;
-        padding: 10px 20px;
-      }
-
-      .nav-links {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .nav-links a {
-        display: block;
-        margin: 8px 0;
       }
     }
   </style>
@@ -174,6 +145,7 @@
 <body>
   <div class="header" style="backdrop-filter:blur(10px);z-index:1000">
     <div class="logo" onclick="window.location.href='get-started.html'">MTALK</div>
+    <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
     <div class="nav-links">
       <a href="get-started.html">Home</a>
       <a href="profile.html">Profile</a>
@@ -192,6 +164,7 @@
   <script src="../assets/js/firebase-init.js"></script>
   <script src="../assets/js/admin.js"></script>
   <script src="../assets/js/premium-buttons.js"></script>
+  <script src="../assets/js/responsive.js"></script>
 
   <script>
     let globalUser = null;

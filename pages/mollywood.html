@@ -10,6 +10,7 @@
         type="image/png" />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="../assets/css/premium-buttons.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
     <style>
         * {
             margin: 0;
@@ -175,6 +176,7 @@
 <body>
     <div class="header">
         <div class="logo" onclick="window.location.href='get-started.html'">MTALK</div>
+        <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
         <div class="nav-links">
             <a href="get-started.html">Home</a>
             <a href="profile.html">Profile</a>
@@ -193,6 +195,7 @@
     <script src="../assets/js/firebase-init.js"></script>
     <script src="../assets/js/admin.js"></script>
     <script src="../assets/js/premium-buttons.js"></script>
+    <script src="../assets/js/responsive.js"></script>
 
     <script>
         let globalUser = null;

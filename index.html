@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/interactive-heading.css">
     <link rel="stylesheet" href="assets/css/premium-buttons.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
 
 
     <style>
@@ -255,6 +256,7 @@
 
     <div class="header">
         <div class="logo" onclick="handleAuthNav('pages/get-started.html')">MTALK</div>
+        <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
         <div class="nav-links">
             <button class="add-movie-btn admin-only premium-btn" onclick="openModal()">+ Add Movie</button>
             <a href="#" onclick="handleAuthNav('pages/get-started.html'); return false;">Home</a>
@@ -284,6 +286,7 @@
     <script src="assets/js/admin.js"></script>
     <script src="assets/js/interactive-heading.js"></script>
     <script src="assets/js/premium-buttons.js"></script>
+    <script src="assets/js/responsive.js"></script>
     <script>
         let globalUser = null;
         let isLoggedIn = false;
