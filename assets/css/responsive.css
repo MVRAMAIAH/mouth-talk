@@ -180,17 +180,22 @@
     /* Marquee adjustments for landing page */
     .marquee-wrapper {
         width: 95vw;
-        height: 160px;
+        height: 140px;
     }
 
     .marquee-track img {
-        width: 90px;
-        height: 130px;
+        width: 75px;
+        height: 110px;
     }
 
-    /* Interactive heading */
+    /* Interactive heading - fit on mobile */
     .interactive-heading {
-        padding: 15px 0;
+        padding: 10px 0;
+    }
+
+    .interactive-letter {
+        font-size: 26px !important;
+        letter-spacing: -0.03em;
     }
 
     /* Bottom section adjustments */
