@@ -180,12 +180,25 @@
     /* Marquee adjustments for landing page */
     .marquee-wrapper {
         width: 95vw;
-        height: 140px;
+        height: 170px;
+    }
+
+    .marquee-track {
+        gap: 15px;
+        padding: 20px 0;
     }
 
     .marquee-track img {
-        width: 75px;
-        height: 110px;
+        width: 80px;
+        height: 115px;
+        border-radius: 8px;
+        border-width: 1.5px;
+        box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .marquee-fade-left,
+    .marquee-fade-right {
+        width: 40px;
     }
 
     /* Interactive heading - fit on mobile */
