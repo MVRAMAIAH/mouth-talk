@@ -310,42 +310,51 @@
         async function checkAuth() {
             try {
                 const res = await fetch('/api/auth/me');
-                if (res.ok) {
-                    const user = await res.json();
-                    globalUser = user;
-                    isLoggedIn = true;
+                if (!res.ok) throw new Error('Not authenticated');
 
-                    // Hide the Login link since user is authenticated
-                    document.getElementById('navLoginLink').style.display = 'none';
+                const user = await res.json();
+                globalUser = user;
+                isLoggedIn = true;
 
-                    const navLinks = document.querySelectorAll('.nav-links a');
-                    const profileLink = Array.from(navLinks).find(a => a.textContent === 'Profile');
-                    if (profileLink) {
-                        profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
-                    }
+                // Hide the Login link since user is authenticated
+                const loginLink = document.getElementById('navLoginLink');
+                if (loginLink) loginLink.style.display = 'none';
 
-                    if (user.isAdmin) {
-                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
-                    }
-                    return true;
-                } else {
-                    // Not logged in — show the Login link
-                    document.getElementById('navLoginLink').style.display = 'inline-block';
+                const navLinks = document.querySelectorAll('.nav-links a');
+                const profileLink = Array.from(navLinks).find(a => a.textContent.includes('Profile'));
+                if (profileLink && user.fullName) {
+                    profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
                 }
+
+                if (user.isAdmin) {
+                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+                }
+                return true;
             } catch (e) {
-                console.error('Auth check error:', e);
-                document.getElementById('navLoginLink').style.display = 'inline-block';
+                console.warn('Auth check skipped:', e.message);
+                const loginLink = document.getElementById('navLoginLink');
+                if (loginLink) loginLink.style.display = 'inline-block';
             }
             return false;
         }
 
         async function init() {
-            // Run auth check and movie fetch in parallel for faster load
-            const [, moviesRes] = await Promise.all([
-                checkAuth(),
-                fetch('/api/movies').then(res => res.json()).catch(() => [])
-            ]);
-            renderMarquee(moviesRes);
+            try {
+                // Run auth check and movie fetch in parallel
+                const results = await Promise.allSettled([
+                    checkAuth(),
+                    fetch('/api/movies').then(async res => {
+                        if (!res.ok) throw new Error('Movies fetch failed');
+                        return res.json();
+                    })
+                ]);
+
+                const moviesRes = results[1].status === 'fulfilled' ? results[1].value : [];
+                renderMarquee(moviesRes);
+            } catch (err) {
+                console.error('Init error:', err);
+                renderMarquee([]); // Fallback to empty marquee so UI doesn't break
+            }
         }
 
         // Start init immediately, don't wait for DOMContentLoaded

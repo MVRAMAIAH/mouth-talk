@@ -17,22 +17,37 @@
     fetch('/api/auth/me')
         .then(function (res) {
             if (!res.ok) {
-                window.location.href = loginPath;
-            } else {
-                return res.json();
+                throw new Error('Not logged in');
             }
+            return res.json();
         })
         .then(function (user) {
-            if (!user) return;
+            if (!user) {
+                window.location.href = loginPath;
+                return;
+            }
             // If user hasn't completed onboarding, redirect them
             if (!user.onboardingComplete) {
                 window.location.href = onboardingPath;
                 return;
             }
-            // Auth OK + onboarding done — show the page
+            // Auth OK — show the page
             document.documentElement.style.visibility = 'visible';
         })
-        .catch(function () {
+        .catch(function (err) {
+            console.error('Auth Guard Error:', err);
+            // If it's a real auth failure, redirect. 
+            // If it's a network error, we might still want to show the page (degraded mode)
+            // but for now, we enforce login.
             window.location.href = loginPath;
         });
+
+    // Safety timeout: if auth takes too long (e.g. backend hanging), show the page anyway
+    // to prevent a permanent white screen, though the user won't be able to do much.
+    setTimeout(function () {
+        if (document.documentElement.style.visibility === 'hidden') {
+            console.warn('Auth guard timeout — forcing visibility');
+            document.documentElement.style.visibility = 'visible';
+        }
+    }, 3000);
 })();
