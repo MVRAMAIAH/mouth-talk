@@ -39,7 +39,7 @@ if (serviceAccountJSON) {
     try {
         const resolvedPath = path.isAbsolute(serviceAccountPath)
             ? serviceAccountPath
-            : path.resolve(__dirname, '..', serviceAccountPath);
+            : path.resolve(__dirname, '..', '..', '..', serviceAccountPath);
 
         if (fs.existsSync(resolvedPath)) {
             const serviceAccount = require(resolvedPath);

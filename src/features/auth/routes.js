@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const admin = require('../config/firebase-admin');
+const admin = require('../../shared/config/firebase-admin');
 const jwt = require('jsonwebtoken');
-const authMiddleware = require('../middleware/auth');
+const authMiddleware = require('../../shared/middleware/auth');
 
 // Helper to generate JWT
 const generateToken = (user) => {
