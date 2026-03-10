@@ -51,7 +51,8 @@ router.post('/google', async (req, res) => {
 
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true, // Required for sameSite: 'none'
+            sameSite: 'none', // Allow cross-site cookies
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path: '/'
         });
@@ -96,7 +97,8 @@ router.post('/phone', async (req, res) => {
 
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
+            sameSite: 'none',
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path: '/'
         });
@@ -128,7 +130,11 @@ router.get('/me', authMiddleware, async (req, res) => {
 
 // POST /api/auth/logout
 router.post('/logout', (req, res) => {
-    res.clearCookie('token', { path: '/' });
+    res.clearCookie('token', {
+        path: '/',
+        secure: true,
+        sameSite: 'none'
+    });
     res.json({ success: true, message: 'Logged out successfully' });
 });
 
