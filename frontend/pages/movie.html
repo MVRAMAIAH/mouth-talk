@@ -2,13 +2,13 @@
 <html lang="en">
 
 <head>
-  <script src="../shared/js/auth-guard.js"></script>
+  <script src="../assets/js/auth-guard.js"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Movie - MTALK</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../shared/css/premium-buttons.css">
-  <link rel="stylesheet" href="../shared/css/responsive.css">
+  <link rel="stylesheet" href="../assets/css/premium-buttons.css">
+  <link rel="stylesheet" href="../assets/css/responsive.css">
   <style>
     body {
       font-family: 'Orbitron', sans-serif;
@@ -130,9 +130,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
-  <script src="../shared/js/firebase-init.js"></script>
-  <script src="../shared/js/premium-buttons.js"></script>
-  <script src="../shared/js/responsive.js"></script>
+  <script src="../assets/js/firebase-init.js"></script>
+  <script src="../assets/js/premium-buttons.js"></script>
+  <script src="../assets/js/responsive.js"></script>
 
   <script>
     // Auth Guard
@@ -170,7 +170,7 @@
 
         const html = `
           <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
-            <img class="poster" src="${movie.poster.startsWith('http') ? movie.poster : '../shared/images/' + movie.poster}" alt="${movie.title} Poster" />
+            <img class="poster" src="${movie.poster.startsWith('http') ? movie.poster : '../assets/images/' + movie.poster}" alt="${movie.title} Poster" />
             <div style="flex:1;min-width:260px">
               <h1 style="font-size:1.8rem;margin-bottom:8px">${movie.title}</h1>
               <p class="synopsis"><span class="highlight">Synopsis:</span> ${movie.synopsis}</p>

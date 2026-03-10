@@ -2,11 +2,11 @@
   "name": "mouth-talk",
   "version": "1.0.0",
   "description": "Static site + small API for movie pages",
-  "main": "src/app/server.js",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node src/app/server.js",
-    "dev": "nodemon src/app/server.js",
-    "seed": "node src/app/seed.js"
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "seed": "node backend/seed.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",

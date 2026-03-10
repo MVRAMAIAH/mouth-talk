@@ -2,5 +2,7 @@ node_modules/
 .env
 .DS_Store
 *.log
-src/shared/config/firebase-service-account.json
+backend/config/firebase-service-account.json
 fix-paths.ps1
+fix-frontend-paths.ps1
+fix-frontend-paths-v2.ps1

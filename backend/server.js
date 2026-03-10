@@ -1,24 +1,24 @@
-// server.js — App Layer (FSD)
+// server.js — Backend
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const cookieParser = require('cookie-parser');
-require('dotenv').config({ path: path.resolve(__dirname, '..', '..', '.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 
-// Import Auth Routes (FSD paths)
-const authRoutes = require('../features/auth/routes');
-const authMiddleware = require('../shared/middleware/auth');
+// Import Auth Routes
+const authRoutes = require('./routes/auth');
+const authMiddleware = require('./middleware/auth');
 
-const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-const STATIC_ROOT = path.join(PROJECT_ROOT, 'public');
-const DATA_DIR = path.join(PROJECT_ROOT, 'src', 'shared', 'data');
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+const STATIC_ROOT = path.join(PROJECT_ROOT, 'frontend');
+const DATA_DIR = path.join(__dirname, 'data');
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
 const DB_NAME = process.env.DB_NAME || 'mouthtalk';
@@ -65,7 +65,6 @@ function generateId() {
 // Initialize MongoDB
 async function initDb() {
     if (!MONGODB_URI) return;
-    // Improved Debug: show username and structure while masking password
     const maskedUri = MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//[USER:$1]:***@');
     console.log('MongoDB URI Debug:', maskedUri);
     try {
@@ -73,7 +72,6 @@ async function initDb() {
         await dbClient.connect();
         db = dbClient.db(DB_NAME);
 
-        // Create per-category movie collections
         for (const cat of CATEGORY_NAMES) {
             categoryCollections[cat] = db.collection(cat);
         }
@@ -83,7 +81,6 @@ async function initDb() {
         theatresCollection = db.collection('theatres');
         usersCollection = db.collection('users');
 
-        // Set db on app for routes to access
         app.set('db', db);
 
         console.log('Connected to MongoDB');
@@ -94,12 +91,11 @@ async function initDb() {
     }
 }
 
-// Helper: check if MongoDB category collections are available
 function hasDbCollections() {
     return Object.keys(categoryCollections).length > 0;
 }
 
-// Sync theatres.json → MongoDB theatres collection
+// Sync theatres.json → MongoDB
 async function syncTheatres() {
     if (!theatresCollection) return;
     try {
@@ -126,7 +122,7 @@ async function syncTheatres() {
     }
 }
 
-// Sync bookings.json → MongoDB bookings collection (movie-keyed structure)
+// Sync bookings.json → MongoDB
 async function syncBookings() {
     if (!bookingsCollection) return;
     try {
@@ -150,7 +146,6 @@ async function syncBookings() {
                 );
             }
         }
-        // Remove bookings no longer in JSON
         const allBookingIds = Object.values(data).flat();
         await bookingsCollection.deleteMany({ bookingId: { $nin: allBookingIds } });
         const totalCount = Object.values(data).reduce((sum, arr) => sum + arr.length, 0);
@@ -170,7 +165,6 @@ async function syncCategoryCollections() {
         const allMovies = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
         if (!Array.isArray(allMovies)) return;
 
-        // Group movies by category
         const grouped = {};
         for (const cat of CATEGORY_NAMES) grouped[cat] = [];
         for (const movie of allMovies) {
@@ -180,7 +174,6 @@ async function syncCategoryCollections() {
 
         const now = new Date();
 
-        // Sync each category
         for (const cat of CATEGORY_NAMES) {
             const coll = categoryCollections[cat];
             const movies = grouped[cat];
@@ -201,13 +194,12 @@ async function syncCategoryCollections() {
     }
 }
 
-// ─── API ROUTES (MOUNT BEFORE STATIC) ───────────────────
+// ─── API ROUTES ───────────────────────────────────────
 app.use('/api/auth', authRoutes);
 
 app.get('/api/movies', async (req, res) => {
     try {
         if (hasDbCollections()) {
-            // Query all category collections and merge
             const results = [];
             for (const cat of CATEGORY_NAMES) {
                 const docs = await categoryCollections[cat].find({}).toArray();
@@ -226,7 +218,6 @@ app.get('/api/movies/:id', async (req, res) => {
     try {
         const id = req.params.id;
         if (hasDbCollections()) {
-            // Search across all category collections
             for (const cat of CATEGORY_NAMES) {
                 const doc = await categoryCollections[cat].findOne({ id });
                 if (doc) return res.json(doc);
@@ -242,10 +233,8 @@ app.get('/api/movies/:id', async (req, res) => {
     }
 });
 
-// Admin Add Movie Route
 app.post('/api/movies', authMiddleware, async (req, res) => {
     try {
-        // Admin check
         if (req.user.email !== 'ramaiah5496@gmail.com') {
             return res.status(403).json({ error: 'Admin access required' });
         }
@@ -261,7 +250,6 @@ app.post('/api/movies', authMiddleware, async (req, res) => {
             return res.status(400).json({ error: 'Invalid category' });
         }
 
-        // 1. Update MongoDB
         if (hasDbCollections()) {
             const coll = categoryCollections[category.toLowerCase()];
             await coll.updateOne(
@@ -271,7 +259,6 @@ app.post('/api/movies', authMiddleware, async (req, res) => {
             );
         }
 
-        // 2. Update local movies.json
         const movies = loadLocalJSON('movies.json');
         const existingIndex = movies.findIndex(m => m.id === id);
         if (existingIndex > -1) {
@@ -297,7 +284,6 @@ app.post('/api/verify-booking', async (req, res) => {
         }
         const upperBookingId = bookingId.toUpperCase();
 
-        // Check in MongoDB first, fallback to local JSON
         if (bookingsCollection) {
             const doc = await bookingsCollection.findOne({ movieId, bookingId: upperBookingId });
             if (!doc) return res.status(404).json({ error: 'Invalid booking ID' });
@@ -314,7 +300,6 @@ app.post('/api/verify-booking', async (req, res) => {
             }
         }
 
-        // Find movie title
         const allMovies = loadLocalJSON('movies.json');
         const movie = allMovies.find(m => m.id === movieId);
         res.json({ valid: true, bookingId: upperBookingId, movieId, movieTitle: movie ? movie.title : movieId });
@@ -350,7 +335,6 @@ app.post('/api/reviews', async (req, res) => {
         }
         const upperBookingId = bookingId.toUpperCase();
 
-        // Validate booking ID belongs to this movie and not used
         if (bookingsCollection) {
             const doc = await bookingsCollection.findOne({ movieId, bookingId: upperBookingId });
             if (!doc) return res.status(404).json({ error: 'Invalid booking ID' });
@@ -384,7 +368,6 @@ app.post('/api/reviews', async (req, res) => {
         if (reviewsCollection) {
             const result = await reviewsCollection.insertOne(review);
             review._id = result.insertedId;
-            // Mark booking as used in MongoDB
             await bookingsCollection.updateOne(
                 { movieId, bookingId: upperBookingId },
                 { $set: { used: true, usedAt: new Date() } }
@@ -400,7 +383,6 @@ app.post('/api/reviews', async (req, res) => {
     }
 });
 
-// React to a review (like/dislike)
 app.post('/api/reviews/:id/react', async (req, res) => {
     try {
         const reviewId = req.params.id;
@@ -411,7 +393,6 @@ app.post('/api/reviews/:id/react', async (req, res) => {
         const field = type === 'like' ? 'likes' : 'dislikes';
 
         if (reviewsCollection) {
-            // Try matching by string _id first, then ObjectId
             let result = await reviewsCollection.findOneAndUpdate(
                 { _id: reviewId },
                 { $inc: { [field]: 1 } },
@@ -430,7 +411,6 @@ app.post('/api/reviews/:id/react', async (req, res) => {
             return res.json({ likes: result.likes || 0, dislikes: result.dislikes || 0 });
         }
 
-        // Local JSON fallback
         const reviews = loadLocalJSON('reviews.json');
         const review = reviews.find(r => r._id === reviewId);
         if (!review) return res.status(404).json({ error: 'Review not found' });
@@ -454,9 +434,9 @@ app.get('/api/theatres', async (req, res) => {
 
 // ─── STATIC FILES ──────────────────────────────────────
 app.use(express.static(STATIC_ROOT));
-app.use('/shared', express.static(path.join(STATIC_ROOT, 'shared')));
+app.use('/assets', express.static(path.join(STATIC_ROOT, 'assets')));
 
-// SPA Fallback - Secure from API collisions
+// SPA Fallback
 app.get('*', (req, res) => {
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'API route not found' });

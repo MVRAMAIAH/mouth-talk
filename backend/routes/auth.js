@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const admin = require('../../shared/config/firebase-admin');
+const admin = require('../config/firebase-admin');
 const jwt = require('jsonwebtoken');
-const authMiddleware = require('../../shared/middleware/auth');
+const authMiddleware = require('../middleware/auth');
 
 // Helper to generate JWT
 const generateToken = (user) => {
@@ -18,7 +18,7 @@ const generateToken = (user) => {
     );
 };
 
-// POST /api/auth/google - Verify Firebase ID Token and sign in
+// POST /api/auth/google
 router.post('/google', async (req, res) => {
     try {
         const { idToken } = req.body;
@@ -52,7 +52,7 @@ router.post('/google', async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            maxAge: 7 * 24 * 60 * 60 * 1000,
             path: '/'
         });
 
@@ -64,7 +64,7 @@ router.post('/google', async (req, res) => {
     }
 });
 
-// POST /api/auth/phone - Verify Firebase Phone ID Token and sign in
+// POST /api/auth/phone
 router.post('/phone', async (req, res) => {
     try {
         const { idToken, fullName } = req.body;
@@ -97,7 +97,7 @@ router.post('/phone', async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            maxAge: 7 * 24 * 60 * 60 * 1000,
             path: '/'
         });
 
@@ -109,14 +109,13 @@ router.post('/phone', async (req, res) => {
     }
 });
 
-// GET /api/auth/me - Get current user (auto-login check)
+// GET /api/auth/me
 router.get('/me', authMiddleware, async (req, res) => {
     try {
         const db = req.app.get('db');
         const user = await db.collection('users').findOne({ uid: req.user.uid });
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        // Add admin flag
         const userWithAdmin = {
             ...user,
             isAdmin: user.email === 'ramaiah5496@gmail.com'
@@ -127,22 +126,20 @@ router.get('/me', authMiddleware, async (req, res) => {
     }
 });
 
-// POST /api/auth/logout - Clear session
+// POST /api/auth/logout
 router.post('/logout', (req, res) => {
     res.clearCookie('token', { path: '/' });
     res.json({ success: true, message: 'Logged out successfully' });
 });
 
-// PATCH /api/auth/profile - Update user profile
+// PATCH /api/auth/profile
 router.patch('/profile', authMiddleware, async (req, res) => {
     try {
         const { fullName, actor, cinephileLevel, motherTongue, favouriteActress, favouriteDirector, favouriteComposer } = req.body;
         const db = req.app.get('db');
         const usersCollection = db.collection('users');
 
-        const updateData = {
-            updatedAt: new Date()
-        };
+        const updateData = { updatedAt: new Date() };
 
         if (fullName) updateData.fullName = fullName;
         if (actor) updateData.actor = actor;
@@ -166,7 +163,7 @@ router.patch('/profile', authMiddleware, async (req, res) => {
     }
 });
 
-// POST /api/auth/onboarding - Save onboarding data and badge
+// POST /api/auth/onboarding
 router.post('/onboarding', authMiddleware, async (req, res) => {
     try {
         const { fullName, motherTongue, favouriteActor, favouriteActress, favouriteDirector, favouriteComposer, profilePicture, badge, quizAnswers } = req.body;
@@ -202,13 +199,12 @@ router.post('/onboarding', authMiddleware, async (req, res) => {
     }
 });
 
-// GET /api/auth/user/:uid - Get public user info (for badge display)
+// GET /api/auth/user/:uid
 router.get('/user/:uid', async (req, res) => {
     try {
         const db = req.app.get('db');
         const user = await db.collection('users').findOne({ uid: req.params.uid });
         if (!user) return res.status(404).json({ error: 'User not found' });
-        // Return only public fields
         res.json({
             fullName: user.fullName,
             badge: user.badge || null,

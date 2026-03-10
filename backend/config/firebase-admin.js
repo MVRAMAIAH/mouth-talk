@@ -1,7 +1,7 @@
 const admin = require('firebase-admin');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '..', '..', '.env') });
 
 const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
 const serviceAccountJSON = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
@@ -10,7 +10,6 @@ const firebaseProjectId = process.env.FIREBASE_PROJECT_ID;
 const firebaseClientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 
 if (serviceAccountJSON) {
-    // Method 1: Full JSON pasted as env var
     try {
         const serviceAccount = JSON.parse(serviceAccountJSON);
         admin.initializeApp({
@@ -21,7 +20,6 @@ if (serviceAccountJSON) {
         console.error('❌ Error parsing FIREBASE_SERVICE_ACCOUNT_JSON:', error.message);
     }
 } else if (firebasePrivateKey && firebaseProjectId && firebaseClientEmail) {
-    // Method 2: Individual env vars (common on Render)
     try {
         admin.initializeApp({
             credential: admin.credential.cert({
@@ -35,11 +33,10 @@ if (serviceAccountJSON) {
         console.error('❌ Error initializing with env vars:', error.message);
     }
 } else if (serviceAccountPath) {
-    // Method 3: File path (local dev)
     try {
         const resolvedPath = path.isAbsolute(serviceAccountPath)
             ? serviceAccountPath
-            : path.resolve(__dirname, '..', '..', '..', serviceAccountPath);
+            : path.resolve(__dirname, '..', '..', serviceAccountPath);
 
         if (fs.existsSync(resolvedPath)) {
             const serviceAccount = require(resolvedPath);

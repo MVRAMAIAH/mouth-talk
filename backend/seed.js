@@ -2,19 +2,18 @@
 const { MongoClient } = require('mongodb');
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '..', '..', '.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const MONGODB_URI = process.env.MONGODB_URI;
 const DB_NAME = process.env.DB_NAME || 'mouthtalk';
 const CATEGORY_NAMES = ['tollywood', 'kollywood', 'sandalwood', 'mollywood', 'bollywood', 'hollywood', 'webseries'];
-const DATA_DIR = path.join(__dirname, '..', 'shared', 'data');
+const DATA_DIR = path.join(__dirname, 'data');
 
 if (!MONGODB_URI) {
     console.error('❌ Please set MONGODB_URI in .env to run the seed script');
     process.exit(1);
 }
 
-// Read & parse a JSON file from src/shared/data
 function readJSON(filename) {
     const filePath = path.join(DATA_DIR, filename);
     if (!fs.existsSync(filePath)) {
@@ -28,7 +27,6 @@ async function seedMovies(db) {
     const allMovies = readJSON('movies.json');
     if (!Array.isArray(allMovies)) return;
 
-    // Group movies by category
     const grouped = {};
     for (const cat of CATEGORY_NAMES) grouped[cat] = [];
     for (const movie of allMovies) {
@@ -37,7 +35,6 @@ async function seedMovies(db) {
         else console.warn(`⚠ Unknown category "${movie.category}" for movie "${movie.id}"`);
     }
 
-    // For each category: drop, re-insert cleanly, create index
     for (const cat of CATEGORY_NAMES) {
         const coll = db.collection(cat);
         await coll.drop().catch(() => { });
@@ -48,7 +45,6 @@ async function seedMovies(db) {
             continue;
         }
 
-        // Add timestamps to each document
         const now = new Date();
         const docs = movies.map(m => ({
             id: m.id,
@@ -130,7 +126,6 @@ async function run() {
         console.log('\n🎫 Seeding bookings...');
         await seedBookings(db);
 
-        // Ensure reviews collection exists with index
         const reviewsColl = db.collection('reviews');
         await reviewsColl.createIndex({ movieId: 1 });
         await reviewsColl.createIndex({ createdAt: -1 });

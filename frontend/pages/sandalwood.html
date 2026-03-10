@@ -2,15 +2,15 @@
 <html lang="en">
 
 <head>
-    <script src="../shared/js/auth-guard.js"></script>
+    <script src="../assets/js/auth-guard.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mouth Talk – Hollywood</title>
+    <title>Mouth Talk – Sandalwood</title>
     <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
         type="image/png" />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="../shared/css/premium-buttons.css">
-    <link rel="stylesheet" href="../shared/css/responsive.css">
+    <link rel="stylesheet" href="../assets/css/premium-buttons.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
     <style>
         * {
             margin: 0;
@@ -100,6 +100,7 @@
             text-decoration: none;
             color: #fff;
             position: relative;
+            /* Added for edit button positioning */
         }
 
         .movie-box:hover {
@@ -154,20 +155,21 @@
         </div>
     </div>
 
-    <h1>Running Movies – Hollywood</h1>
+    <h1>Running Movies – Sandalwood</h1>
     <div id="movieGrid" class="movie-grid"></div>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
-    <script src="../shared/js/firebase-init.js"></script>
-    <script src="../shared/js/admin.js"></script>
-    <script src="../shared/js/premium-buttons.js"></script>
-    <script src="../shared/js/responsive.js"></script>
+    <script src="../assets/js/firebase-init.js"></script>
+    <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/premium-buttons.js"></script>
+    <script src="../assets/js/responsive.js"></script>
 
     <script>
         let globalUser = null;
+        // Auth Guard
         async function checkAuth() {
             try {
                 const res = await fetch('/api/auth/me');
@@ -177,7 +179,10 @@
                     globalUser = user;
                     const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
                     if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
-                    if (user.isAdmin) injectAdminModal();
+
+                    if (user.isAdmin) {
+                        injectAdminModal();
+                    }
                 }
             } catch (e) {
                 window.location.href = 'login.html';
@@ -185,13 +190,13 @@
         }
         checkAuth();
 
-        const CATEGORY = 'hollywood';
+        const CATEGORY = 'sandalwood';
 
         async function loadMovies() {
             try {
                 const res = await fetch('/api/movies');
                 if (!res.ok) throw new Error('API fetch failed');
-                const movies = (await res.json()).filter(m => m.category.toLowerCase() === CATEGORY);
+                const movies = (await res.json()).filter(m => m.category === CATEGORY);
                 const grid = document.getElementById('movieGrid');
                 grid.innerHTML = '';
 
@@ -212,7 +217,7 @@
 
                     const img = document.createElement('img');
                     img.alt = m.title || 'Poster';
-                    img.src = m.poster.startsWith('http') ? m.poster : `/shared/images/${m.poster}`;
+                    img.src = `/assets/images/${m.poster}`;
 
                     const title = document.createElement('span');
                     title.className = 'movie-title';
@@ -239,7 +244,8 @@
                 });
             } catch (err) {
                 console.error('loadMovies error', err);
-                document.getElementById('movieGrid').innerHTML = '<p class="empty-msg">Could not load movies.</p>';
+                document.getElementById('movieGrid').innerHTML =
+                    '<p class="empty-msg" style="color:#f55">Could not load movies.</p>';
             }
         }
         async function init() {
@@ -247,6 +253,7 @@
             await loadMovies();
         }
         init();
+
     </script>
 </body>
 

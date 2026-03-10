@@ -9,9 +9,9 @@
     <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
         type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="shared/css/interactive-heading.css">
-    <link rel="stylesheet" href="shared/css/premium-buttons.css">
-    <link rel="stylesheet" href="shared/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/interactive-heading.css">
+    <link rel="stylesheet" href="assets/css/premium-buttons.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
 
 
     <style>
@@ -24,7 +24,7 @@
 
         body {
             background: black;
-            background-image: url("shared/images/land.jpg");
+            background-image: url("assets/images/land.jpg");
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -283,10 +283,10 @@
         </div>
     </div>
 
-    <script src="shared/js/admin.js"></script>
-    <script src="shared/js/interactive-heading.js"></script>
-    <script src="shared/js/premium-buttons.js"></script>
-    <script src="shared/js/responsive.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script src="assets/js/interactive-heading.js"></script>
+    <script src="assets/js/premium-buttons.js"></script>
+    <script src="assets/js/responsive.js"></script>
     <script>
         let globalUser = null;
         let isLoggedIn = false;
@@ -373,7 +373,7 @@
                     container.style.display = 'inline-block';
 
                     const img = document.createElement('img');
-                    img.src = m.poster.startsWith('http') ? m.poster : '/shared/images/' + m.poster;
+                    img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + m.poster;
                     img.alt = m.title;
                     img.className = 'marquee-img';
                     img.onclick = () => location.href = 'pages/movie.html?id=' + m.id;
