@@ -9,12 +9,13 @@ require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const app = express();
 app.use(cors({
-    origin: [
-        'http://localhost:5000',
-        'https://mouth-talk-zjym-7hmtosv2w-venkata-ramaiahs-projects.vercel.app'
-    ],
+    origin: [/vercel\.app$/, /localhost:\d+$/],
     credentials: true
 }));
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+    next();
+});
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 
