@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-TALK Debug Console</title>
+    <style>
+        body {
+            background: #111;
+            color: #0f0;
+            font-family: monospace;
+            padding: 20px;
+        }
+
+        .log {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 5px;
+        }
+
+        .error {
+            color: #f00;
+        }
+
+        .success {
+            color: #0f0;
+        }
+
+        .header {
+            color: #ff073a;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">M-TALK Deployment Debugger</div>
+    <div id="console"></div>
+
+    <script>
+        const consoleEl = document.getElementById('console');
+        function log(msg, type = '') {
+            const div = document.createElement('div');
+            div.className = 'log ' + type;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            consoleEl.prepend(div);
+        }
+
+        async function runTests() {
+            log('Starting Connectivity Tests...');
+
+            // 1. Check if we can reach the local API (Rewrite Test)
+            try {
+                log('Testing /api/movies proxy...');
+                const res = await fetch('/api/movies');
+                log(`Status: ${res.status} ${res.statusText}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    log(`Success! Found ${data.length || 0} movies.`, 'success');
+                } else {
+                    log(`Failed to reach backend proxy. Check vercel.json destination.`, 'error');
+                }
+            } catch (err) {
+                log(`Proxy Error: ${err.message}`, 'error');
+            }
+
+            // 2. Check Auth Endpoint
+            try {
+                log('Testing /api/auth/me...');
+                const res = await fetch('/api/auth/me');
+                log(`Status: ${res.status} ${res.statusText}`);
+                if (res.status === 401) {
+                    log('Auth endpoint reached (401 is normal for anonymous).', 'success');
+                }
+            } catch (err) {
+                log(`Auth Error: ${err.message}`, 'error');
+            }
+
+            // 3. Asset Checks
+            const assetPaths = ['/assets/css/premium-buttons.css', '/assets/js/premium-buttons.js'];
+            for (const path of assetPaths) {
+                try {
+                    log(`Checking asset: ${path}...`);
+                    const res = await fetch(path);
+                    if (res.ok) log(`Asset Loaded: ${path}`, 'success');
+                    else log(`Asset Missing (404): ${path}`, 'error');
+                } catch (err) {
+                    log(`Asset Fetch Error: ${err.message}`, 'error');
+                }
+            }
+
+            log('Tests Completed.');
+        }
+
+        runTests();
+    </script>
+</body>
+
+</html>
