@@ -9,7 +9,10 @@ require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const app = express();
 app.use(cors({
-    origin: [/vercel\.app$/, /localhost:\d+$/],
+    origin: function (origin, callback) {
+        // Allow all origins to debug connectivity issues
+        callback(null, true);
+    },
     credentials: true
 }));
 app.use((req, res, next) => {
