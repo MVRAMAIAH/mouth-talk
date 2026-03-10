@@ -8,7 +8,13 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:5000',
+        'https://mouth-talk-zjym-7hmtosv2w-venkata-ramaiahs-projects.vercel.app'
+    ],
+    credentials: true
+}));
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 
