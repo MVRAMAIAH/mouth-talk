@@ -8,17 +8,36 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const app = express();
+
+// 1. Move logging to the absolute top for debugging
+app.use((req, res, next) => {
+    console.log(`[DEBUG] ${new Date().toISOString()} - ${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+    next();
+});
+
+// 2. Health checks immediately after logging
+app.get('/health', (req, res) => res.status(200).send('HEALTH_OK'));
+app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
+
+// Improved CORS for production and development
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow all origins to debug connectivity issues
-        callback(null, true);
+        const allowedOrigins = [
+            'http://localhost:3000',
+            'http://localhost:5173'
+        ];
+
+        // Allow no-origin (like mobile apps or curl) or allowed origins
+        if (!origin || allowedOrigins.some(o => typeof o === 'string' ? o === origin : o.test(origin))) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS blocked for origin: ${origin}`);
+            callback(null, true); // Still allowing all for now as requested, but logged
+        }
     },
     credentials: true
 }));
-app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - Origin: ${req.headers.origin}`);
-    next();
-});
+
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 

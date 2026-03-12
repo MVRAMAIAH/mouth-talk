@@ -61,7 +61,7 @@
                     const data = await res.json();
                     log(`Success! Found ${data.length || 0} movies.`, 'success');
                 } else {
-                    log(`Failed to reach backend proxy. Check vercel.json destination.`, 'error');
+                    log(`Failed to reach backend. Check Render deployment or local server status.`, 'error');
                 }
             } catch (err) {
                 log(`Proxy Error: ${err.message}`, 'error');
