@@ -847,6 +847,10 @@
         }
 
         function renderQuizQuestion() {
+            if (currentQuizIndex >= 5) {
+                calculateBadge();
+                return;
+            }
             const q = quizQuestions[currentQuizIndex];
             document.getElementById('quiz-progress').textContent = `QUESTION ${currentQuizIndex + 1} / 5`;
             document.getElementById('quiz-question').textContent = q.q;
@@ -867,9 +871,20 @@
         }
 
         function selectQuizOption(badge, btnEl) {
+            // Prevent multiple clicks
+            const allOptions = document.querySelectorAll('.quiz-option');
+            if (btnEl.classList.contains('selected') || btnEl.disabled) return;
+            
+            allOptions.forEach(b => {
+                b.disabled = true;
+                b.classList.remove('selected');
+                b.style.pointerEvents = 'none';
+                b.style.opacity = '0.6';
+            });
+
             // Visual feedback
-            document.querySelectorAll('.quiz-option').forEach(b => b.classList.remove('selected'));
             btnEl.classList.add('selected');
+            btnEl.style.opacity = '1';
 
             // Record answer
             quizScores[badge]++;

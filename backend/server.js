@@ -305,6 +305,34 @@ app.post('/api/movies', authMiddleware, async (req, res) => {
     }
 });
 
+app.delete('/api/movies/:id', authMiddleware, async (req, res) => {
+    try {
+        if (req.user.email !== 'ramaiah5496@gmail.com') {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+
+        const id = req.params.id;
+
+        // 1. Delete from MongoDB
+        if (hasDbCollections()) {
+            for (const cat of CATEGORY_NAMES) {
+                await categoryCollections[cat].deleteOne({ id });
+            }
+        }
+
+        // 2. Delete from local JSON
+        const movies = loadLocalJSON('movies.json');
+        const updatedMovies = movies.filter(m => m.id !== id);
+        writeLocalJSON('movies.json', updatedMovies);
+
+        console.log(`🗑️ Movie deleted: ${id} by admin`);
+        res.json({ success: true, message: 'Movie deleted permanently' });
+    } catch (err) {
+        console.error('Error deleting movie:', err);
+        res.status(500).json({ error: 'Server error deleting movie' });
+    }
+});
+
 app.post('/api/verify-booking', async (req, res) => {
     try {
         const { bookingId, movieId } = req.body;

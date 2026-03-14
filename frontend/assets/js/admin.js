@@ -71,7 +71,10 @@ function injectAdminModal() {
                     <label>Synopsis</label>
                     <textarea id="movieSynopsis" class="premium-input" rows="3"></textarea>
                 </div>
-                <button type="submit" class="submit-btn premium-btn" id="saveBtn">Save Movie</button>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="submit-btn premium-btn" id="saveBtn" style="flex: 2;">Save Movie</button>
+                    <button type="button" class="delete-btn premium-btn" id="deleteBtn" style="flex: 1; margin-top: 20px; background: rgba(255, 7, 58, 0.1); border-color: rgba(255, 7, 58, 0.5); display: none;">Delete</button>
+                </div>
             </form>
         </div>
     </div>
@@ -159,6 +162,10 @@ function injectAdminModal() {
     btns.forEach(b => b.classList.add('premium-btn'));
 
     document.getElementById('addMovieForm').addEventListener('submit', handleMovieSubmit);
+    document.getElementById('deleteBtn').addEventListener('click', () => {
+        const id = document.getElementById('movieId').value;
+        handleDeleteMovie(id);
+    });
 }
 
 function openModal(movieData = null) {
@@ -184,10 +191,12 @@ function openModal(movieData = null) {
         document.getElementById('movieProducer').value = movieData.producer || '';
         document.getElementById('movieTrailer').value = movieData.trailer || '';
         document.getElementById('movieSynopsis').value = movieData.synopsis || '';
+        document.getElementById('deleteBtn').style.display = 'block';
     } else {
         document.getElementById('modalTitle').textContent = 'Add New Movie';
         document.getElementById('saveBtn').textContent = 'Save Movie';
         document.getElementById('movieId').readOnly = false;
+        document.getElementById('deleteBtn').style.display = 'none';
     }
 
     document.getElementById('movieModal').style.display = 'flex';
@@ -230,5 +239,28 @@ async function handleMovieSubmit(e) {
         }
     } catch (err) {
         alert('Connection error.');
+    }
+}
+
+async function handleDeleteMovie(id) {
+    if (!confirm(`Are you sure you want to PERMANENTLY delete movie "${id}"? This cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/movies/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (res.ok) {
+            alert('🗑️ Movie deleted successfully.');
+            closeModal();
+            location.reload();
+        } else {
+            const err = await res.json();
+            alert('Error deleting movie: ' + err.error);
+        }
+    } catch (err) {
+        alert('Connection error while deleting.');
     }
 }
