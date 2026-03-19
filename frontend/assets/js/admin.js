@@ -208,6 +208,12 @@ function closeModal() {
 
 async function handleMovieSubmit(e) {
     e.preventDefault();
+    let trailerInput = document.getElementById('movieTrailer').value;
+    if (trailerInput.includes('<iframe')) {
+        const match = trailerInput.match(/src="([^"]+)"/);
+        if (match) trailerInput = match[1];
+    }
+
     const movieData = {
         id: document.getElementById('movieId').value,
         title: document.getElementById('movieTitle').value,
@@ -218,7 +224,7 @@ async function handleMovieSubmit(e) {
         director: document.getElementById('movieDirector').value,
         music: document.getElementById('movieMusic').value,
         producer: document.getElementById('movieProducer').value,
-        trailer: document.getElementById('movieTrailer').value,
+        trailer: trailerInput,
         synopsis: document.getElementById('movieSynopsis').value
     };
 

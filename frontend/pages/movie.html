@@ -166,6 +166,12 @@
         const movie = movies.find(m => m.id === id) || movies[0];
         if (!movie) { renderNotFound(); return }
 
+        let trailerUrl = movie.trailer || '';
+        if (trailerUrl.includes('<iframe')) {
+          const match = trailerUrl.match(/src="([^"]+)"/);
+          if (match) trailerUrl = match[1];
+        }
+
         document.title = movie.title + ' · MTALK';
 
         const html = `
@@ -186,7 +192,7 @@
             </div>
           </div>
           <div class="trailer-container">
-            <iframe class="trailer-video" src="${movie.trailer}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+            <iframe class="trailer-video" src="${trailerUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
           </div>
         `;
 
