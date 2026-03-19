@@ -144,7 +144,7 @@ async function syncTheatres() {
                 { upsert: true }
             );
         }
-        await theatresCollection.deleteMany({ id: { $nin: ids } });
+        // [REMOVED WIPE] await theatresCollection.deleteMany({ id: { $nin: ids } });
         console.log(`✅ Synced theatres.json → theatres (${data.length} docs)`);
     } catch (err) {
         console.error('❌ Error syncing theatres:', err);
@@ -176,7 +176,7 @@ async function syncBookings() {
             }
         }
         const allBookingIds = Object.values(data).flat();
-        await bookingsCollection.deleteMany({ bookingId: { $nin: allBookingIds } });
+        // [REMOVED WIPE] await bookingsCollection.deleteMany({ bookingId: { $nin: allBookingIds } });
         const totalCount = Object.values(data).reduce((sum, arr) => sum + arr.length, 0);
         console.log(`✅ Synced bookings.json → bookings (${totalCount} docs across ${Object.keys(data).length} movies)`);
     } catch (err) {
@@ -215,7 +215,7 @@ async function syncCategoryCollections() {
                     { upsert: true }
                 );
             }
-            await coll.deleteMany({ id: { $nin: ids } });
+            // [REMOVED WIPE] await coll.deleteMany({ id: { $nin: ids } });
         }
         console.log(`✅ Synced movies.json → ${CATEGORY_NAMES.join(', ')} (${allMovies.length} total movies)`);
     } catch (err) {
