@@ -38,7 +38,7 @@ app.use(cors({
     credentials: true
 }));
 
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
 
 // Import Auth Routes
@@ -297,11 +297,46 @@ app.post('/api/movies', authMiddleware, async (req, res) => {
         }
         writeLocalJSON('movies.json', movies);
 
+        // Auto-push the JSON change
+        const { exec } = require('child_process');
+        exec(`git add backend/data/movies.json && git commit -m "auto(db): update movies.json with ${title}" && git push origin main`, { cwd: PROJECT_ROOT }, (err, stdout, stderr) => {
+            if (err) console.error('Git push movies.json failed:', stderr);
+            else console.log('Successfully auto-pushed movies.json to cloud');
+        });
+
         console.log(`🎬 Movie added/updated: ${title} (${category}) by admin`);
         res.status(201).json({ success: true, movie: movieData });
     } catch (err) {
         console.error('Error adding movie:', err);
         res.status(500).json({ error: 'Server error adding movie' });
+    }
+});
+
+app.post('/api/upload-image', authMiddleware, async (req, res) => {
+    try {
+        if (req.user.email !== 'ramaiah5496@gmail.com') {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+        
+        const { filename, base64 } = req.body;
+        if (!filename || !base64) return res.status(400).json({ error: 'Missing data' });
+        
+        const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
+        const cleanFilename = filename.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+        const filepath = path.join(STATIC_ROOT, 'assets', 'images', cleanFilename);
+        
+        fs.writeFileSync(filepath, Buffer.from(base64Data, 'base64'));
+        
+        const { exec } = require('child_process');
+        exec(`git add "frontend/assets/images/${cleanFilename}" && git commit -m "auto(assets): push uploaded image ${cleanFilename}" && git push origin main`, { cwd: PROJECT_ROOT }, (err, stdout, stderr) => {
+            if (err) console.error('Git push image failed:', stderr);
+            else console.log('Successfully pushed image:', cleanFilename);
+        });
+        
+        res.json({ success: true, url: cleanFilename });
+    } catch (err) {
+        console.error('Upload Error:', err);
+        res.status(500).json({ error: 'Server error during upload' });
     }
 });
 

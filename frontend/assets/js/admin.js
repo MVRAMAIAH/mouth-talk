@@ -37,6 +37,8 @@ function injectAdminModal() {
                 </div>
                 <div class="form-group">
                     <label>Poster Filename (e.g. hits4k.jpg)</label>
+                    <div id="uploadStatus" style="color: #FF073A; font-size: 12px; margin-top: 5px; display: none;">Uploading...</div>
+                    <img id="posterPreview" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none; border: 1px solid #FF073A; border-radius: 8px;" alt="Poster Preview">
                     <input type="text" id="moviePoster" class="premium-input" required>
                 </div>
                 <div style="display: flex; gap: 15px;">
@@ -166,6 +168,17 @@ function injectAdminModal() {
         const id = document.getElementById('movieId').value;
         handleDeleteMovie(id);
     });
+
+    document.getElementById('moviePosterFile').addEventListener('change', handlePosterUpload);
+    document.getElementById('moviePoster').addEventListener('input', (e) => {
+        const preview = document.getElementById('posterPreview');
+        if (e.target.value) {
+            preview.src = e.target.value;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    });
 }
 
 function openModal(movieData = null) {
@@ -175,6 +188,16 @@ function openModal(movieData = null) {
     }
 
     document.getElementById('addMovieForm').reset();
+    const uploadStatus = document.getElementById('uploadStatus');
+    if (uploadStatus) {
+        uploadStatus.style.display = 'none';
+        uploadStatus.style.color = '#FF073A';
+    }
+    const preview = document.getElementById('posterPreview');
+    if (preview) {
+        preview.style.display = 'none';
+        preview.src = '';
+    }
 
     if (movieData) {
         document.getElementById('modalTitle').textContent = 'Edit Movie';
@@ -184,6 +207,13 @@ function openModal(movieData = null) {
         document.getElementById('movieTitle').value = movieData.title || '';
         document.getElementById('movieCategory').value = movieData.category || 'tollywood';
         document.getElementById('moviePoster').value = movieData.poster || '';
+        if (movieData.poster) {
+            const tempPreview = document.getElementById('posterPreview');
+            if (tempPreview) {
+                tempPreview.src = movieData.poster;
+                tempPreview.style.display = 'block';
+            }
+        }
         document.getElementById('movieActor').value = movieData.actor || '';
         document.getElementById('movieActress').value = movieData.actress || '';
         document.getElementById('movieDirector').value = movieData.director || '';
@@ -246,6 +276,59 @@ async function handleMovieSubmit(e) {
     } catch (err) {
         alert('Connection error.');
     }
+}
+
+async function handlePosterUpload(e) {
+    const file = e.target.files[0];
+    if (!file) {
+        const preview = document.getElementById('posterPreview');
+        if (preview) preview.style.display = 'none';
+        return;
+    }
+
+    const uploadStatus = document.getElementById('uploadStatus');
+    const posterInput = document.getElementById('moviePoster');
+    const preview = document.getElementById('posterPreview');
+    const saveBtn = document.getElementById('saveBtn');
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+        const base64 = event.target.result;
+        
+        if (preview) {
+            preview.src = base64;
+            preview.style.display = 'block';
+        }
+
+        try {
+            saveBtn.disabled = true;
+            uploadStatus.style.display = 'block';
+            uploadStatus.style.color = '#FF073A';
+            uploadStatus.textContent = 'Uploading and pushing to cloud... Please wait.';
+
+            const res = await fetch('/api/upload-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: file.name, base64 })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                posterInput.value = data.url;
+                uploadStatus.textContent = 'Upload and auto-push completely successful!';
+                uploadStatus.style.color = '#4caf50';
+            } else {
+                throw new Error(data.error || 'Server error');
+            }
+        } catch (err) {
+            console.error('Upload Error:', err);
+            uploadStatus.textContent = err.message || 'Image upload failed. Try pasting a URL instead.';
+            uploadStatus.style.color = '#FF073A';
+        } finally {
+            saveBtn.disabled = false;
+        }
+    };
+    reader.readAsDataURL(file);
 }
 
 async function handleDeleteMovie(id) {
