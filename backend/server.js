@@ -550,10 +550,18 @@ const PORT = process.env.PORT || 3000;
 // Start server
 initDb().then(async () => {
     if (hasDbCollections()) {
-        // We no longer auto-sync JSON to DB on startup to prevent old files from overwriting live Atlas deletions.
-        // await syncCategoryCollections();
-        // await syncTheatres();
-        // await syncBookings();
+        // INSTEAD of uploading old JSON to Atlas, download the TRUE data from Atlas and update the local JSON file!
+        try {
+            const results = [];
+            for (const cat of CATEGORY_NAMES) {
+                const docs = await categoryCollections[cat].find({}).toArray();
+                results.push(...docs);
+            }
+            writeLocalJSON('movies.json', results);
+            console.log('✅ Overwrote local movies.json with live data from MongoDB Atlas');
+        } catch (err) {
+            console.error('Error updating local movies.json from Atlas:', err);
+        }
     }
     app.listen(PORT, () => {
         console.log(`\n🚀 Server running on http://localhost:${PORT}`);
