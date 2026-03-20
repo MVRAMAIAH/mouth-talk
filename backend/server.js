@@ -169,7 +169,7 @@ async function syncBookings() {
                 const key = `${movieId}:${bookingId}`;
                 allKeys.push(key);
                 await bookingsCollection.updateOne(
-                    { movieId, bookingId },
+                    { bookingId },
                     { $set: { movieId, bookingId, updatedAt: now }, $setOnInsert: { createdAt: now, used: false } },
                     { upsert: true }
                 );
@@ -359,6 +359,13 @@ app.delete('/api/movies/:id', authMiddleware, async (req, res) => {
         const movies = loadLocalJSON('movies.json');
         const updatedMovies = movies.filter(m => m.id !== id);
         writeLocalJSON('movies.json', updatedMovies);
+
+        // Auto-push the JSON change so the deletion persists across deployments
+        const { exec } = require('child_process');
+        exec(`git add backend/data/movies.json && git commit -m "auto(db): delete movie ${id}" && git push origin main`, { cwd: PROJECT_ROOT }, (err, stdout, stderr) => {
+            if (err) console.error('Git push movies.json deletion failed:', stderr);
+            else console.log(`Successfully auto-pushed movies.json deletion for movie: ${id}`);
+        });
 
         console.log(`🗑️ Movie deleted: ${id} by admin`);
         res.json({ success: true, message: 'Movie deleted permanently' });
