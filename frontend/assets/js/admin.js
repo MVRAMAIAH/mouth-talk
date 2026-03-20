@@ -36,8 +36,14 @@ function injectAdminModal() {
                     <input type="text" id="movieTitle" class="premium-input" placeholder="e.g. Hit: The Third Case" required>
                 </div>
                 <div class="form-group">
-                    <label>Poster Filename (e.g. hits4k.jpg)</label>
-                    <input type="text" id="moviePoster" class="premium-input" required>
+                    <label>Poster (Upload File OR Paste URL)</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="file" id="moviePosterFile" accept="image/*" class="premium-input" style="flex: 1; padding: 8px;">
+                        <span style="color: #aaa; font-size: 12px;">OR</span>
+                        <input type="text" id="moviePoster" class="premium-input" placeholder="Paste image URL" style="flex: 1;">
+                    </div>
+                    <div id="uploadStatus" style="color: #FF073A; font-size: 12px; margin-top: 5px; display: none;">Uploading...</div>
+                    <img id="posterPreview" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none; border: 1px solid #FF073A; border-radius: 8px;" alt="Poster Preview">
                 </div>
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
@@ -157,6 +163,13 @@ function injectAdminModal() {
     div.innerHTML = modalHTML;
     document.body.appendChild(div);
 
+    // Dynamically load Firebase Storage
+    if (!firebase.apps.length || typeof firebase.storage !== 'function') {
+        const script = document.createElement('script');
+        script.src = "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js";
+        document.head.appendChild(script);
+    }
+
     // Apply premium-btn class to injected buttons
     const btns = div.querySelectorAll('.submit-btn, .edit-overlay');
     btns.forEach(b => b.classList.add('premium-btn'));
@@ -165,6 +178,17 @@ function injectAdminModal() {
     document.getElementById('deleteBtn').addEventListener('click', () => {
         const id = document.getElementById('movieId').value;
         handleDeleteMovie(id);
+    });
+
+    document.getElementById('moviePosterFile').addEventListener('change', handlePosterUpload);
+    document.getElementById('moviePoster').addEventListener('input', (e) => {
+        const preview = document.getElementById('posterPreview');
+        if (e.target.value) {
+            preview.src = e.target.value;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
     });
 }
 
@@ -175,6 +199,16 @@ function openModal(movieData = null) {
     }
 
     document.getElementById('addMovieForm').reset();
+    const uploadStatus = document.getElementById('uploadStatus');
+    if (uploadStatus) {
+        uploadStatus.style.display = 'none';
+        uploadStatus.style.color = '#FF073A';
+    }
+    const preview = document.getElementById('posterPreview');
+    if (preview) {
+        preview.style.display = 'none';
+        preview.src = '';
+    }
 
     if (movieData) {
         document.getElementById('modalTitle').textContent = 'Edit Movie';
@@ -184,6 +218,13 @@ function openModal(movieData = null) {
         document.getElementById('movieTitle').value = movieData.title || '';
         document.getElementById('movieCategory').value = movieData.category || 'tollywood';
         document.getElementById('moviePoster').value = movieData.poster || '';
+        if (movieData.poster) {
+            const tempPreview = document.getElementById('posterPreview');
+            if (tempPreview) {
+                tempPreview.src = movieData.poster;
+                tempPreview.style.display = 'block';
+            }
+        }
         document.getElementById('movieActor').value = movieData.actor || '';
         document.getElementById('movieActress').value = movieData.actress || '';
         document.getElementById('movieDirector').value = movieData.director || '';
@@ -214,11 +255,21 @@ async function handleMovieSubmit(e) {
         if (match) trailerInput = match[1];
     }
 
+    let posterInput = document.getElementById('moviePoster').value.trim();
+    const saveBtn = document.getElementById('saveBtn');
+
+    if (posterInput && !posterInput.startsWith('http') && !posterInput.includes('.')) {
+        posterInput += '.jpg';
+    } else if (!posterInput) {
+        alert('Please select a poster file or paste a URL.');
+        return;
+    }
+
     const movieData = {
         id: document.getElementById('movieId').value,
         title: document.getElementById('movieTitle').value,
         category: document.getElementById('movieCategory').value,
-        poster: document.getElementById('moviePoster').value,
+        poster: posterInput,
         actor: document.getElementById('movieActor').value,
         actress: document.getElementById('movieActress').value,
         director: document.getElementById('movieDirector').value,
@@ -229,6 +280,8 @@ async function handleMovieSubmit(e) {
     };
 
     try {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving Movie...';
         const res = await fetch('/api/movies', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -245,6 +298,60 @@ async function handleMovieSubmit(e) {
         }
     } catch (err) {
         alert('Connection error.');
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = document.getElementById('modalTitle').textContent.includes('Edit') ? 'Update Movie' : 'Save Movie';
+    }
+}
+
+async function handlePosterUpload(e) {
+    const file = e.target.files[0];
+    if (!file) {
+        const preview = document.getElementById('posterPreview');
+        if (preview) preview.style.display = 'none';
+        return;
+    }
+
+    const uploadStatus = document.getElementById('uploadStatus');
+    const posterInput = document.getElementById('moviePoster');
+    const preview = document.getElementById('posterPreview');
+    const saveBtn = document.getElementById('saveBtn');
+
+    // Show local preview instantly
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        if (preview) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+    };
+    reader.readAsDataURL(file);
+
+    try {
+        saveBtn.disabled = true;
+        uploadStatus.style.display = 'block';
+        uploadStatus.style.color = '#FF073A';
+        uploadStatus.textContent = 'Uploading image to cloud... Please wait.';
+
+        if (!firebase.apps.length || typeof firebase.storage !== 'function') {
+            throw new Error('Cloud storage not ready yet. Please try again.');
+        }
+
+        const storageRef = firebase.storage().ref();
+        const fileRef = storageRef.child('posters/' + Date.now() + '_' + file.name);
+        await fileRef.put(file);
+        const downloadURL = await fileRef.getDownloadURL();
+        
+        posterInput.value = downloadURL;
+        
+        uploadStatus.textContent = 'Upload successful!';
+        uploadStatus.style.color = '#4caf50';
+    } catch (err) {
+        console.error('Upload Error:', err);
+        uploadStatus.textContent = err.message || 'Image upload failed. Try pasting a URL instead.';
+        uploadStatus.style.color = '#FF073A';
+    } finally {
+        saveBtn.disabled = false;
     }
 }
 
