@@ -36,10 +36,14 @@ function injectAdminModal() {
                     <input type="text" id="movieTitle" class="premium-input" placeholder="e.g. Hit: The Third Case" required>
                 </div>
                 <div class="form-group">
-                    <label>Poster Filename (e.g. hits4k.jpg)</label>
+                    <label>Poster (Upload File OR Paste URL)</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="file" id="moviePosterFile" accept="image/*" class="premium-input" style="flex: 1; padding: 8px;">
+                        <span style="color: #aaa; font-size: 12px;">OR</span>
+                        <input type="text" id="moviePoster" class="premium-input" placeholder="Paste image URL" style="flex: 1;">
+                    </div>
                     <div id="uploadStatus" style="color: #FF073A; font-size: 12px; margin-top: 5px; display: none;">Uploading...</div>
                     <img id="posterPreview" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none; border: 1px solid #FF073A; border-radius: 8px;" alt="Poster Preview">
-                    <input type="text" id="moviePoster" class="premium-input" required>
                 </div>
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
