@@ -550,9 +550,10 @@ const PORT = process.env.PORT || 3000;
 // Start server
 initDb().then(async () => {
     if (hasDbCollections()) {
-        await syncCategoryCollections();
-        await syncTheatres();
-        await syncBookings();
+        // We no longer auto-sync JSON to DB on startup to prevent old files from overwriting live Atlas deletions.
+        // await syncCategoryCollections();
+        // await syncTheatres();
+        // await syncBookings();
     }
     app.listen(PORT, () => {
         console.log(`\n🚀 Server running on http://localhost:${PORT}`);
