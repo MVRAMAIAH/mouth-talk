@@ -297,11 +297,41 @@ app.post('/api/movies', authMiddleware, async (req, res) => {
         }
         writeLocalJSON('movies.json', movies);
 
+        // --- NEW: Generate 10-character Booking IDs ---
+        // Generate 15 random 10-character alphanumeric IDs (uppercase)
+        const newBookingIds = Array.from({ length: 15 }, () => 
+            (Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2))
+            .toUpperCase().replace(/[^A-Z0-9]/g, '').padEnd(10, 'X').substring(0, 10)
+        );
+
+        // Save to local bookings.json
+        const localBookings = loadLocalJSON('bookings.json');
+        if (!localBookings[id]) {
+            localBookings[id] = newBookingIds;
+        } else {
+            // Append if movie exists
+            localBookings[id] = [...new Set([...localBookings[id], ...newBookingIds])].slice(0, 50); // limit to a reasonable amount
+        }
+        writeLocalJSON('bookings.json', localBookings);
+
+        // Save to MongoDB bookingsCollection
+        if (hasDbCollections() && bookingsCollection) {
+            const now = new Date();
+            for (const bId of newBookingIds) {
+                await bookingsCollection.updateOne(
+                    { bookingId: bId },
+                    { $set: { movieId: id, bookingId: bId, updatedAt: now }, $setOnInsert: { createdAt: now, used: false } },
+                    { upsert: true }
+                );
+            }
+        }
+        // ----------------------------------------------
+
         // Auto-push the JSON change
         const { exec } = require('child_process');
-        exec(`git add backend/data/movies.json && git commit -m "auto(db): update movies.json with ${title}" && git push origin main`, { cwd: PROJECT_ROOT }, (err, stdout, stderr) => {
-            if (err) console.error('Git push movies.json failed:', stderr);
-            else console.log('Successfully auto-pushed movies.json to cloud');
+        exec(`git add backend/data/movies.json backend/data/bookings.json && git commit -m "auto(db): update movies and bookings with ${title}" && git push origin main`, { cwd: PROJECT_ROOT }, (err, stdout, stderr) => {
+            if (err) console.error('Git push failed:', stderr);
+            else console.log('Successfully auto-pushed to cloud');
         });
 
         console.log(`🎬 Movie added/updated: ${title} (${category}) by admin`);

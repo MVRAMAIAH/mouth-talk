@@ -1,5 +1,5 @@
 {
-    "hit3": [
+    "mt": [
         "AB12CD34EF",
         "GH56IJ78KL",
         "MN90OP12QR",
@@ -9,7 +9,7 @@
         "KL56MN78OP",
         "QR90ST12UV"
     ],
-    "retr": [
+    "duran": [
         "WX34YZ56AB",
         "CD78EF90GH",
         "TK11RV29XP",
@@ -18,46 +18,6 @@
         "HX19KD52YG",
         "DW73PA38RT",
         "LP96NE14BK"
-    ],
-    "bhram": [
-        "QM28SH61JC",
-        "RA47TE85FN",
-        "UJ63WB09XQ",
-        "YH52LD37MK",
-        "VK84NP16AE",
-        "CX39GR72WS",
-        "ZT61HF28BJ",
-        "MQ13KW94DL"
-    ],
-    "ntr30": [
-        "PE57VA43NR",
-        "XB82JF16GT",
-        "NK35RC69HW",
-        "SG48UE31QZ",
-        "WD71LA57FP",
-        "AJ24MH83VC",
-        "ET96PB45XK",
-        "IG19SD72NJ"
-    ],
-    "indushit": [
-        "RH53WK08BT",
-        "FL82NQ37PA",
-        "KP41HG65DC",
-        "WR73SA18JF",
-        "NL29QE84TB",
-        "XG56VJ42MH",
-        "DJ81FK37NP",
-        "BT14WC69RA"
-    ],
-    "pk04": [
-        "GN48XH25LE",
-        "SP72UA91FK",
-        "HQ35YD63JB",
-        "LA87MC52WT",
-        "VE19NR46GP",
-        "RK53FT28HN",
-        "UC74GA91XB",
-        "JR17PD35WK"
     ],
     "kan01": [
         "FS82LE49NH",
@@ -139,14 +99,55 @@
         "SN62HD15GW",
         "QA39ME71JP"
     ],
-    "mag": [
-        "VR84TK46FX",
-        "GN57LA28QD",
-        "JH93WE14BK",
-        "DP26XK69HA",
-        "FK81NR53TW",
-        "LQ47SG85NE",
-        "NX92WJ34RP",
-        "TM56BH71KA"
+    "USB": [
+        "DZZV9RHHDR",
+        "OXPPDJT5FR",
+        "UTRGJTBPHH",
+        "SX0YTLFJKN",
+        "N2E5ETIZBK",
+        "Q53EZRCW7C",
+        "M10M1B0UES",
+        "WB9QLEYYIT",
+        "CBMW6CKTSK",
+        "NWVG7TZWTC",
+        "THOQPXO6QI",
+        "2ZBBBOE5UV",
+        "0790JVEAOH",
+        "60R6WHKRMB",
+        "GEMQ81N43N"
+    ],
+    "retr": [
+        "X5STF4ZRM8",
+        "NKT9J01MDG",
+        "9N2WU553F8",
+        "YXMGEA7NVE",
+        "0TB0WJ3FQT",
+        "MJ7Y827HFB",
+        "ICZ7IJF3E2",
+        "NEV74AVLVI",
+        "SKBUWWXG9X",
+        "J5MLCXLMXG",
+        "2YMG1HL99K",
+        "LKZ8B1TADH",
+        "7687WG7KB3",
+        "EX9WCU60PU",
+        "0ZBQCDRMJ2"
+    ],
+    "duranh": [
+        "9GXQ9D2MPW",
+        "Z200YMV9XA",
+        "8YUUXUHK93",
+        "JWYL5EMUI8",
+        "VDVG0HN3MU",
+        "KX0M69ZBIR",
+        "WX61EURMJJ",
+        "JTJ5PZ5H12",
+        "OCI11MF6EI",
+        "DX339T1EFX",
+        "HVKCH5OEZC",
+        "E46NHER9VC",
+        "T2MP0961PD",
+        "03J5GVVZZH",
+        "QBVWOE5NEX"
     ]
 }
