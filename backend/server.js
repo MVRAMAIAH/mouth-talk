@@ -298,8 +298,8 @@ app.post('/api/movies', authMiddleware, async (req, res) => {
         writeLocalJSON('movies.json', movies);
 
         // --- NEW: Generate 10-character Booking IDs ---
-        // Generate 15 random 10-character alphanumeric IDs (uppercase)
-        const newBookingIds = Array.from({ length: 15 }, () => 
+        // Generate 10 random 10-character alphanumeric IDs (uppercase)
+        const newBookingIds = Array.from({ length: 10 }, () => 
             (Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2))
             .toUpperCase().replace(/[^A-Z0-9]/g, '').padEnd(10, 'X').substring(0, 10)
         );
