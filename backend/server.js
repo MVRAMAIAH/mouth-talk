@@ -59,6 +59,7 @@ let reviewsCollection = null;
 let theatresCollection = null;
 let usersCollection = null;
 let commentsCollection = null;
+let reactionsCollection = null;
 
 // Per-category movie collections
 const CATEGORY_NAMES = ['tollywood', 'kollywood', 'sandalwood', 'mollywood', 'bollywood', 'hollywood', 'webseries'];
@@ -111,6 +112,7 @@ async function initDb() {
         theatresCollection = db.collection('theatres');
         usersCollection = db.collection('users');
         commentsCollection = db.collection('comments');
+        reactionsCollection = db.collection('reactions');
 
         app.set('db', db);
 
@@ -514,40 +516,70 @@ app.post('/api/reviews', async (req, res) => {
     }
 });
 
-app.post('/api/reviews/:id/react', async (req, res) => {
+app.post('/api/reviews/:id/react', authMiddleware, async (req, res) => {
     try {
         const reviewId = req.params.id;
         const { type } = req.body;
+        const uid = req.user.uid;
+
         if (!['like', 'dislike'].includes(type)) {
             return res.status(400).json({ error: 'Type must be like or dislike' });
         }
-        const field = type === 'like' ? 'likes' : 'dislikes';
 
-        if (reviewsCollection) {
-            let result = await reviewsCollection.findOneAndUpdate(
-                { _id: reviewId },
-                { $inc: { [field]: 1 } },
-                { returnDocument: 'after' }
-            );
-            if (!result) {
-                try {
-                    result = await reviewsCollection.findOneAndUpdate(
-                        { _id: new ObjectId(reviewId) },
-                        { $inc: { [field]: 1 } },
-                        { returnDocument: 'after' }
-                    );
-                } catch (e) { /* not a valid ObjectId, ignore */ }
+        const isLike = type === 'like';
+        const otherType = isLike ? 'dislike' : 'like';
+        const field = isLike ? 'likes' : 'dislikes';
+        const otherField = isLike ? 'dislikes' : 'likes';
+
+        if (reviewsCollection && reactionsCollection) {
+            // 1. Check existing reaction
+            const existing = await reactionsCollection.findOne({ reviewId, uid });
+
+            if (!existing) {
+                // New reaction
+                await reactionsCollection.insertOne({ reviewId, uid, type, createdAt: new Date() });
+                await reviewsCollection.updateOne({ _id: reviewId }, { $inc: { [field]: 1 } });
+            } else if (existing.type === type) {
+                // Toggle off
+                await reactionsCollection.deleteOne({ _id: existing._id });
+                await reviewsCollection.updateOne({ _id: reviewId }, { $inc: { [field]: -1 } });
+            } else {
+                // Switch reaction (Like -> Dislike or vice versa)
+                await reactionsCollection.updateOne({ _id: existing._id }, { $set: { type, updatedAt: new Date() } });
+                await reviewsCollection.updateOne({ _id: reviewId }, { $inc: { [field]: 1, [otherField]: -1 } });
             }
-            if (!result) return res.status(404).json({ error: 'Review not found' });
-            return res.json({ likes: result.likes || 0, dislikes: result.dislikes || 0 });
+
+            const updated = await reviewsCollection.findOne({ _id: reviewId });
+            return res.json({ likes: updated.likes || 0, dislikes: updated.dislikes || 0, userReaction: existing && existing.type === type ? null : type });
         }
 
+        // Local Fallback
         const reviews = loadLocalJSON('reviews.json');
+        const reactions = loadLocalJSON('reactions.json');
         const review = reviews.find(r => r._id === reviewId);
         if (!review) return res.status(404).json({ error: 'Review not found' });
-        review[field] = (review[field] || 0) + 1;
+
+        const reactIdx = reactions.findIndex(r => r.reviewId === reviewId && r.uid === uid);
+        let userReaction = type;
+
+        if (reactIdx === -1) {
+            reactions.push({ reviewId, uid, type, createdAt: new Date() });
+            review[field] = (review[field] || 0) + 1;
+        } else if (reactions[reactIdx].type === type) {
+            reactions.splice(reactIdx, 1);
+            review[field] = Math.max(0, (review[field] || 0) - 1);
+            userReaction = null;
+        } else {
+            const oldType = reactions[reactIdx].type;
+            const oldField = oldType === 'like' ? 'likes' : 'dislikes';
+            reactions[reactIdx].type = type;
+            review[field] = (review[field] || 0) + 1;
+            review[oldField] = Math.max(0, (review[oldField] || 0) - 1);
+        }
+
         writeLocalJSON('reviews.json', reviews);
-        res.json({ likes: review.likes || 0, dislikes: review.dislikes || 0 });
+        writeLocalJSON('reactions.json', reactions);
+        res.json({ likes: review.likes || 0, dislikes: review.dislikes || 0, userReaction });
     } catch (err) {
         console.error('React error:', err);
         res.status(500).json({ error: 'Server error' });
@@ -571,7 +603,7 @@ app.get('/api/reviews/:id/comments', async (req, res) => {
 app.post('/api/reviews/:id/comments', authMiddleware, async (req, res) => {
     try {
         const reviewId = req.params.id;
-        const { text } = req.body;
+        const { text, parentId } = req.body;
         if (!text || !text.trim()) {
             return res.status(400).json({ error: 'Comment text is required' });
         }
@@ -579,6 +611,7 @@ app.post('/api/reviews/:id/comments', authMiddleware, async (req, res) => {
         const comment = {
             _id: generateId(),
             reviewId,
+            parentId: parentId || null,
             userId: req.user._id,
             userName: req.user.fullName,
             userBadge: req.user.badge || null,

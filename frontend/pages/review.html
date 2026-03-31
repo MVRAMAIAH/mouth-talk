@@ -320,6 +320,37 @@
       border-radius: 8px;
     }
 
+    .comment-reply {
+      margin-left: 30px;
+      border-left: 2px solid rgba(255, 7, 58, 0.2);
+      padding-left: 15px;
+      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .reply-btn {
+      font-size: 0.6rem;
+      color: #888;
+      cursor: pointer;
+      margin-left: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .reply-btn:hover {
+      color: #FF073A;
+    }
+
+    .reply-form {
+      margin-top: 10px;
+      display: none;
+      gap: 8px;
+    }
+
+    .reply-form.active {
+      display: flex;
+    }
+
     .comment-user {
       font-size: 0.65rem;
       color: #FF073A;
@@ -790,26 +821,67 @@
 
     // ─── REACTIONS ───
     async function react(reviewId, type, btn) {
+      if (!isLoggedIn) {
+        showLoginToast();
+        return;
+      }
+
+      const card = btn.closest('.review-card');
+      const btns = card.querySelectorAll('.react-btn');
+      const likeBtn = btns[0];
+      const dislikeBtn = btns[1];
+      const likeSpan = likeBtn.querySelector('span');
+      const dislikeSpan = dislikeBtn.querySelector('span');
+
+      let currentLikes = parseInt(likeSpan.textContent);
+      let currentDislikes = parseInt(dislikeSpan.textContent);
+
+      const isLike = type === 'like';
+      const otherBtn = isLike ? dislikeBtn : likeBtn;
+
+      // Optimistic UI update
+      const alreadyHas = btn.classList.contains('active');
+      const otherHas = otherBtn.classList.contains('active');
+
+      if (alreadyHas) {
+        // Toggle off
+        btn.classList.remove('active');
+        if (isLike) currentLikes--; else currentDislikes--;
+      } else {
+        // Toggle on
+        btn.classList.add('active');
+        if (isLike) currentLikes++; else currentDislikes++;
+
+        // Remove other if active (mutual exclusive)
+        if (otherHas) {
+          otherBtn.classList.remove('active');
+          if (isLike) currentDislikes--; else currentLikes--;
+        }
+      }
+
+      likeSpan.textContent = currentLikes;
+      dislikeSpan.textContent = currentDislikes;
+
       try {
         const res = await fetch(`/api/reviews/${reviewId}/react`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type })
         });
-        if (!res.ok) return;
+        if (!res.ok) throw new Error('React failed');
         const updated = await res.json();
 
-        // Update counts in-place
-        const card = btn.closest('.review-card');
-        const btns = card.querySelectorAll('.react-btn');
-        btns[0].querySelector('span').textContent = updated.likes || 0;
-        btns[1].querySelector('span').textContent = updated.dislikes || 0;
+        // Sync with server result
+        likeSpan.textContent = updated.likes || 0;
+        dislikeSpan.textContent = updated.dislikes || 0;
 
-        // Visual feedback
-        btn.classList.add(type === 'like' ? 'liked' : 'disliked');
-        setTimeout(() => btn.classList.remove('liked', 'disliked'), 1200);
+        btns.forEach(b => b.classList.remove('active'));
+        if (updated.userReaction === 'like') likeBtn.classList.add('active');
+        if (updated.userReaction === 'dislike') dislikeBtn.classList.add('active');
+
       } catch (err) {
         console.error('React error:', err);
+        // Rollback on error? Simplified for now.
       }
     }
 
@@ -981,52 +1053,93 @@
         if (comments.length === 0) {
           list.innerHTML = '<p style="font-size:0.7rem;color:#555;text-align:center">No comments yet. Say something!</p>';
         } else {
-          list.innerHTML = comments.map(c => `
-            <div class="comment-item">
-              <div class="comment-user">
-                ${c.userBadge && BADGE_MAP[c.userBadge] ? BADGE_MAP[c.userBadge].emoji : ''} ${esc(c.userName)}
+          // Group comments by parentId
+          const baseComments = comments.filter(c => !c.parentId);
+          const replies = comments.filter(c => c.parentId);
+
+          list.innerHTML = baseComments.map(c => {
+            const badge = c.userBadge && BADGE_MAP[c.userBadge] ? BADGE_MAP[c.userBadge] : null;
+            const badgeHtml = badge ? `<span class="review-badge" style="font-size:0.5rem;padding:1px 6px;margin-right:5px">
+              <span class="review-badge-emoji">${badge.emoji}</span> ${badge.name}</span>` : '';
+
+            const commentReplies = replies.filter(r => r.parentId === c._id);
+            const repliesHtml = commentReplies.map(r => {
+              const rBadge = r.userBadge && BADGE_MAP[r.userBadge] ? BADGE_MAP[r.userBadge] : null;
+              const rBadgeHtml = rBadge ? `<span class="review-badge" style="font-size:0.5rem;padding:1px 6px;margin-right:5px">
+                <span class="review-badge-emoji">${rBadge.emoji}</span> ${rBadge.name}</span>` : '';
+              return `
+                <div class="comment-item comment-reply">
+                  <div class="comment-user">${rBadgeHtml} ${esc(r.userName)}</div>
+                  <div class="comment-text">${esc(r.text)}</div>
+                </div>
+              `;
+            }).join('');
+
+            return `
+              <div class="comment-wrapper" id="comment-wrapper-${c._id}">
+                <div class="comment-item">
+                  <div class="comment-user">${badgeHtml} ${esc(c.userName)} 
+                    <span class="reply-btn" onclick="showReplyForm('${reviewId}', '${c._id}')">Reply</span>
+                  </div>
+                  <div class="comment-text">${esc(c.text)}</div>
+                </div>
+                <div id="replies-${c._id}">${repliesHtml}</div>
+                <div class="reply-form" id="reply-form-${c._id}">
+                  <input type="text" class="comment-input" id="reply-input-${c._id}" placeholder="Write a reply..." onkeypress="if(event.key==='Enter') submitComment('${reviewId}', '${c._id}')">
+                  <button class="comment-submit" onclick="submitComment('${reviewId}', '${c._id}')" id="reply-btn-${c._id}">Post</button>
+                </div>
               </div>
-              <div class="comment-text">${esc(c.text)}</div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
         }
       } catch (err) {
         list.innerHTML = '<p style="font-size:0.7rem;color:#f55;text-align:center">Could not load comments.</p>';
       }
     }
 
-    async function submitComment(reviewId) {
-      const input = document.getElementById(`comment-input-${reviewId}`);
-      const btn = document.getElementById(`comment-btn-${reviewId}`);
+    function showReplyForm(reviewId, parentId) {
+      if (!isLoggedIn) { showLoginToast(); return; }
+      const form = document.getElementById(`reply-form-${parentId}`);
+      if (form) form.classList.toggle('active');
+    }
+
+    async function submitComment(reviewId, parentId = null) {
+      const inputId = parentId ? `reply-input-${parentId}` : `comment-input-${reviewId}`;
+      const btnId = parentId ? `reply-btn-${parentId}` : `comment-btn-${reviewId}`;
+      const input = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
       const text = input.value.trim();
 
       if (!text) return;
-      if (!currentUser) {
-        alert('Please log in to comment');
+      if (!isLoggedIn) {
+        showLoginToast();
         return;
       }
 
       btn.disabled = true;
+      const originalText = btn.textContent;
       btn.textContent = '...';
 
       try {
         const res = await fetch(`/api/reviews/${reviewId}/comments`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text })
+          body: JSON.stringify({ text, parentId })
         });
         if (!res.ok) {
           const data = await res.json();
           alert(data.error || 'Failed to post comment');
         } else {
           input.value = '';
+          const form = document.getElementById(`reply-form-${parentId}`);
+          if (form) form.classList.remove('active');
           loadComments(reviewId);
         }
       } catch (err) {
         alert('Network error. Please try again.');
       }
       btn.disabled = false;
-      btn.textContent = 'Post';
+      btn.textContent = originalText;
     }
 
     // ─── HELPERS ───
