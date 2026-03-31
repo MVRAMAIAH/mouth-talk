@@ -93,6 +93,15 @@ function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
 }
 
+function toId(id) {
+    if (!id) return id;
+    if (typeof id !== 'string') return id;
+    if (id.length === 24 && /^[0-9a-fA-F]{24}$/.test(id)) {
+        try { return new ObjectId(id); } catch (e) { return id; }
+    }
+    return id;
+}
+
 // Initialize MongoDB
 async function initDb() {
     if (!MONGODB_URI) return;
@@ -447,15 +456,40 @@ app.get('/api/reviews', async (req, res) => {
         const filter = {};
         if (movieId) filter.movieId = movieId;
         if (badge) filter.userBadge = badge;
-        if (reviewsCollection) {
-            return res.json(await reviewsCollection.find(filter).sort({ likes: -1, createdAt: -1 }).toArray());
+
+        // Try to get UID from token for state sync
+        let uid = null;
+        if (req.cookies.token) {
+            try {
+                const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET || 'fallback-secret-for-dev-only');
+                uid = decoded.uid;
+            } catch (e) { /* ignore */ }
         }
-        let reviews = loadLocalJSON('reviews.json');
-        if (movieId) reviews = reviews.filter(r => r.movieId === movieId);
-        if (badge) reviews = reviews.filter(r => r.userBadge === badge);
-        reviews.sort((a, b) => (b.likes || 0) - (a.likes || 0) || new Date(b.createdAt) - new Date(a.createdAt));
+
+        let reviews = [];
+        if (reviewsCollection) {
+            reviews = await reviewsCollection.find(filter).sort({ likes: -1, createdAt: -1 }).toArray();
+        } else {
+            reviews = loadLocalJSON('reviews.json');
+            if (movieId) reviews = reviews.filter(r => r.movieId === movieId);
+            if (badge) reviews = reviews.filter(r => r.userBadge === badge);
+            reviews.sort((a, b) => (b.likes || 0) - (a.likes || 0) || new Date(b.createdAt) - new Date(a.createdAt));
+        }
+
+        // Attach user reaction if logged in
+        if (uid) {
+            const reactions = reactionsCollection
+                ? await reactionsCollection.find({ uid, reviewId: { $in: reviews.map(r => r._id.toString()) } }).toArray()
+                : loadLocalJSON('reactions.json').filter(r => r.uid === uid);
+
+            const reactMap = {};
+            reactions.forEach(r => reactMap[r.reviewId] = r.type);
+            reviews = reviews.map(r => ({ ...r, userReaction: reactMap[r._id.toString()] || null }));
+        }
+
         res.json(reviews);
     } catch (err) {
+        console.error('Fetch reviews error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -538,15 +572,15 @@ app.post('/api/reviews/:id/react', authMiddleware, async (req, res) => {
             if (!existing) {
                 // New reaction
                 await reactionsCollection.insertOne({ reviewId, uid, type, createdAt: new Date() });
-                await reviewsCollection.updateOne({ _id: reviewId }, { $inc: { [field]: 1 } });
+                await reviewsCollection.updateOne({ _id: toId(reviewId) }, { $inc: { [field]: 1 } });
             } else if (existing.type === type) {
                 // Toggle off
                 await reactionsCollection.deleteOne({ _id: existing._id });
-                await reviewsCollection.updateOne({ _id: reviewId }, { $inc: { [field]: -1 } });
+                await reviewsCollection.updateOne({ _id: toId(reviewId) }, { $inc: { [field]: -1 } });
             } else {
                 // Switch reaction (Like -> Dislike or vice versa)
                 await reactionsCollection.updateOne({ _id: existing._id }, { $set: { type, updatedAt: new Date() } });
-                await reviewsCollection.updateOne({ _id: reviewId }, { $inc: { [field]: 1, [otherField]: -1 } });
+                await reviewsCollection.updateOne({ _id: toId(reviewId) }, { $inc: { [field]: 1, [otherField]: -1 } });
             }
 
             const updated = await reviewsCollection.findOne({ _id: reviewId });

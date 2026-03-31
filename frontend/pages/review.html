@@ -781,6 +781,10 @@
           const badgeHtml = r.userBadge && BADGE_MAP[r.userBadge]
             ? `<span class="review-badge"><span class="review-badge-emoji">${BADGE_MAP[r.userBadge].emoji}</span> ${BADGE_MAP[r.userBadge].name}</span>`
             : '';
+
+          const likeClass = r.userReaction === 'like' ? 'liked' : '';
+          const dislikeClass = r.userReaction === 'dislike' ? 'disliked' : '';
+
           return `
                     <div class="review-card" data-id="${r._id}">
                         <div class="review-header">
@@ -790,10 +794,10 @@
                         <div class="review-user">by ${esc(r.userName)} ${badgeHtml}</div>
                         <div class="review-text">${esc(r.text)}</div>
                         <div class="review-actions">
-                            <button class="react-btn" onclick="react('${r._id}','like', this)">
+                            <button class="react-btn ${likeClass}" onclick="react('${r._id}','like', this)">
                                 👍 <span>${r.likes || 0}</span>
                             </button>
-                            <button class="react-btn" onclick="react('${r._id}','dislike', this)">
+                            <button class="react-btn ${dislikeClass}" onclick="react('${r._id}','dislike', this)">
                                 👎 <span>${r.dislikes || 0}</span>
                             </button>
                             <button class="react-btn mouth-btn" onclick="toggleComments('${r._id}')">
@@ -838,23 +842,25 @@
 
       const isLike = type === 'like';
       const otherBtn = isLike ? dislikeBtn : likeBtn;
+      const selfClass = isLike ? 'liked' : 'disliked';
+      const otherClass = isLike ? 'disliked' : 'liked';
 
       // Optimistic UI update
-      const alreadyHas = btn.classList.contains('active');
-      const otherHas = otherBtn.classList.contains('active');
+      const alreadyHas = btn.classList.contains(selfClass);
+      const otherHas = otherBtn.classList.contains(otherClass);
 
       if (alreadyHas) {
         // Toggle off
-        btn.classList.remove('active');
+        btn.classList.remove(selfClass);
         if (isLike) currentLikes--; else currentDislikes--;
       } else {
         // Toggle on
-        btn.classList.add('active');
+        btn.classList.add(selfClass);
         if (isLike) currentLikes++; else currentDislikes++;
 
         // Remove other if active (mutual exclusive)
         if (otherHas) {
-          otherBtn.classList.remove('active');
+          otherBtn.classList.remove(otherClass);
           if (isLike) currentDislikes--; else currentLikes--;
         }
       }
@@ -875,9 +881,10 @@
         likeSpan.textContent = updated.likes || 0;
         dislikeSpan.textContent = updated.dislikes || 0;
 
-        btns.forEach(b => b.classList.remove('active'));
-        if (updated.userReaction === 'like') likeBtn.classList.add('active');
-        if (updated.userReaction === 'dislike') dislikeBtn.classList.add('active');
+        likeBtn.classList.remove('liked');
+        dislikeBtn.classList.remove('disliked');
+        if (updated.userReaction === 'like') likeBtn.classList.add('liked');
+        if (updated.userReaction === 'dislike') dislikeBtn.classList.add('disliked');
 
       } catch (err) {
         console.error('React error:', err);
