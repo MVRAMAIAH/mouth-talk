@@ -429,8 +429,42 @@
       align-items: center;
     }
 
-    .modal-overlay.active {
+    .custom-toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0, 0, 0, 0.9);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      z-index: 10000;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
       display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .custom-toast.active {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .custom-toast.error {
+      border-left: 4px solid #f44336;
+    }
+
+    .custom-toast.warning {
+      border-left: 4px solid #ff9800;
+    }
+
+    .custom-toast.success {
+      border-left: 4px solid #4caf50;
     }
 
     .modal {
@@ -837,19 +871,22 @@
       const likeSpan = likeBtn.querySelector('span');
       const dislikeSpan = dislikeBtn.querySelector('span');
 
-      let currentLikes = parseInt(likeSpan.textContent);
-      let currentDislikes = parseInt(dislikeSpan.textContent);
-
       const isLike = type === 'like';
       const otherBtn = isLike ? dislikeBtn : likeBtn;
       const selfClass = isLike ? 'liked' : 'disliked';
       const otherClass = isLike ? 'disliked' : 'liked';
 
-      // Optimistic UI update
-      const alreadyHas = btn.classList.contains(selfClass);
-      const otherHas = otherBtn.classList.contains(otherClass);
+      // Store initial state for rollback
+      const initialLikes = parseInt(likeSpan.textContent) || 0;
+      const initialDislikes = parseInt(dislikeSpan.textContent) || 0;
+      const initialSelfActive = btn.classList.contains(selfClass);
+      const initialOtherActive = otherBtn.classList.contains(otherClass);
 
-      if (alreadyHas) {
+      let currentLikes = initialLikes;
+      let currentDislikes = initialDislikes;
+
+      // Optimistic UI update
+      if (initialSelfActive) {
         // Toggle off
         btn.classList.remove(selfClass);
         if (isLike) currentLikes--; else currentDislikes--;
@@ -859,14 +896,14 @@
         if (isLike) currentLikes++; else currentDislikes++;
 
         // Remove other if active (mutual exclusive)
-        if (otherHas) {
+        if (initialOtherActive) {
           otherBtn.classList.remove(otherClass);
           if (isLike) currentDislikes--; else currentLikes--;
         }
       }
 
-      likeSpan.textContent = currentLikes;
-      dislikeSpan.textContent = currentDislikes;
+      likeSpan.textContent = Math.max(0, currentLikes);
+      dislikeSpan.textContent = Math.max(0, currentDislikes);
 
       try {
         const res = await fetch(`/api/reviews/${reviewId}/react`, {
@@ -874,21 +911,28 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type })
         });
-        if (!res.ok) throw new Error('React failed');
+
+        if (!res.ok) throw new Error('Action failed');
+
         const updated = await res.json();
 
-        // Sync with server result
+        // Final sync with server result
         likeSpan.textContent = updated.likes || 0;
         dislikeSpan.textContent = updated.dislikes || 0;
 
-        likeBtn.classList.remove('liked');
-        dislikeBtn.classList.remove('disliked');
-        if (updated.userReaction === 'like') likeBtn.classList.add('liked');
-        if (updated.userReaction === 'dislike') dislikeBtn.classList.add('disliked');
+        likeBtn.classList.toggle('liked', updated.userReaction === 'like');
+        dislikeBtn.classList.toggle('disliked', updated.userReaction === 'dislike');
 
       } catch (err) {
         console.error('React error:', err);
-        // Rollback on error? Simplified for now.
+
+        // Rollback on error
+        likeSpan.textContent = initialLikes;
+        dislikeSpan.textContent = initialDislikes;
+        likeBtn.classList.toggle('liked', initialSelfActive && isLike || initialOtherActive && !isLike);
+        dislikeBtn.classList.toggle('disliked', initialSelfActive && !isLike || initialOtherActive && isLike);
+
+        showToast('System busy. Reaction could not be saved.');
       }
     }
 
