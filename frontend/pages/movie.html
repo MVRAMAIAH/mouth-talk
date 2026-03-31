@@ -176,7 +176,7 @@
 
         const html = `
           <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
-            <img class="poster" src="${movie.poster.startsWith('http') ? movie.poster : '../assets/images/' + movie.poster}" alt="${movie.title} Poster" />
+            <img class="poster" src="${movie.poster.startsWith('http') ? movie.poster : '../assets/images/' + (movie.poster.includes('.') ? movie.poster : movie.poster + '.jpg')}" alt="${movie.title} Poster" />
             <div style="flex:1;min-width:260px">
               <h1 style="font-size:1.8rem;margin-bottom:8px">${movie.title}</h1>
               <p class="synopsis"><span class="highlight">Synopsis:</span> ${movie.synopsis}</p>

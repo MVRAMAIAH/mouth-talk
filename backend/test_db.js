@@ -1,0 +1,1 @@
+const {MongoClient} = require('mongodb'); async function run() { const client = new MongoClient('mongodb://127.0.0.1:27017/'); await client.connect(); const db = client.db('mouthtalk'); const movies = await db.collection('movies').find().toArray(); console.log(movies.filter(m => JSON.stringify(m).toLowerCase().includes('durandh'))); client.close(); } run().catch(console.error);

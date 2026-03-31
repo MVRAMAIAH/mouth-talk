@@ -100,7 +100,8 @@
     .poster {
         width: 100% !important;
         max-width: 280px;
-        height: auto !important;
+        aspect-ratio: 3/5;
+        object-fit: cover;
         margin: 0 auto;
     }
 

@@ -283,6 +283,102 @@
       color: #555;
     }
 
+    /* ─── COMMENTS SECTION ─── */
+    .comments-section {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: none;
+    }
+
+    .comments-section.active {
+      display: block;
+    }
+
+    .comments-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 15px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .comments-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .comments-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 7, 58, 0.3);
+      border-radius: 4px;
+    }
+
+    .comment-item {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 10px 14px;
+      border-radius: 8px;
+    }
+
+    .comment-user {
+      font-size: 0.65rem;
+      color: #FF073A;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .comment-text {
+      font-size: 0.75rem;
+      color: #bbb;
+      line-height: 1.4;
+    }
+
+    .comment-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    .comment-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #fff;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .comment-input:focus {
+      border-color: rgba(255, 7, 58, 0.4);
+    }
+
+    .comment-submit {
+      background: #FF073A;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      padding: 0 15px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .comment-submit:hover {
+      background: #d6002f;
+      transform: scale(1.05);
+    }
+
+    .comment-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .empty-state {
       text-align: center;
       padding: 60px 20px;
@@ -669,7 +765,19 @@
                             <button class="react-btn" onclick="react('${r._id}','dislike', this)">
                                 👎 <span>${r.dislikes || 0}</span>
                             </button>
+                            <button class="react-btn mouth-btn" onclick="toggleComments('${r._id}')">
+                                👄 <span class="comment-count-label">Comments</span>
+                            </button>
                             <span class="review-date">${formatDate(r.createdAt)}</span>
+                        </div>
+                        <div class="comments-section" id="comments-${r._id}">
+                            <div class="comments-list" id="comments-list-${r._id}">
+                                <p style="font-size:0.7rem;color:#555;text-align:center">Loading comments...</p>
+                            </div>
+                            <div class="comment-form">
+                                <input type="text" class="comment-input" id="comment-input-${r._id}" placeholder="Write a comment..." onkeypress="if(event.key==='Enter') submitComment('${r._id}')">
+                                <button class="comment-submit" onclick="submitComment('${r._id}')" id="comment-btn-${r._id}">Post</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -851,6 +959,75 @@
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') closeModals();
     });
+
+    // ─── COMMENTS ───
+    async function toggleComments(reviewId) {
+      const section = document.getElementById(`comments-${reviewId}`);
+      if (!section) return;
+      section.classList.toggle('active');
+      if (section.classList.contains('active')) {
+        loadComments(reviewId);
+      }
+    }
+
+    async function loadComments(reviewId) {
+      const list = document.getElementById(`comments-list-${reviewId}`);
+      if (!list) return;
+      try {
+        const res = await fetch(`/api/reviews/${reviewId}/comments`);
+        if (!res.ok) throw new Error('Fetch failed');
+        const comments = await res.json();
+
+        if (comments.length === 0) {
+          list.innerHTML = '<p style="font-size:0.7rem;color:#555;text-align:center">No comments yet. Say something!</p>';
+        } else {
+          list.innerHTML = comments.map(c => `
+            <div class="comment-item">
+              <div class="comment-user">
+                ${c.userBadge && BADGE_MAP[c.userBadge] ? BADGE_MAP[c.userBadge].emoji : ''} ${esc(c.userName)}
+              </div>
+              <div class="comment-text">${esc(c.text)}</div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        list.innerHTML = '<p style="font-size:0.7rem;color:#f55;text-align:center">Could not load comments.</p>';
+      }
+    }
+
+    async function submitComment(reviewId) {
+      const input = document.getElementById(`comment-input-${reviewId}`);
+      const btn = document.getElementById(`comment-btn-${reviewId}`);
+      const text = input.value.trim();
+
+      if (!text) return;
+      if (!currentUser) {
+        alert('Please log in to comment');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '...';
+
+      try {
+        const res = await fetch(`/api/reviews/${reviewId}/comments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          alert(data.error || 'Failed to post comment');
+        } else {
+          input.value = '';
+          loadComments(reviewId);
+        }
+      } catch (err) {
+        alert('Network error. Please try again.');
+      }
+      btn.disabled = false;
+      btn.textContent = 'Post';
+    }
 
     // ─── HELPERS ───
     function esc(str) {

@@ -58,6 +58,7 @@ let bookingsCollection = null;
 let reviewsCollection = null;
 let theatresCollection = null;
 let usersCollection = null;
+let commentsCollection = null;
 
 // Per-category movie collections
 const CATEGORY_NAMES = ['tollywood', 'kollywood', 'sandalwood', 'mollywood', 'bollywood', 'hollywood', 'webseries'];
@@ -109,6 +110,7 @@ async function initDb() {
         reviewsCollection = db.collection('reviews');
         theatresCollection = db.collection('theatres');
         usersCollection = db.collection('users');
+        commentsCollection = db.collection('comments');
 
         app.set('db', db);
 
@@ -299,9 +301,9 @@ app.post('/api/movies', authMiddleware, async (req, res) => {
 
         // --- NEW: Generate 10-character Booking IDs ---
         // Generate 10 random 10-character alphanumeric IDs (uppercase)
-        const newBookingIds = Array.from({ length: 10 }, () => 
+        const newBookingIds = Array.from({ length: 10 }, () =>
             (Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2))
-            .toUpperCase().replace(/[^A-Z0-9]/g, '').padEnd(10, 'X').substring(0, 10)
+                .toUpperCase().replace(/[^A-Z0-9]/g, '').padEnd(10, 'X').substring(0, 10)
         );
 
         // Save to local bookings.json
@@ -347,22 +349,22 @@ app.post('/api/upload-image', authMiddleware, async (req, res) => {
         if (req.user.email !== 'ramaiah5496@gmail.com') {
             return res.status(403).json({ error: 'Admin access required' });
         }
-        
+
         const { filename, base64 } = req.body;
         if (!filename || !base64) return res.status(400).json({ error: 'Missing data' });
-        
+
         const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
         const cleanFilename = filename.replace(/[^a-zA-Z0-9.\-_]/g, '_');
         const filepath = path.join(STATIC_ROOT, 'assets', 'images', cleanFilename);
-        
+
         fs.writeFileSync(filepath, Buffer.from(base64Data, 'base64'));
-        
+
         const { exec } = require('child_process');
         exec(`git add "frontend/assets/images/${cleanFilename}" && git commit -m "auto(assets): push uploaded image ${cleanFilename}" && git push origin main`, { cwd: PROJECT_ROOT }, (err, stdout, stderr) => {
             if (err) console.error('Git push image failed:', stderr);
             else console.log('Successfully pushed image:', cleanFilename);
         });
-        
+
         res.json({ success: true, url: cleanFilename });
     } catch (err) {
         console.error('Upload Error:', err);
@@ -548,6 +550,53 @@ app.post('/api/reviews/:id/react', async (req, res) => {
         res.json({ likes: review.likes || 0, dislikes: review.dislikes || 0 });
     } catch (err) {
         console.error('React error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.get('/api/reviews/:id/comments', async (req, res) => {
+    try {
+        const reviewId = req.params.id;
+        if (commentsCollection) {
+            const comments = await commentsCollection.find({ reviewId }).sort({ createdAt: 1 }).toArray();
+            return res.json(comments);
+        }
+        const comments = loadLocalJSON('comments.json');
+        res.json(comments.filter(c => c.reviewId === reviewId).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.post('/api/reviews/:id/comments', authMiddleware, async (req, res) => {
+    try {
+        const reviewId = req.params.id;
+        const { text } = req.body;
+        if (!text || !text.trim()) {
+            return res.status(400).json({ error: 'Comment text is required' });
+        }
+
+        const comment = {
+            _id: generateId(),
+            reviewId,
+            userId: req.user._id,
+            userName: req.user.fullName,
+            userBadge: req.user.badge || null,
+            text: text.trim(),
+            createdAt: new Date()
+        };
+
+        if (commentsCollection) {
+            const result = await commentsCollection.insertOne(comment);
+            comment._id = result.insertedId;
+        } else {
+            const comments = loadLocalJSON('comments.json');
+            comments.push(comment);
+            writeLocalJSON('comments.json', comments);
+        }
+        res.status(201).json(comment);
+    } catch (err) {
+        console.error('Comment error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });

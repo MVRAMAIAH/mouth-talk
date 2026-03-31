@@ -216,7 +216,7 @@
 
           const img = document.createElement('img');
           img.alt = m.title || 'Poster';
-          img.src = m.poster.startsWith('http') ? m.poster : `../assets/images/${m.poster}`;
+          img.src = m.poster.startsWith('http') ? m.poster : `../assets/images/${m.poster.includes('.') ? m.poster : m.poster + '.jpg'}`;
 
           const title = document.createElement('span');
           title.className = 'movie-title';

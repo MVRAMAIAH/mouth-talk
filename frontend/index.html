@@ -382,7 +382,7 @@
                     container.style.display = 'inline-block';
 
                     const img = document.createElement('img');
-                    img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + m.poster;
+                    img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + (m.poster.includes('.') ? m.poster : m.poster + '.jpg');
                     img.alt = m.title;
                     img.className = 'marquee-img';
                     img.onclick = () => location.href = 'pages/movie.html?id=' + m.id;
