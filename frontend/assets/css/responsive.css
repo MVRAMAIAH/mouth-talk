@@ -107,7 +107,8 @@
 
     /* Onboarding */
     .step h2 {
-        font-size: 24px;
+        font-size: 32px;
+        text-shadow: 0 0 20px rgba(255, 7, 58, 0.6);
     }
 
     .onboard-input {
@@ -335,8 +336,9 @@
 
     /* Onboarding */
     .step h2 {
-        font-size: 20px;
-        margin-bottom: 20px;
+        font-size: 28px;
+        margin-bottom: 25px;
+        text-shadow: 0 0 15px rgba(255, 7, 58, 0.6);
     }
 
     .btn-next {
