@@ -354,20 +354,34 @@
     }
 
     .comment-user {
-      font-size: 0.65rem;
-      color: #FF073A;
-      margin-bottom: 6px;
+      font-size: 0.7rem;
+      color: #888;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       gap: 8px;
-      font-weight: bold;
+    }
+
+    .comment-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 6px;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 7, 58, 0.08));
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 12px;
+      font-size: 0.5rem;
+      color: rgba(255, 215, 0, 0.9);
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
 
     .comment-text {
-      font-size: 0.75rem;
-      color: #bbb;
-      line-height: 1.4;
-      margin-bottom: 8px;
+      font-size: 0.8rem;
+      color: #ccc;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      font-family: Arial, sans-serif;
     }
 
     .comment-actions {
@@ -378,28 +392,36 @@
     }
 
     .comment-react-btn {
-      background: transparent;
-      border: none;
-      color: #666;
-      font-size: 0.65rem;
-      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 4px;
-      transition: color 0.2s;
-      padding: 2px 0;
+      padding: 4px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      background: transparent;
+      color: #777;
+      font-size: 0.65rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Orbitron', sans-serif;
     }
 
     .comment-react-btn:hover {
-      color: #FF073A;
+      border-color: #FF073A;
+      color: #fff;
+      background: rgba(255, 7, 58, 0.1);
     }
 
     .comment-react-btn.liked {
+      border-color: #4caf50;
       color: #4caf50;
+      background: rgba(76, 175, 80, 0.05);
     }
 
     .comment-react-btn.disliked {
+      border-color: #f44336;
       color: #f44336;
+      background: rgba(244, 67, 54, 0.05);
     }
 
     .comment-form {
@@ -1150,7 +1172,7 @@
 
           list.innerHTML = baseComments.map(c => {
             const badge = c.userBadge && BADGE_MAP[c.userBadge] ? BADGE_MAP[c.userBadge] : null;
-            const badgeHtml = badge ? `<span class="review-badge" style="font-size:0.5rem;padding:1px 6px;margin-right:2px">
+            const badgeHtml = badge ? `<span class="comment-badge">
               <span class="review-badge-emoji">${badge.emoji}</span> ${badge.name}</span>` : '';
 
             const likeClass = c.userReaction === 'like' ? 'liked' : '';
@@ -1159,7 +1181,7 @@
             const commentReplies = replies.filter(r => r.parentId === c._id);
             const repliesHtml = commentReplies.map(r => {
               const rBadge = r.userBadge && BADGE_MAP[r.userBadge] ? BADGE_MAP[r.userBadge] : null;
-              const rBadgeHtml = rBadge ? `<span class="review-badge" style="font-size:0.5rem;padding:1px 6px;margin-right:2px">
+              const rBadgeHtml = rBadge ? `<span class="comment-badge">
                 <span class="review-badge-emoji">${rBadge.emoji}</span> ${rBadge.name}</span>` : '';
 
               const rLikeClass = r.userReaction === 'like' ? 'liked' : '';
