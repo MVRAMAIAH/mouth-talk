@@ -5,6 +5,7 @@ const fs = require('fs');
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const app = express();
@@ -60,6 +61,7 @@ let theatresCollection = null;
 let usersCollection = null;
 let commentsCollection = null;
 let reactionsCollection = null;
+let commentReactionsCollection = null;
 
 // Per-category movie collections
 const CATEGORY_NAMES = ['tollywood', 'kollywood', 'sandalwood', 'mollywood', 'bollywood', 'hollywood', 'webseries'];
@@ -122,6 +124,7 @@ async function initDb() {
         usersCollection = db.collection('users');
         commentsCollection = db.collection('comments');
         reactionsCollection = db.collection('reactions');
+        commentReactionsCollection = db.collection('comment_reactions');
 
         app.set('db', db);
 
@@ -623,13 +626,38 @@ app.post('/api/reviews/:id/react', authMiddleware, async (req, res) => {
 app.get('/api/reviews/:id/comments', async (req, res) => {
     try {
         const reviewId = req.params.id;
-        if (commentsCollection) {
-            const comments = await commentsCollection.find({ reviewId }).sort({ createdAt: 1 }).toArray();
-            return res.json(comments);
+
+        // Try to get UID from token for state sync
+        let uid = null;
+        if (req.cookies.token) {
+            try {
+                const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET || 'fallback-secret-for-dev-only');
+                uid = decoded.uid;
+            } catch (e) { /* ignore */ }
         }
-        const comments = loadLocalJSON('comments.json');
-        res.json(comments.filter(c => c.reviewId === reviewId).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
+
+        let comments = [];
+        if (commentsCollection) {
+            comments = await commentsCollection.find({ reviewId }).sort({ createdAt: 1 }).toArray();
+        } else {
+            comments = loadLocalJSON('comments.json');
+            comments = comments.filter(c => c.reviewId === reviewId).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        }
+
+        // Attach user reaction if logged in
+        if (uid) {
+            const reactions = commentReactionsCollection
+                ? await commentReactionsCollection.find({ uid, commentId: { $in: comments.map(c => c._id.toString()) } }).toArray()
+                : loadLocalJSON('comment_reactions.json').filter(r => r.uid === uid);
+
+            const reactMap = {};
+            reactions.forEach(r => reactMap[r.commentId] = r.type);
+            comments = comments.map(c => ({ ...c, userReaction: reactMap[c._id.toString()] || null }));
+        }
+
+        res.json(comments);
     } catch (err) {
+        console.error('Fetch comments error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -650,6 +678,8 @@ app.post('/api/reviews/:id/comments', authMiddleware, async (req, res) => {
             userName: req.user.fullName,
             userBadge: req.user.badge || null,
             text: text.trim(),
+            likes: 0,
+            dislikes: 0,
             createdAt: new Date()
         };
 
@@ -664,6 +694,76 @@ app.post('/api/reviews/:id/comments', authMiddleware, async (req, res) => {
         res.status(201).json(comment);
     } catch (err) {
         console.error('Comment error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.post('/api/comments/:id/react', authMiddleware, async (req, res) => {
+    try {
+        const commentId = req.params.id;
+        const { type } = req.body;
+        const uid = req.user.uid;
+
+        if (!['like', 'dislike'].includes(type)) {
+            return res.status(400).json({ error: 'Type must be like or dislike' });
+        }
+
+        const isLike = type === 'like';
+        const otherType = isLike ? 'dislike' : 'like';
+        const field = isLike ? 'likes' : 'dislikes';
+        const otherField = isLike ? 'dislikes' : 'likes';
+
+        if (commentsCollection && commentReactionsCollection) {
+            // 1. Check existing reaction
+            const existing = await commentReactionsCollection.findOne({ commentId, uid });
+
+            if (!existing) {
+                // New reaction
+                await commentReactionsCollection.insertOne({ commentId, uid, type, createdAt: new Date() });
+                await commentsCollection.updateOne({ _id: toId(commentId) }, { $inc: { [field]: 1 } });
+            } else if (existing.type === type) {
+                // Toggle off
+                await commentReactionsCollection.deleteOne({ _id: existing._id });
+                await commentsCollection.updateOne({ _id: toId(commentId) }, { $inc: { [field]: -1 } });
+            } else {
+                // Switch reaction
+                await commentReactionsCollection.updateOne({ _id: existing._id }, { $set: { type, updatedAt: new Date() } });
+                await commentsCollection.updateOne({ _id: toId(commentId) }, { $inc: { [field]: 1, [otherField]: -1 } });
+            }
+
+            const updated = await commentsCollection.findOne({ _id: toId(commentId) });
+            return res.json({ likes: updated.likes || 0, dislikes: updated.dislikes || 0, userReaction: existing && existing.type === type ? null : type });
+        }
+
+        // Local Fallback
+        const comments = loadLocalJSON('comments.json');
+        const reactions = loadLocalJSON('comment_reactions.json');
+        const comment = comments.find(c => c._id === commentId);
+        if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+        const reactIdx = reactions.findIndex(r => r.commentId === commentId && r.uid === uid);
+        let userReaction = type;
+
+        if (reactIdx === -1) {
+            reactions.push({ commentId, uid, type, createdAt: new Date() });
+            comment[field] = (comment[field] || 0) + 1;
+        } else if (reactions[reactIdx].type === type) {
+            reactions.splice(reactIdx, 1);
+            comment[field] = Math.max(0, (comment[field] || 0) - 1);
+            userReaction = null;
+        } else {
+            const oldType = reactions[reactIdx].type;
+            const oldField = oldType === 'like' ? 'likes' : 'dislikes';
+            reactions[reactIdx].type = type;
+            comment[field] = (comment[field] || 0) + 1;
+            comment[oldField] = Math.max(0, (comment[oldField] || 0) - 1);
+        }
+
+        writeLocalJSON('comments.json', comments);
+        writeLocalJSON('comment_reactions.json', reactions);
+        res.json({ likes: comment.likes || 0, dislikes: comment.dislikes || 0, userReaction });
+    } catch (err) {
+        console.error('Comment react error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });

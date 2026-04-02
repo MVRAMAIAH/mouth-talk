@@ -58,6 +58,7 @@
     .nav-links {
       display: flex;
       gap: 20px;
+      align-items: center;
     }
 
     .nav-links a {
@@ -66,6 +67,7 @@
       font-size: 18px;
       font-weight: 500;
       transition: color 0.3s ease;
+      white-space: nowrap;
     }
 
     .nav-links a:hover {
@@ -354,16 +356,50 @@
     .comment-user {
       font-size: 0.65rem;
       color: #FF073A;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
+      font-weight: bold;
     }
 
     .comment-text {
       font-size: 0.75rem;
       color: #bbb;
       line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .comment-react-btn {
+      background: transparent;
+      border: none;
+      color: #666;
+      font-size: 0.65rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s;
+      padding: 2px 0;
+    }
+
+    .comment-react-btn:hover {
+      color: #FF073A;
+    }
+
+    .comment-react-btn.liked {
+      color: #4caf50;
+    }
+
+    .comment-react-btn.disliked {
+      color: #f44336;
     }
 
     .comment-form {
@@ -1114,29 +1150,52 @@
 
           list.innerHTML = baseComments.map(c => {
             const badge = c.userBadge && BADGE_MAP[c.userBadge] ? BADGE_MAP[c.userBadge] : null;
-            const badgeHtml = badge ? `<span class="review-badge" style="font-size:0.5rem;padding:1px 6px;margin-right:5px">
+            const badgeHtml = badge ? `<span class="review-badge" style="font-size:0.5rem;padding:1px 6px;margin-right:2px">
               <span class="review-badge-emoji">${badge.emoji}</span> ${badge.name}</span>` : '';
+
+            const likeClass = c.userReaction === 'like' ? 'liked' : '';
+            const dislikeClass = c.userReaction === 'dislike' ? 'disliked' : '';
 
             const commentReplies = replies.filter(r => r.parentId === c._id);
             const repliesHtml = commentReplies.map(r => {
               const rBadge = r.userBadge && BADGE_MAP[r.userBadge] ? BADGE_MAP[r.userBadge] : null;
-              const rBadgeHtml = rBadge ? `<span class="review-badge" style="font-size:0.5rem;padding:1px 6px;margin-right:5px">
+              const rBadgeHtml = rBadge ? `<span class="review-badge" style="font-size:0.5rem;padding:1px 6px;margin-right:2px">
                 <span class="review-badge-emoji">${rBadge.emoji}</span> ${rBadge.name}</span>` : '';
+
+              const rLikeClass = r.userReaction === 'like' ? 'liked' : '';
+              const rDislikeClass = r.userReaction === 'dislike' ? 'disliked' : '';
+
               return `
-                <div class="comment-item comment-reply">
+                <div class="comment-item comment-reply" id="comment-${r._id}">
                   <div class="comment-user">${rBadgeHtml} ${esc(r.userName)}</div>
                   <div class="comment-text">${esc(r.text)}</div>
+                  <div class="comment-actions">
+                    <button class="comment-react-btn ${rLikeClass}" onclick="reactToComment('${r._id}','like', this)">
+                      👍 <span>${r.likes || 0}</span>
+                    </button>
+                    <button class="comment-react-btn ${rDislikeClass}" onclick="reactToComment('${r._id}','dislike', this)">
+                      👎 <span>${r.dislikes || 0}</span>
+                    </button>
+                  </div>
                 </div>
               `;
             }).join('');
 
             return `
               <div class="comment-wrapper" id="comment-wrapper-${c._id}">
-                <div class="comment-item">
+                <div class="comment-item" id="comment-${c._id}">
                   <div class="comment-user">${badgeHtml} ${esc(c.userName)} 
                     <span class="reply-btn" onclick="showReplyForm('${reviewId}', '${c._id}')">Reply</span>
                   </div>
                   <div class="comment-text">${esc(c.text)}</div>
+                  <div class="comment-actions">
+                    <button class="comment-react-btn ${likeClass}" onclick="reactToComment('${c._id}','like', this)">
+                      👍 <span>${c.likes || 0}</span>
+                    </button>
+                    <button class="comment-react-btn ${dislikeClass}" onclick="reactToComment('${c._id}','dislike', this)">
+                      👎 <span>${c.dislikes || 0}</span>
+                    </button>
+                  </div>
                 </div>
                 <div id="replies-${c._id}">${repliesHtml}</div>
                 <div class="reply-form" id="reply-form-${c._id}">
@@ -1195,6 +1254,35 @@
       }
       btn.disabled = false;
       btn.textContent = originalText;
+    }
+
+    async function reactToComment(commentId, type, btn) {
+      if (!currentUser) { showLoginToast(); return; }
+
+      const likeBtn = btn.parentElement.querySelector('.comment-react-btn:nth-child(1)');
+      const dislikeBtn = btn.parentElement.querySelector('.comment-react-btn:nth-child(2)');
+      const likeSpan = likeBtn.querySelector('span');
+      const dislikeSpan = dislikeBtn.querySelector('span');
+
+      const isLike = type === 'like';
+
+      try {
+        const res = await fetch(`/api/comments/${commentId}/react`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type })
+        });
+        if (!res.ok) throw new Error('Reaction failed');
+        const data = await res.json();
+
+        likeSpan.textContent = data.likes || 0;
+        dislikeSpan.textContent = data.dislikes || 0;
+
+        likeBtn.classList.toggle('liked', data.userReaction === 'like');
+        dislikeBtn.classList.toggle('disliked', data.userReaction === 'dislike');
+      } catch (err) {
+        console.error('Comment react error', err);
+      }
     }
 
     // ─── HELPERS ───
