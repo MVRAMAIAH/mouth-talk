@@ -401,6 +401,23 @@
       letter-spacing: 0.5px;
     }
 
+    .comment-delete-btn {
+      background: none;
+      border: none;
+      color: #555;
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      margin-left: 6px;
+    }
+
+    .comment-delete-btn:hover {
+      color: #f44336;
+      background: rgba(244, 67, 54, 0.1);
+    }
+
     .comment-badge {
       display: inline-flex;
       align-items: center;
@@ -1230,9 +1247,13 @@
               const rLikeClass = r.userReaction === 'like' ? 'liked' : '';
               const rDislikeClass = r.userReaction === 'dislike' ? 'disliked' : '';
 
+              const rDeleteBtn = currentUser && currentUser.isAdmin
+                ? `<button class="comment-delete-btn" onclick="deleteComment('${r._id}','${reviewId}')" title="Delete reply">🗑️</button>`
+                : '';
+
               return `
                 <div class="comment-item comment-reply" id="comment-${r._id}">
-                  <div class="comment-user">${rAvatarHtml} <span class="comment-name">${esc(r.userName || 'Anonymous')}</span> ${rBadgeHtml} ${rTimeHtml}</div>
+                  <div class="comment-user">${rAvatarHtml} <span class="comment-name">${esc(r.userName || 'Anonymous')}</span> ${rBadgeHtml} ${rTimeHtml} ${rDeleteBtn}</div>
                   <div class="comment-text">${esc(r.text)}</div>
                   <div class="comment-actions">
                     <button class="comment-react-btn ${rLikeClass}" onclick="reactToComment('${r._id}','like', this)">
@@ -1246,11 +1267,15 @@
               `;
             }).join('');
 
+            const deleteBtn = currentUser && currentUser.isAdmin
+              ? `<button class="comment-delete-btn" onclick="deleteComment('${c._id}','${reviewId}')" title="Delete comment">🗑️</button>`
+              : '';
+
             return `
               <div class="comment-wrapper" id="comment-wrapper-${c._id}">
                 <div class="comment-item" id="comment-${c._id}">
                   <div class="comment-user">${avatarHtml} <span class="comment-name">${esc(c.userName || 'Anonymous')}</span> ${badgeHtml} ${timeHtml}
-                    <span class="reply-btn" onclick="showReplyForm('${reviewId}', '${c._id}')">Reply</span>
+                    <span class="reply-btn" onclick="showReplyForm('${reviewId}', '${c._id}')">Reply</span>${deleteBtn}
                   </div>
                   <div class="comment-text">${esc(c.text)}</div>
                   <div class="comment-actions">
@@ -1347,6 +1372,23 @@
         dislikeBtn.classList.toggle('disliked', data.userReaction === 'dislike');
       } catch (err) {
         console.error('Comment react error', err);
+      }
+    }
+
+    // ─── DELETE COMMENT (Admin) ───
+    async function deleteComment(commentId, reviewId) {
+      if (!confirm('Delete this comment and its replies?')) return;
+      try {
+        const res = await fetch(`/api/comments/${commentId}`, { method: 'DELETE' });
+        if (!res.ok) {
+          const data = await res.json();
+          showToast(data.error || 'Failed to delete', 'error');
+          return;
+        }
+        showToast('Comment deleted', 'success');
+        loadComments(reviewId);
+      } catch (err) {
+        showToast('Network error', 'error');
       }
     }
 

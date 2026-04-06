@@ -708,6 +708,43 @@ app.post('/api/reviews/:id/comments', authMiddleware, async (req, res) => {
     }
 });
 
+// Admin-only: Delete a comment (and its child replies)
+app.delete('/api/comments/:id', authMiddleware, async (req, res) => {
+    try {
+        if (req.user.email !== 'ramaiah5496@gmail.com') {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+
+        const commentId = req.params.id;
+
+        if (commentsCollection) {
+            // Delete child replies first
+            await commentsCollection.deleteMany({ parentId: commentId });
+            // Delete the comment itself
+            await commentsCollection.deleteOne({ _id: toId(commentId) });
+            // Also try string-based _id match
+            await commentsCollection.deleteOne({ _id: commentId });
+            // Clean up reactions
+            if (commentReactionsCollection) {
+                await commentReactionsCollection.deleteMany({ commentId });
+            }
+        } else {
+            let comments = loadLocalJSON('comments.json');
+            comments = comments.filter(c => c._id !== commentId && c.parentId !== commentId);
+            writeLocalJSON('comments.json', comments);
+            let reactions = loadLocalJSON('comment_reactions.json');
+            reactions = reactions.filter(r => r.commentId !== commentId);
+            writeLocalJSON('comment_reactions.json', reactions);
+        }
+
+        console.log(`🗑️ Admin deleted comment: ${commentId}`);
+        res.json({ success: true, message: 'Comment deleted' });
+    } catch (err) {
+        console.error('Delete comment error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 app.post('/api/comments/:id/react', authMiddleware, async (req, res) => {
     try {
         const commentId = req.params.id;
