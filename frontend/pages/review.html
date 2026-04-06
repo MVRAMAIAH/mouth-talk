@@ -394,6 +394,13 @@
       letter-spacing: 0.3px;
     }
 
+    .comment-name {
+      color: #e0e0e0;
+      font-weight: 600;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+    }
+
     .comment-badge {
       display: inline-flex;
       align-items: center;
@@ -1225,7 +1232,7 @@
 
               return `
                 <div class="comment-item comment-reply" id="comment-${r._id}">
-                  <div class="comment-user">${rAvatarHtml} ${rBadgeHtml} ${esc(r.userName)} ${rTimeHtml}</div>
+                  <div class="comment-user">${rAvatarHtml} <span class="comment-name">${esc(r.userName || 'Anonymous')}</span> ${rBadgeHtml} ${rTimeHtml}</div>
                   <div class="comment-text">${esc(r.text)}</div>
                   <div class="comment-actions">
                     <button class="comment-react-btn ${rLikeClass}" onclick="reactToComment('${r._id}','like', this)">
@@ -1242,7 +1249,7 @@
             return `
               <div class="comment-wrapper" id="comment-wrapper-${c._id}">
                 <div class="comment-item" id="comment-${c._id}">
-                  <div class="comment-user">${avatarHtml} ${badgeHtml} ${esc(c.userName)} ${timeHtml}
+                  <div class="comment-user">${avatarHtml} <span class="comment-name">${esc(c.userName || 'Anonymous')}</span> ${badgeHtml} ${timeHtml}
                     <span class="reply-btn" onclick="showReplyForm('${reviewId}', '${c._id}')">Reply</span>
                   </div>
                   <div class="comment-text">${esc(c.text)}</div>
@@ -1341,6 +1348,24 @@
       } catch (err) {
         console.error('Comment react error', err);
       }
+    }
+
+    // ─── TOAST HELPERS ───
+    function showToast(msg, type = 'warning') {
+      let toast = document.querySelector('.custom-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'custom-toast';
+        document.body.appendChild(toast);
+      }
+      toast.className = 'custom-toast ' + type;
+      toast.textContent = msg;
+      requestAnimationFrame(() => toast.classList.add('active'));
+      setTimeout(() => toast.classList.remove('active'), 3000);
+    }
+
+    function showLoginToast() {
+      showToast('Please log in to perform this action.', 'warning');
     }
 
     // ─── HELPERS ───
