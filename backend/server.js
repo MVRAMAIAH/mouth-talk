@@ -670,14 +670,23 @@ app.post('/api/reviews/:id/comments', authMiddleware, async (req, res) => {
             return res.status(400).json({ error: 'Comment text is required' });
         }
 
+        // Fetch full user record from DB (JWT only has uid/email/name)
+        let fullUser = null;
+        if (usersCollection) {
+            fullUser = await usersCollection.findOne({ uid: req.user.uid });
+        } else {
+            const users = loadLocalJSON('users.json');
+            fullUser = users.find(u => u.uid === req.user.uid);
+        }
+
         const comment = {
             _id: generateId(),
             reviewId,
             parentId: parentId || null,
-            userId: req.user._id,
-            userName: req.user.fullName,
-            userAvatar: req.user.picture || null,
-            userBadge: req.user.badge || null,
+            userId: req.user.uid,
+            userName: (fullUser && fullUser.fullName) || req.user.name || 'Anonymous',
+            userAvatar: (fullUser && fullUser.picture) || null,
+            userBadge: (fullUser && fullUser.badge) || null,
             text: text.trim(),
             likes: 0,
             dislikes: 0,
