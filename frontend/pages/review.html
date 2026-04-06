@@ -362,6 +362,38 @@
       gap: 8px;
     }
 
+    .comment-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid rgba(255, 7, 58, 0.35);
+      flex-shrink: 0;
+    }
+
+    .comment-avatar-initial {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      text-transform: uppercase;
+      border: 1.5px solid rgba(255, 7, 58, 0.35);
+    }
+
+    .comment-timestamp {
+      font-size: 0.55rem;
+      color: #555;
+      margin-left: auto;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+    }
+
     .comment-badge {
       display: inline-flex;
       align-items: center;
@@ -1174,6 +1206,8 @@
             const badge = c.userBadge && BADGE_MAP[c.userBadge] ? BADGE_MAP[c.userBadge] : null;
             const badgeHtml = badge ? `<span class="comment-badge">
               <span class="review-badge-emoji">${badge.emoji}</span> ${badge.name}</span>` : '';
+            const avatarHtml = buildAvatarHtml(c.userAvatar, c.userName);
+            const timeHtml = c.createdAt ? `<span class="comment-timestamp">${formatCommentTime(c.createdAt)}</span>` : '';
 
             const likeClass = c.userReaction === 'like' ? 'liked' : '';
             const dislikeClass = c.userReaction === 'dislike' ? 'disliked' : '';
@@ -1183,13 +1217,15 @@
               const rBadge = r.userBadge && BADGE_MAP[r.userBadge] ? BADGE_MAP[r.userBadge] : null;
               const rBadgeHtml = rBadge ? `<span class="comment-badge">
                 <span class="review-badge-emoji">${rBadge.emoji}</span> ${rBadge.name}</span>` : '';
+              const rAvatarHtml = buildAvatarHtml(r.userAvatar, r.userName);
+              const rTimeHtml = r.createdAt ? `<span class="comment-timestamp">${formatCommentTime(r.createdAt)}</span>` : '';
 
               const rLikeClass = r.userReaction === 'like' ? 'liked' : '';
               const rDislikeClass = r.userReaction === 'dislike' ? 'disliked' : '';
 
               return `
                 <div class="comment-item comment-reply" id="comment-${r._id}">
-                  <div class="comment-user">${rBadgeHtml} ${esc(r.userName)}</div>
+                  <div class="comment-user">${rAvatarHtml} ${rBadgeHtml} ${esc(r.userName)} ${rTimeHtml}</div>
                   <div class="comment-text">${esc(r.text)}</div>
                   <div class="comment-actions">
                     <button class="comment-react-btn ${rLikeClass}" onclick="reactToComment('${r._id}','like', this)">
@@ -1206,7 +1242,7 @@
             return `
               <div class="comment-wrapper" id="comment-wrapper-${c._id}">
                 <div class="comment-item" id="comment-${c._id}">
-                  <div class="comment-user">${badgeHtml} ${esc(c.userName)} 
+                  <div class="comment-user">${avatarHtml} ${badgeHtml} ${esc(c.userName)} ${timeHtml}
                     <span class="reply-btn" onclick="showReplyForm('${reviewId}', '${c._id}')">Reply</span>
                   </div>
                   <div class="comment-text">${esc(c.text)}</div>
@@ -1318,6 +1354,29 @@
       if (!dateStr) return '';
       const d = new Date(dateStr);
       return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Avatar helper – image or colored-initial fallback
+    const AVATAR_COLORS = ['#FF073A', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#00bcd4', '#009688', '#4caf50', '#ff9800'];
+    function buildAvatarHtml(avatarUrl, name) {
+      if (avatarUrl) {
+        return `<img class="comment-avatar" src="${esc(avatarUrl)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><span class="comment-avatar-initial" style="display:none;background:${AVATAR_COLORS[((name || 'U').charCodeAt(0)) % AVATAR_COLORS.length]}">${esc((name || 'U')[0])}</span>`;
+      }
+      const color = AVATAR_COLORS[((name || 'U').charCodeAt(0)) % AVATAR_COLORS.length];
+      return `<span class="comment-avatar-initial" style="background:${color}">${esc((name || 'U')[0])}</span>`;
+    }
+
+    // Relative timestamp for comments (e.g. "2m ago", "3h ago", "5 Apr")
+    function formatCommentTime(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      const now = new Date();
+      const diff = Math.floor((now - d) / 1000);
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+      if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+      if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
     }
 
     // ─── INIT ───

@@ -676,6 +676,7 @@ app.post('/api/reviews/:id/comments', authMiddleware, async (req, res) => {
             parentId: parentId || null,
             userId: req.user._id,
             userName: req.user.fullName,
+            userAvatar: req.user.picture || null,
             userBadge: req.user.badge || null,
             text: text.trim(),
             likes: 0,
