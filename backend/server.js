@@ -349,9 +349,11 @@ app.get('/api/users/:uid', async (req, res) => {
             onboardingComplete: user.onboardingComplete || false,
             followerCount,
             followingCount,
-            isFollowing
+            isFollowing,
+            isMe: viewerUid === uid
         });
     } catch (err) {
+        console.error('Fetch user details error:', err);
         res.status(500).json({ error: 'Server error fetching user details' });
     }
 });

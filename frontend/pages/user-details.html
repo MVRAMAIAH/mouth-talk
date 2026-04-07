@@ -172,13 +172,9 @@
 
             followerCountEl.textContent = user.followerCount || 0;
             followingCountEl.textContent = user.followingCount || 0;
-
-            const currentUser = parseJwt(getCookie('token'));
             
-            // Show follow button if:
-            // 1. Not logged in (guest)
-            // 2. Logged in and not viewing own profile
-            if (!currentUser || currentUser.uid !== user.uid) {
+            // Show follow button if NOT viewing own profile
+            if (!user.isMe) {
                 followContainer.style.display = 'block';
                 updateFollowBtn(user.isFollowing);
             } else {
@@ -206,13 +202,6 @@
         }
 
         async function toggleFollow() {
-            const token = getCookie('token');
-            if (!token) {
-                alert('Connection error. Please longin again to use this feature.');
-                window.location.href = 'profile.html';
-                return;
-            }
-
             const params = new URLSearchParams(window.location.search);
             const targetUid = params.get('id');
             const btn = document.getElementById('follow-btn');
@@ -229,6 +218,13 @@
                 const method = isFollowing ? 'DELETE' : 'POST';
                 const endpoint = isFollowing ? `/api/unfollow/${targetUid}` : `/api/follow/${targetUid}`;
                 const res = await fetch(endpoint, { method });
+                
+                if (res.status === 401) {
+                    alert('Please longin to follow or unfollow users.');
+                    window.location.href = 'profile.html';
+                    return;
+                }
+
                 if (!res.ok) throw new Error('Action failed');
             } catch (err) {
                 console.error(err);
