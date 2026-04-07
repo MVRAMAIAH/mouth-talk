@@ -14,7 +14,7 @@
                     <span class="icon">🏠</span>
                     <span>HOME</span>
                 </a>
-                <a href="/pages/review.html" class="nav-item ${isActive('/pages/review.html')}" id="navExplore">
+                <a href="/pages/get-started.html" class="nav-item ${isActive('/pages/get-started.html')}" id="navExplore">
                     <span class="icon">💎</span>
                     <span>EXPLORE</span>
                 </a>
@@ -34,12 +34,19 @@
 
         // Link Mobile Alerts to the header notification bell
         const mobileNotifBtn = document.getElementById('navNotifMobile');
-        mobileNotifBtn.addEventListener('click', () => {
+        mobileNotifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const bell = document.getElementById('notifBtn');
+            const dropdown = document.getElementById('notifDropdown');
             if (bell) {
                 bell.click();
+            } else if (dropdown) {
+                // Fallback direct toggle
+                const isActive = dropdown.classList.toggle('active');
+                if (isActive && typeof window.fetchNotifications === 'function') {
+                    window.fetchNotifications();
+                }
             } else {
-                // Fallback: If no bell in header, redirect to notifications page or show custom alert
                 window.location.href = '/pages/profile.html';
             }
         });

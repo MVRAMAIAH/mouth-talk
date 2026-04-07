@@ -42,12 +42,28 @@ html {
   background: var(--mt-glass-heavy);
   backdrop-filter: var(--mt-blur);
   -webkit-backdrop-filter: var(--mt-blur);
-  z-index: 2000;
+  z-index: 2100;
   border-top: 1px solid rgba(255, 7, 58, 0.2);
   justify-content: space-around;
   align-items: center;
   padding: 0 10px 15px; /* Extra bottom padding for safe area */
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Mobile-First Notifications Dropdown */
+@media (max-width: 768px) {
+  .notifications-dropdown {
+    position: fixed !important;
+    top: 70px !important;
+    left: 5% !important;
+    right: 5% !important;
+    width: 90% !important;
+    max-height: 70vh !important;
+    z-index: 2200 !important;
+    border: 1px solid var(--mt-red) !important;
+    box-shadow: 0 0 40px rgba(255, 7, 58, 0.3) !important;
+    animation: slideUp 0.3s ease-out forwards;
+  }
 }
 
 .nav-item {
