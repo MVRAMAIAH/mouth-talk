@@ -1,0 +1,171 @@
+/* 
+  Mouth-Talk Beast-Mode Responsive System 
+  Elite Mobile Design & App-Like UX
+*/
+
+:root {
+  --mt-red: #FF073A;
+  --mt-glass: rgba(255, 255, 255, 0.05);
+  --mt-glass-heavy: rgba(0, 0, 0, 0.85);
+  --mt-blur: blur(20px);
+}
+
+/* --- Global Haptic Simulation --- */
+button, .btn, .nav-item, .clickable {
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active, .btn:active, .nav-item:active, .clickable:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* --- Fluid Typography (Beast-Mode Scale) --- */
+html {
+  font-size: 16px;
+}
+@media (max-width: 480px) {
+  h1 { font-size: clamp(1.8rem, 8vw, 2.5rem) !important; }
+  h2 { font-size: clamp(1.4rem, 6vw, 1.8rem) !important; }
+  p, span, div { font-size: clamp(0.85rem, 4vw, 1rem); }
+}
+
+/* --- Global Mobile Navigation Bar (Bottom) --- */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 75px;
+  background: var(--mt-glass-heavy);
+  backdrop-filter: var(--mt-blur);
+  -webkit-backdrop-filter: var(--mt-blur);
+  z-index: 2000;
+  border-top: 1px solid rgba(255, 7, 58, 0.2);
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px 15px; /* Extra bottom padding for safe area */
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  text-decoration: none;
+  font-size: 10px;
+  gap: 4px;
+  flex: 1;
+  transition: 0.3s;
+}
+
+.nav-item i, .nav-item span.icon {
+  font-size: 22px;
+  transition: 0.3s;
+}
+
+.nav-item.active {
+  color: var(--mt-red);
+}
+
+.nav-item.active span.icon {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 0 8px var(--mt-red));
+}
+
+/* Hide desktop header elements on small screens if redundant */
+@media (max-width: 768px) {
+  .mobile-bottom-nav { display: flex; }
+  
+  .header .nav-links {
+    /* Hide the main nav links if we use bottom nav */
+    display: none !important;
+  }
+}
+
+/* --- Beast-Mode Cards & Grids --- */
+@media (max-width: 480px) {
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* Forces 2-column grid even on small phones */
+    gap: 12px !important;
+    padding: 10px !important;
+  }
+
+  .movie-title {
+    font-size: 0.65rem !important;
+  }
+
+  .profile-container {
+    padding: 30px 15px !important;
+    margin-top: 70px !important;
+    width: 95% !important;
+  }
+
+  .dna-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .dna-item {
+    padding: 12px !important;
+  }
+}
+
+/* --- Bottom-Sheet Modals (Mobile-Only) --- */
+@media (max-width: 768px) {
+  .modal-content, .modal {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 25px 25px 0 0 !important;
+    transform: translateY(100%);
+    animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding-bottom: 90px !important; /* Space for bottom nav */
+  }
+
+  @keyframes slideUp {
+    to { transform: translateY(0); }
+  }
+
+  /* Handle for Bottom Sheet */
+  .modal-content::before {
+    content: '';
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* --- Premium Buttons for Mobile --- */
+.premium-btn {
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+}
+
+/* Custom Scrollbar for Beast Mode */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: black;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--mt-red);
+  border-radius: 10px;
+}
