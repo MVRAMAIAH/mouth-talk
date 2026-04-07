@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/premium-buttons.css">
     <link rel="stylesheet" href="../assets/css/responsive.css">
+    <link rel="stylesheet" href="../assets/css/nav-search.css">
     <style>
         * {
             margin: 0;
@@ -389,6 +390,19 @@
         </div>
     </div>
 
+    <!-- Follows Modal -->
+    <div class="modal-overlay" id="followsModal" onclick="closeFollowsModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Followers</h3>
+                <button class="modal-close" onclick="closeFollowsModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- List items will be rendered here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Profile Section -->
     <div class="profile-container">
         <img id="profile-img" class="profile-img"
@@ -402,6 +416,16 @@
                 <span class="verified-badge" id="verified-badge"></span>
             </h2>
             <p id="display-contact">-</p>
+            <div class="stats-bar" style="border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 20px;">
+                <div class="stat-item" onclick="openFollowsModal('followers')">
+                    <span class="stat-value" id="follower-count">0</span>
+                    <span class="stat-label">Followers</span>
+                </div>
+                <div class="stat-item" onclick="openFollowsModal('following')">
+                    <span class="stat-value" id="following-count">0</span>
+                    <span class="stat-label">Following</span>
+                </div>
+            </div>
         </div>
 
         <!-- Read-only info display -->
@@ -499,46 +523,54 @@
                         window.location.href = 'login.html';
                         return;
                     }
-                    const user = await res.json();
+                    const userData = await res.json();
 
-                    document.getElementById('name-text').textContent = user.fullName;
-                    document.getElementById('user-name-input').value = user.fullName;
-                    document.getElementById('display-contact').textContent = user.email || user.phone;
-                    document.getElementById('auth-badge').textContent = (user.provider || 'JWT') + ' authenticated';
+                    document.getElementById('name-text').textContent = userData.fullName;
+                    document.getElementById('user-name-input').value = userData.fullName;
+                    document.getElementById('display-contact').textContent = (userData.email || userData.phone || '-');
+                    document.getElementById('info-display').setAttribute('data-uid', userData.uid);
+                
+                    // Display Follow Stats
+                    document.getElementById('follower-count').textContent = userData.followerCount || 0;
+                    document.getElementById('following-count').textContent = userData.followingCount || 0;
+                    
+                    // Badge Logic
+                    const bType = userData.badge || 'rocky';
+                    document.getElementById('auth-badge').textContent = (userData.provider || 'JWT') + ' authenticated';
 
-                    if (user.picture) {
-                        document.getElementById('profile-img').src = user.picture;
+                    if (userData.picture) {
+                        document.getElementById('profile-img').src = userData.picture;
                     }
 
                     // Verified badge with emoji
-                    if (user.badge && BADGE_MAP[user.badge]) {
+                    if (userData.badge && BADGE_MAP[userData.badge]) {
                         const vb = document.getElementById('verified-badge');
-                        vb.textContent = BADGE_MAP[user.badge].emoji;
+                        vb.textContent = BADGE_MAP[userData.badge].emoji;
                         vb.classList.add('visible');
                     }
 
                     // Always show Movie DNA section with available data
                     document.getElementById('info-display').style.display = 'block';
-                    document.getElementById('ro-name').textContent = user.fullName || '—';
-                    document.getElementById('ro-tongue').textContent = user.motherTongue || '—';
-                    document.getElementById('ro-actor').textContent = user.actor || '—';
-                    document.getElementById('ro-actress').textContent = user.favouriteActress || '—';
-                    document.getElementById('ro-director').textContent = user.favouriteDirector || '—';
-                    document.getElementById('ro-composer').textContent = user.favouriteComposer || '—';
+                    document.getElementById('ro-name').textContent = userData.fullName || '—';
+                    document.getElementById('ro-tongue').textContent = userData.motherTongue || '—';
+                    document.getElementById('ro-actor').textContent = userData.actor || '—';
+                    document.getElementById('ro-actress').textContent = userData.favouriteActress || '—';
+                    document.getElementById('ro-director').textContent = userData.favouriteDirector || '—';
+                    document.getElementById('ro-composer').textContent = userData.favouriteComposer || '—';
 
                     // Show edit pref inputs only if onboarding was completed
-                    if (user.onboardingComplete) {
+                    if (userData.onboardingComplete) {
                         document.getElementById('edit-prefs').style.display = 'block';
                         document.getElementById('edit-actor-wrap').style.display = 'block';
                         document.getElementById('edit-actress-wrap').style.display = 'block';
                         document.getElementById('edit-director-wrap').style.display = 'block';
                         document.getElementById('edit-composer-wrap').style.display = 'block';
 
-                        if (user.motherTongue) document.getElementById('tongue-input').value = user.motherTongue;
-                        if (user.actor) document.getElementById('actor-input').value = user.actor;
-                        if (user.favouriteActress) document.getElementById('actress-input').value = user.favouriteActress;
-                        if (user.favouriteDirector) document.getElementById('director-input').value = user.favouriteDirector;
-                        if (user.favouriteComposer) document.getElementById('composer-input').value = user.favouriteComposer;
+                        if (userData.motherTongue) document.getElementById('tongue-input').value = userData.motherTongue;
+                        if (userData.actor) document.getElementById('actor-input').value = userData.actor;
+                        if (userData.favouriteActress) document.getElementById('actress-input').value = userData.favouriteActress;
+                        if (userData.favouriteDirector) document.getElementById('director-input').value = userData.favouriteDirector;
+                        if (userData.favouriteComposer) document.getElementById('composer-input').value = userData.favouriteComposer;
                     }
 
                     document.getElementById('loading-overlay').style.display = 'none';
@@ -618,6 +650,57 @@
 
             fetchUserData();
         </script>
-</body>
 
+    <!-- Social List Logic -->
+    <script>
+        async function openFollowsModal(type) {
+            const modal = document.getElementById('followsModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            // Find current user's UID (it's stored in public window.currentUser from profile.html logic or we can fetch it again)
+            // But we already have it from the /me call which filled userData
+            const uid = document.getElementById('info-display').getAttribute('data-uid');
+
+            title.textContent = type === 'followers' ? 'Followers' : 'Following';
+            body.innerHTML = '<div class="search-loading"><div class="spinner"></div></div>';
+            modal.classList.add('active');
+
+            try {
+                const res = await fetch(`/api/users/${uid}/${type}`);
+                if (!res.ok) throw new Error('Fetch failed');
+                const users = await res.json();
+
+                if (users.length === 0) {
+                    body.innerHTML = `<div class="search-no-results">No ${type} yet.</div>`;
+                    return;
+                }
+
+                body.innerHTML = users.map(u => `
+                    <div class="list-item">
+                        <img class="list-avatar" src="${u.picture || 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png'}" alt="" onclick="window.location.href='user-details.html?id=${u.uid}'">
+                        <div class="list-info" onclick="window.location.href='user-details.html?id=${u.uid}'">
+                            <div class="list-name">${esc(u.fullName)}</div>
+                            <div class="list-badge">${u.badge ? u.badge.toUpperCase() : 'MEMBER'}</div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error(err);
+                body.innerHTML = '<div class="search-no-results">Failed to load list.</div>';
+            }
+        }
+
+        function closeFollowsModal() {
+            document.getElementById('followsModal').classList.remove('active');
+        }
+
+        function esc(str) {
+            const d = document.createElement('div');
+            d.textContent = str || '';
+            return d.innerHTML;
+        }
+    </script>
+</body>
 </html>

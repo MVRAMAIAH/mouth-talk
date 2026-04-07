@@ -84,12 +84,39 @@ router.post('/phone', async (req, res) => {
 router.get('/me', authMiddleware, async (req, res) => {
     try {
         const db = req.app.get('db');
+        const uid = req.user.uid;
         let user;
-        if (db) user = await db.collection('users').findOne({ uid: req.user.uid });
-        else user = loadUsersJSON().find(u => u.uid === req.user.uid);
+        if (db) user = await db.collection('users').findOne({ uid });
+        else user = loadUsersJSON().find(u => u.uid === uid);
+
         if (!user) return res.status(404).json({ error: 'User not found' });
-        res.json({ ...user, isAdmin: user.email === 'ramaiah5496@gmail.com' });
-    } catch (e) { res.status(500).json({ error: 'Server error' }); }
+
+        // Get Follow Stats
+        let followerCount = 0;
+        let followingCount = 0;
+        
+        if (db) {
+            followerCount = await db.collection('follows').countDocuments({ followingId: uid });
+            followingCount = await db.collection('follows').countDocuments({ followerId: uid });
+        } else {
+            const followsPath = path.join(DATA_DIR, 'follows.json');
+            if (fs.existsSync(followsPath)) {
+                const follows = JSON.parse(fs.readFileSync(followsPath, 'utf8'));
+                followerCount = follows.filter(f => f.followingId === uid).length;
+                followingCount = follows.filter(f => f.followerId === uid).length;
+            }
+        }
+
+        res.json({ 
+            ...user, 
+            isAdmin: user.email === 'ramaiah5496@gmail.com',
+            followerCount,
+            followingCount
+        });
+    } catch (e) { 
+        console.error('Fetch me error:', e);
+        res.status(500).json({ error: 'Server error' }); 
+    }
 });
 
 router.post('/logout', (req, res) => {
