@@ -72,29 +72,6 @@
             }
         }
 
-        // Add Notification Link to the mobile burger menu if present
-        function injectMenuLink() {
-            const navLinks = document.querySelector('.header .nav-links');
-            if (navLinks && !document.getElementById('menuNotifMobile')) {
-                const notifLink = `
-                    <a href="#" id="menuNotifMobile" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <i class="fas fa-bell" style="color: #FF073A;"></i>
-                        ALERTS 
-                        <span id="menuBadgeMobile" style="background:#FF073A; color:white; font-size:9px; font-weight:bold; padding: 2px 6px; border-radius:10px; display:none;">0</span>
-                    </a>
-                `;
-                navLinks.insertAdjacentHTML('afterbegin', notifLink);
-                
-                document.getElementById('menuNotifMobile').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    mobileNotifBtn.click();
-                    // Close menu after click
-                    navLinks.classList.remove('active');
-                });
-            }
-        }
-
-        injectMenuLink();
         setInterval(syncBadge, 1000);
     }
 
