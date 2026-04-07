@@ -1,0 +1,22 @@
+{
+  "name": "Mouth-Talk",
+  "short_name": "MTALK",
+  "description": "The Ultimate Movie Destination & Social Review Platform",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#FF073A",
+  "icons": [
+    {
+      "src": "https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg",
+      "sizes": "192x192",
+      "type": "image/jpg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg",
+      "sizes": "512x512",
+      "type": "image/jpg"
+    }
+  ]
+}

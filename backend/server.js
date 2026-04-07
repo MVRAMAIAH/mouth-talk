@@ -7,9 +7,21 @@ const { MongoClient, ObjectId } = require('mongodb');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
+const webpush = require('web-push');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const app = express();
+
+// Configure VAPID for Web Push
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+        'mailto:ramaiah5496@gmail.com', // or any contact email
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    );
+} else {
+    console.warn('[WARN] VAPID keys not set. Push notifications will not work.');
+}
 
 // 1. Move logging to the absolute top for debugging
 app.use((req, res, next) => {
@@ -72,6 +84,7 @@ let reactionsCollection = null;
 let commentReactionsCollection = null;
 let followsCollection = null;
 let notificationsCollection = null;
+let subscriptionsCollection = null;
 
 // Per-category movie collections
 const CATEGORY_NAMES = ['tollywood', 'kollywood', 'sandalwood', 'mollywood', 'bollywood', 'hollywood', 'webseries'];
@@ -137,6 +150,7 @@ async function initDb() {
         reactionsCollection = db.collection('reactions');
         commentReactionsCollection = db.collection('comment_reactions');
         notificationsCollection = db.collection('notifications');
+        subscriptionsCollection = db.collection('push_subscriptions');
 
         app.set('db', db);
 
@@ -180,6 +194,44 @@ async function createNotification(recipientUid, senderUid, type, referenceId, te
             const notifications = loadLocalJSON('notifications.json');
             notifications.unshift(notification);
             writeLocalJSON('notifications.json', notifications.slice(0, 100)); // Keep last 100
+        }
+
+        // --- BACKGROUND PUSH NOTIFICATION ---
+        // Find all push subscriptions for the recipient
+        let subs = [];
+        if (subscriptionsCollection) {
+            subs = await subscriptionsCollection.find({ uid: recipientUid }).toArray();
+        } else {
+            subs = loadLocalJSON('subscriptions.json').filter(s => s.uid === recipientUid);
+        }
+
+        if (subs.length > 0) {
+            const payload = JSON.stringify({
+                title: 'Mouth-Talk Alert',
+                body: `${notification.senderName} ${text}`,
+                icon: 'https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg',
+                data: {
+                    type,
+                    referenceId,
+                    url: `/pages/user-details.html?id=${referenceId}`
+                }
+            });
+
+            subs.forEach(sub => {
+                webpush.sendNotification(sub.subscription, payload).catch(err => {
+                    console.error('Push error:', err.statusCode);
+                    if (err.statusCode === 404 || err.statusCode === 410) {
+                        // Subscription expired or no longer valid
+                        if (subscriptionsCollection) {
+                            subscriptionsCollection.deleteOne({ _id: sub._id });
+                        } else {
+                            const allSubs = loadLocalJSON('subscriptions.json');
+                            const filtered = allSubs.filter(s => s._id !== sub._id);
+                            writeLocalJSON('subscriptions.json', filtered);
+                        }
+                    }
+                });
+            });
         }
     } catch (err) {
         console.error('Notification creation failed:', err);
@@ -1268,6 +1320,57 @@ app.post('/api/notifications/mark-read', authMiddleware, async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Mark read failed' });
+    }
+});
+
+// --- Push Subscription API ---
+app.post('/api/notifications/subscribe', authMiddleware, async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        const { subscription } = req.body;
+        if (!subscription) return res.status(400).json({ error: 'Subscription is required' });
+
+        const subDoc = {
+            _id: generateId(),
+            uid,
+            subscription,
+            createdAt: new Date()
+        };
+
+        if (subscriptionsCollection) {
+            // Update if endpoint already exists for this user to avoid duplicates
+            await subscriptionsCollection.updateOne(
+                { uid, "subscription.endpoint": subscription.endpoint },
+                { $set: subDoc },
+                { upsert: true }
+            );
+        } else {
+            const subs = loadLocalJSON('subscriptions.json');
+            const exists = subs.findIndex(s => s.uid === uid && s.subscription.endpoint === subscription.endpoint);
+            if (exists > -1) subs[exists] = subDoc;
+            else subs.push(subDoc);
+            writeLocalJSON('subscriptions.json', subs);
+        }
+        res.status(201).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Subscription failed' });
+    }
+});
+
+app.post('/api/notifications/unsubscribe', authMiddleware, async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        const { endpoint } = req.body;
+        if (subscriptionsCollection) {
+            await subscriptionsCollection.deleteOne({ uid, "subscription.endpoint": endpoint });
+        } else {
+            const subs = loadLocalJSON('subscriptions.json');
+            const filtered = subs.filter(s => !(s.uid === uid && s.subscription.endpoint === endpoint));
+            writeLocalJSON('subscriptions.json', filtered);
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Unsubscribe failed' });
     }
 });
 

@@ -162,8 +162,63 @@
 
     // Start
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initNotifications);
+        document.addEventListener('DOMContentLoaded', () => {
+            initNotifications();
+            registerServiceWorker();
+        });
     } else {
         initNotifications();
+        registerServiceWorker();
+    }
+
+    async function registerServiceWorker() {
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            try {
+                const reg = await navigator.serviceWorker.register('/sw.js');
+                console.log('SW Registered:', reg.scope);
+                
+                // If user is logged in, attempt to subscribe
+                // We'll check for a logged in state (globalUser or checking auth/me)
+                checkAndSubscribe(reg);
+            } catch (err) {
+                console.error('SW Registration failed:', err);
+            }
+        }
+    }
+
+    async function checkAndSubscribe(reg) {
+        try {
+            const res = await fetch('/api/auth/me');
+            if (!res.ok) return; // Not logged in
+            
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') return;
+
+            const publicVapidKey = 'BK5otuuQHAJeflU6ObzqGX9h35G6G_JhYd8Uni2DQnekgpNV_mTt7uyxr03UiwE3thLei62ESEwOuR0zyMASq1U';
+            const subscription = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+            });
+
+            await fetch('/api/notifications/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subscription })
+            });
+            console.log('Push Subscribed');
+        } catch (err) {
+            console.error('Subscription error:', err);
+        }
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
     }
 })();
