@@ -71,6 +71,7 @@ let commentsCollection = null;
 let reactionsCollection = null;
 let commentReactionsCollection = null;
 let followsCollection = null;
+let notificationsCollection = null;
 
 // Per-category movie collections
 const CATEGORY_NAMES = ['tollywood', 'kollywood', 'sandalwood', 'mollywood', 'bollywood', 'hollywood', 'webseries'];
@@ -135,6 +136,7 @@ async function initDb() {
         commentsCollection = db.collection('comments');
         reactionsCollection = db.collection('reactions');
         commentReactionsCollection = db.collection('comment_reactions');
+        notificationsCollection = db.collection('notifications');
 
         app.set('db', db);
 
@@ -143,6 +145,44 @@ async function initDb() {
     } catch (err) {
         console.error('MongoDB connection failed:', err.message);
         categoryCollections = {};
+    }
+}
+
+// --- Notification Helper ---
+async function createNotification(recipientUid, senderUid, type, referenceId, text) {
+    try {
+        if (recipientUid === senderUid) return; // Don't notify yourself
+
+        // Get sender details
+        let sender;
+        if (usersCollection) {
+            sender = await usersCollection.findOne({ uid: senderUid });
+        } else {
+            sender = loadLocalJSON('users.json').find(u => u.uid === senderUid);
+        }
+
+        const notification = {
+            _id: generateId(),
+            recipientUid,
+            senderUid,
+            senderName: sender ? sender.fullName : 'Someone',
+            senderAvatar: sender ? sender.picture : null,
+            type, // 'follow', 'review_like', 'comment_like', 'comment_reply'
+            referenceId,
+            text,
+            isRead: false,
+            createdAt: new Date()
+        };
+
+        if (notificationsCollection) {
+            await notificationsCollection.insertOne(notification);
+        } else {
+            const notifications = loadLocalJSON('notifications.json');
+            notifications.unshift(notification);
+            writeLocalJSON('notifications.json', notifications.slice(0, 100)); // Keep last 100
+        }
+    } catch (err) {
+        console.error('Notification creation failed:', err);
     }
 }
 
@@ -415,6 +455,9 @@ app.post('/api/follow/:id', authMiddleware, async (req, res) => {
                 writeLocalJSON('follows.json', follows);
             }
         }
+
+        // Notify the user being followed
+        await createNotification(followingId, followerId, 'follow', followerId, 'started following you');
 
         res.json({ success: true, message: 'Followed successfully' });
     } catch (err) {
@@ -879,7 +922,13 @@ app.post('/api/reviews/:id/react', authMiddleware, async (req, res) => {
                 await reviewsCollection.updateOne({ _id: toId(reviewId) }, { $inc: { [field]: 1, [otherField]: -1 } });
             }
 
-            const updated = await reviewsCollection.findOne({ _id: reviewId });
+            const updated = await reviewsCollection.findOne({ _id: toId(reviewId) });
+            
+            // Notify author if it's a new like
+            if (isLike && (!existing || existing.type !== 'like')) {
+                await createNotification(updated.uid, uid, 'review_like', reviewId, `liked your review of ${updated.movieTitle}`);
+            }
+
             return res.json({ likes: updated.likes || 0, dislikes: updated.dislikes || 0, userReaction: existing && existing.type === type ? null : type });
         }
 
@@ -891,10 +940,12 @@ app.post('/api/reviews/:id/react', authMiddleware, async (req, res) => {
 
         const reactIdx = reactions.findIndex(r => r.reviewId === reviewId && r.uid === uid);
         let userReaction = type;
+        let shouldNotifyLike = false;
 
         if (reactIdx === -1) {
             reactions.push({ reviewId, uid, type, createdAt: new Date() });
             review[field] = (review[field] || 0) + 1;
+            if (isLike) shouldNotifyLike = true;
         } else if (reactions[reactIdx].type === type) {
             reactions.splice(reactIdx, 1);
             review[field] = Math.max(0, (review[field] || 0) - 1);
@@ -905,6 +956,11 @@ app.post('/api/reviews/:id/react', authMiddleware, async (req, res) => {
             reactions[reactIdx].type = type;
             review[field] = (review[field] || 0) + 1;
             review[oldField] = Math.max(0, (review[oldField] || 0) - 1);
+            if (isLike) shouldNotifyLike = true;
+        }
+
+        if (shouldNotifyLike) {
+            await createNotification(review.uid, uid, 'review_like', reviewId, `liked your review of ${review.movieTitle}`);
         }
 
         writeLocalJSON('reviews.json', reviews);
@@ -994,6 +1050,33 @@ app.post('/api/reviews/:id/comments', authMiddleware, async (req, res) => {
             comments.push(comment);
             writeLocalJSON('comments.json', comments);
         }
+
+        // --- Notifications ---
+        // 1. If it's a reply, notify the parent comment's author
+        if (parentId) {
+            let parentComment;
+            if (commentsCollection) {
+                parentComment = await commentsCollection.findOne({ _id: toId(parentId) });
+            } else {
+                parentComment = loadLocalJSON('comments.json').find(c => c._id === parentId);
+            }
+            if (parentComment && parentComment.userId !== req.user.uid) {
+                await createNotification(parentComment.userId, req.user.uid, 'comment_reply', reviewId, `replied to your comment`);
+            }
+        } 
+        // 2. Otherwise, notify the review author
+        else {
+            let review;
+            if (reviewsCollection) {
+                review = await reviewsCollection.findOne({ _id: toId(reviewId) });
+            } else {
+                review = loadLocalJSON('reviews.json').find(r => r._id === reviewId);
+            }
+            if (review && review.uid !== req.user.uid) {
+                await createNotification(review.uid, req.user.uid, 'comment_new', reviewId, `commented on your review of ${review.movieTitle}`);
+            }
+        }
+
         res.status(201).json(comment);
     } catch (err) {
         console.error('Comment error:', err);
@@ -1067,11 +1150,16 @@ app.post('/api/comments/:id/react', authMiddleware, async (req, res) => {
                 await commentsCollection.updateOne({ _id: toId(commentId) }, { $inc: { [field]: -1 } });
             } else {
                 // Switch reaction
-                await commentReactionsCollection.updateOne({ _id: existing._id }, { $set: { type, updatedAt: new Date() } });
                 await commentsCollection.updateOne({ _id: toId(commentId) }, { $inc: { [field]: 1, [otherField]: -1 } });
             }
 
             const updated = await commentsCollection.findOne({ _id: toId(commentId) });
+            
+            // Notify comment author if it's a new like
+            if (isLike && (!existing || existing.type !== 'like')) {
+                await createNotification(updated.userId, uid, 'comment_like', updated.reviewId, `liked your comment`);
+            }
+
             return res.json({ likes: updated.likes || 0, dislikes: updated.dislikes || 0, userReaction: existing && existing.type === type ? null : type });
         }
 
@@ -1083,10 +1171,12 @@ app.post('/api/comments/:id/react', authMiddleware, async (req, res) => {
 
         const reactIdx = reactions.findIndex(r => r.commentId === commentId && r.uid === uid);
         let userReaction = type;
+        let shouldNotifyLike = false;
 
         if (reactIdx === -1) {
             reactions.push({ commentId, uid, type, createdAt: new Date() });
             comment[field] = (comment[field] || 0) + 1;
+            if (isLike) shouldNotifyLike = true;
         } else if (reactions[reactIdx].type === type) {
             reactions.splice(reactIdx, 1);
             comment[field] = Math.max(0, (comment[field] || 0) - 1);
@@ -1097,6 +1187,11 @@ app.post('/api/comments/:id/react', authMiddleware, async (req, res) => {
             reactions[reactIdx].type = type;
             comment[field] = (comment[field] || 0) + 1;
             comment[oldField] = Math.max(0, (comment[oldField] || 0) - 1);
+            if (isLike) shouldNotifyLike = true;
+        }
+
+        if (shouldNotifyLike) {
+            await createNotification(comment.userId, uid, 'comment_like', comment.reviewId, `liked your comment`);
         }
 
         writeLocalJSON('comments.json', comments);
@@ -1114,6 +1209,62 @@ app.get('/api/theatres', async (req, res) => {
         res.json(theatres);
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// --- Notifications API ---
+app.get('/api/notifications', authMiddleware, async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        let notifications = [];
+        if (notificationsCollection) {
+            notifications = await notificationsCollection.find({ recipientUid: uid }).sort({ createdAt: -1 }).limit(50).toArray();
+        } else {
+            notifications = loadLocalJSON('notifications.json').filter(n => n.recipientUid === uid);
+            notifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        res.json(notifications);
+    } catch (err) {
+        res.status(500).json({ error: 'Fetch notifications failed' });
+    }
+});
+
+app.get('/api/notifications/unread-count', authMiddleware, async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        let count = 0;
+        if (notificationsCollection) {
+            count = await notificationsCollection.countDocuments({ recipientUid: uid, isRead: false });
+        } else {
+            count = loadLocalJSON('notifications.json').filter(n => n.recipientUid === uid && !n.isRead).length;
+        }
+        res.json({ count });
+    } catch (err) {
+        res.status(500).json({ error: 'Fetch unread count failed' });
+    }
+});
+
+app.post('/api/notifications/mark-read', authMiddleware, async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        const { id } = req.body; // if id is provided, mark only that one, else mark all
+
+        if (notificationsCollection) {
+            const filter = { recipientUid: uid };
+            if (id) filter._id = toId(id);
+            await notificationsCollection.updateMany(filter, { $set: { isRead: true } });
+        } else {
+            const notifications = loadLocalJSON('notifications.json');
+            notifications.forEach(n => {
+                if (n.recipientUid === uid && (!id || n._id === id)) {
+                    n.isRead = true;
+                }
+            });
+            writeLocalJSON('notifications.json', notifications);
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Mark read failed' });
     }
 });
 
