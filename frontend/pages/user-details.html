@@ -167,16 +167,18 @@
             // Follow UI
             const followerCountEl = document.getElementById('follower-count');
             const followingCountEl = document.getElementById('following-count');
-            const followBtn = document.getElementById('follow-btn');
             const followContainer = document.getElementById('follow-container');
+            const followBtn = document.getElementById('follow-btn');
 
             followerCountEl.textContent = user.followerCount || 0;
             followingCountEl.textContent = user.followingCount || 0;
 
-            // Check if viewing own profile (simplified check by name or logic)
-            // Ideally we'd compare against currentUser's uid
             const currentUser = parseJwt(getCookie('token'));
-            if (currentUser && currentUser.uid !== user.uid) {
+            
+            // Show follow button if:
+            // 1. Not logged in (guest)
+            // 2. Logged in and not viewing own profile
+            if (!currentUser || currentUser.uid !== user.uid) {
                 followContainer.style.display = 'block';
                 updateFollowBtn(user.isFollowing);
             } else {
@@ -204,6 +206,13 @@
         }
 
         async function toggleFollow() {
+            const token = getCookie('token');
+            if (!token) {
+                alert('Connection error. Please longin again to use this feature.');
+                window.location.href = 'profile.html';
+                return;
+            }
+
             const params = new URLSearchParams(window.location.search);
             const targetUid = params.get('id');
             const btn = document.getElementById('follow-btn');
