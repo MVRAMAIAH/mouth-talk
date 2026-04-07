@@ -33,21 +33,7 @@ html {
 
 /* --- Global Mobile Navigation Bar (Bottom) --- */
 .mobile-bottom-nav {
-  display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 75px;
-  background: var(--mt-glass-heavy);
-  backdrop-filter: var(--mt-blur);
-  -webkit-backdrop-filter: var(--mt-blur);
-  z-index: 2100;
-  border-top: 1px solid rgba(255, 7, 58, 0.2);
-  justify-content: space-around;
-  align-items: center;
-  padding: 0 10px 15px; /* Extra bottom padding for safe area */
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+  display: none !important;
 }
 
 /* Mobile-First Notifications Dropdown */
@@ -105,12 +91,7 @@ html {
 
 /* Hide desktop header elements on small screens if redundant */
 @media (max-width: 768px) {
-  .mobile-bottom-nav { display: flex; }
-  
-  .header .nav-links {
-    /* Hide the main nav links if we use bottom nav */
-    display: none !important;
-  }
+  .mobile-bottom-nav { display: none !important; }
 }
 
 /* --- Beast-Mode Cards & Grids --- */
