@@ -350,6 +350,7 @@ app.get('/api/users/:uid', async (req, res) => {
         let followerCount = 0;
         let followingCount = 0;
         let isFollowing = false;
+        let followsMe = false;
 
         // Try to get current user UID from token for follow status
         let viewerUid = null;
@@ -365,19 +366,21 @@ app.get('/api/users/:uid', async (req, res) => {
             followingCount = await followsCollection.countDocuments({ followerId: uid });
             if (viewerUid) {
                 const followDoc = await followsCollection.findOne({ followerId: viewerUid, followingId: uid });
+                const followsMeDoc = await followsCollection.findOne({ followerId: uid, followingId: viewerUid });
                 isFollowing = !!followDoc;
+                followsMe = !!followsMeDoc;
             }
         } else {
-            const allFollows = loadLocalJSON('follows.json');
-            followerCount = allFollows.filter(f => f.followingId === uid).length;
-            followingCount = allFollows.filter(f => f.followerId === uid).length;
+            const follows = loadLocalJSON('follows.json');
+            followerCount = follows.filter(f => f.followingId === uid).length;
+            followingCount = follows.filter(f => f.followerId === uid).length;
             if (viewerUid) {
-                isFollowing = allFollows.some(f => f.followerId === viewerUid && f.followingId === uid);
+                isFollowing = follows.some(f => f.followerId === viewerUid && f.followingId === uid);
+                followsMe = follows.some(f => f.followerId === uid && f.followingId === viewerUid);
             }
         }
 
         res.json({
-            uid: user.uid,
             fullName: user.fullName,
             picture: user.picture || null,
             badge: user.badge || null,

@@ -47,6 +47,25 @@
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; display: flex; justify-content: center; align-items: center; z-index: 2000; }
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 7, 58, 0.1); border-top: 4px solid #FF073A; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .relationship-label {
+            font-size: 11px;
+            color: #888;
+            margin-top: -5px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .relationship-label.mutual {
+            color: #FF073A;
+            background: rgba(255, 7, 58, 0.1);
+            border: 1px solid rgba(255, 7, 58, 0.2);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -66,6 +85,7 @@
         <img id="profile-img" class="profile-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png" alt="User">
         <div class="user-info">
             <h2 class="username-row" id="username-text">Loading User...</h2>
+            <div id="relationship-tag" style="display:none;"></div>
             <div id="user-badge" class="badge" style="display:none;"></div>
             <div id="follow-container" style="display:none;">
                 <button id="follow-btn" class="follow-btn follow" onclick="toggleFollow()">Follow</button>
@@ -184,6 +204,31 @@
 
             if (user.motherTongue || user.actor || user.favouriteActress || user.favouriteDirector) {
                 document.getElementById('dna-section').style.display = 'block';
+                document.getElementById('follower-count').textContent = user.followerCount || 0;
+                document.getElementById('following-count').textContent = user.followingCount || 0;
+
+                // Set Relationship Status
+                const relTag = document.getElementById('relationship-tag');
+                if (!user.isMe) {
+                    if (user.isFollowing && user.followsMe) {
+                        relTag.textContent = '🤝 You both follow each other in MTALK';
+                        relTag.className = 'relationship-label mutual';
+                        relTag.style.display = 'inline-block';
+                    } else if (user.followsMe) {
+                        relTag.textContent = 'Follows you';
+                        relTag.className = 'relationship-label';
+                        relTag.style.display = 'inline-block';
+                    } else if (user.isFollowing) {
+                        relTag.textContent = 'Following';
+                        relTag.className = 'relationship-label';
+                        relTag.style.display = 'inline-block';
+                    } else {
+                        relTag.style.display = 'none';
+                    }
+                } else {
+                    relTag.style.display = 'none';
+                }
+
                 document.getElementById('dna-tongue').textContent = user.motherTongue || '—';
                 document.getElementById('dna-actor').textContent = user.actor || '—';
                 document.getElementById('dna-actress').textContent = user.favouriteActress || '—';
