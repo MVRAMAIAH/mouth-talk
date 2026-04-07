@@ -325,16 +325,31 @@ app.get('/api/users/:uid', async (req, res) => {
 app.get('/api/users/:uid/reviews', async (req, res) => {
     try {
         const uid = req.params.uid;
+        
+        // 1. Find user to get their name for legacy review matching
+        let user;
+        if (usersCollection) {
+            user = await usersCollection.findOne({ uid });
+        } else {
+            user = loadLocalJSON('users.json').find(u => u.uid === uid);
+        }
+
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
         let reviews = [];
         if (reviewsCollection) {
-            reviews = await reviewsCollection.find({ uid }).sort({ createdAt: -1 }).toArray();
+            // Search by UID (new) or userName (legacy fallback)
+            reviews = await reviewsCollection.find({
+                $or: [{ uid }, { userName: user.fullName }]
+            }).sort({ createdAt: -1 }).toArray();
         } else {
             const allReviews = loadLocalJSON('reviews.json');
-            reviews = allReviews.filter(r => r.uid === uid);
+            reviews = allReviews.filter(r => r.uid === uid || r.userName === user.fullName);
             reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
         res.json(reviews);
     } catch (err) {
+        console.error('Fetch user reviews error:', err);
         res.status(500).json({ error: 'Server error fetching user reviews' });
     }
 });
