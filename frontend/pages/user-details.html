@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - MTALK</title>
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/premium-buttons.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+    <link rel="stylesheet" href="../assets/css/nav-search.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Orbitron', sans-serif; }
+        body { background: black; color: white; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding-bottom: 60px; overflow-y: auto; }
+        
+        .header { width: 100%; padding: 20px 50px; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); position: fixed; top: 0; left: 0; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+        .logo { font-size: 26px; font-weight: bold; color: #FF073A; text-transform: uppercase; cursor: pointer; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a { text-decoration: none; color: white; font-size: 18px; transition: 0.3s; white-space: nowrap; }
+        .nav-links a:hover { color: #FF073A; }
+
+        .profile-container { text-align: center; padding: 70px 50px; background-color: rgba(0, 0, 0, 0.8); border-radius: 15px; box-shadow: 0 4px 15px rgba(255, 7, 58, 0.5); width: 90%; max-width: 800px; margin-top: 120px; border: 1px solid rgba(255, 7, 58, 0.2); }
+        .profile-img { border-radius: 50%; width: 120px; height: 120px; object-fit: cover; border: 3px solid #FF073A; margin-bottom: 20px; box-shadow: 0 0 15px rgba(255, 7, 58, 0.5); }
+        
+        .username-row { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 28px; margin-bottom: 10px; color: white; text-shadow: 0 0 10px #FF073A; }
+        .badge { display: inline-block; padding: 4px 12px; background: rgba(255, 7, 58, 0.2); border: 1px solid #FF073A; border-radius: 20px; font-size: 10px; color: #FF073A; text-transform: uppercase; margin-bottom: 20px; }
+
+        .dna-section { margin-top: 30px; text-align: left; background: rgba(255, 255, 255, 0.03); padding: 25px; border-radius: 12px; border: 1px solid rgba(255, 7, 58, 0.1); }
+        .dna-title { font-size: 14px; color: #FF073A; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid rgba(255, 7, 58, 0.2); padding-bottom: 10px; }
+        .dna-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .dna-item { display: flex; flex-direction: column; gap: 5px; }
+        .dna-label { font-size: 10px; color: #888; text-transform: uppercase; }
+        .dna-value { font-size: 14px; color: white; }
+
+        .reviews-section { margin-top: 40px; width: 100%; text-align: left; }
+        .reviews-title { font-size: 18px; color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .reviews-title::after { content: ''; flex: 1; height: 1px; background: rgba(255, 7, 58, 0.3); }
+        
+        .review-card { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 7, 58, 0.1); border-radius: 10px; padding: 20px; margin-bottom: 15px; transition: 0.3s; }
+        .review-card:hover { border-color: #FF073A; background: rgba(255, 7, 58, 0.05); }
+        .review-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .review-movie { font-weight: bold; color: #FF073A; font-size: 14px; cursor: pointer; }
+        .review-rating { color: #FFD700; }
+        .review-text { font-size: 13px; color: #ccc; line-height: 1.6; margin-bottom: 10px; font-family: sans-serif; }
+        .review-date { font-size: 10px; color: #555; }
+
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255, 7, 58, 0.1); border-top: 4px solid #FF073A; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay"><div class="spinner"></div></div>
+
+    <div class="header">
+        <div class="logo" onclick="window.location.href='../index.html'">MTALK</div>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="profile.html">Profile</a>
+            <a href="location.html">Location</a>
+            <a href="about.html">About</a>
+        </div>
+    </div>
+
+    <div class="profile-container">
+        <img id="profile-img" class="profile-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png" alt="User">
+        <div class="user-info">
+            <h2 class="username-row" id="username-text">Loading User...</h2>
+            <div id="user-badge" class="badge" style="display:none;"></div>
+        </div>
+
+        <div class="dna-section" id="dna-section" style="display:none;">
+            <div class="dna-title">Movie DNA</div>
+            <div class="dna-grid">
+                <div class="dna-item"><span class="dna-label">Mother Tongue</span><span class="dna-value" id="dna-tongue">—</span></div>
+                <div class="dna-item"><span class="dna-label">Fav Actor</span><span class="dna-value" id="dna-actor">—</span></div>
+                <div class="dna-item"><span class="dna-label">Fav Actress</span><span class="dna-value" id="dna-actress">—</span></div>
+                <div class="dna-item"><span class="dna-label">Fav Director</span><span class="dna-value" id="dna-director">—</span></div>
+            </div>
+        </div>
+
+        <div class="reviews-section">
+            <h3 class="reviews-title">Recent Reviews</h3>
+            <div id="reviews-list">
+                <p style="text-align:center; color:#555; padding:20px;">No reviews found for this user.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/nav-search.js"></script>
+    <script>
+        const BADGE_MAP = {
+            rocky: { emoji: '💪', name: 'ROCKY' },
+            ram: { emoji: '🌸', name: 'RAM' },
+            shivaji: { emoji: '🏛️', name: 'SHIVAJI' },
+            anil: { emoji: '👨‍👩‍👧‍👦', name: 'ANIL' }
+        };
+
+        async function init() {
+            const params = new URLSearchParams(window.location.search);
+            const uid = params.get('id');
+
+            if (!uid) {
+                document.getElementById('username-text').textContent = 'User Not Found';
+                document.getElementById('loading-overlay').style.display = 'none';
+                return;
+            }
+
+            try {
+                // Fetch user data and reviews in parallel
+                const [userRes, reviewsRes] = await Promise.all([
+                    fetch(`/api/users/${uid}`),
+                    fetch(`/api/users/${uid}/reviews`)
+                ]);
+
+                if (!userRes.ok) throw new Error('User not found');
+                const user = await userRes.json();
+                const reviews = await reviewsRes.json();
+
+                renderUser(user);
+                renderReviews(reviews);
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('username-text').textContent = 'Profile Load Error';
+            } finally {
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        }
+
+        function renderUser(user) {
+            document.getElementById('username-text').textContent = user.fullName;
+            if (user.picture) document.getElementById('profile-img').src = user.picture;
+            
+            if (user.badge && BADGE_MAP[user.badge]) {
+                const badgeEl = document.getElementById('user-badge');
+                badgeEl.textContent = `${BADGE_MAP[user.badge].emoji} ${BADGE_MAP[user.badge].name}`;
+                badgeEl.style.display = 'inline-block';
+            }
+
+            if (user.motherTongue || user.actor || user.favouriteActress || user.favouriteDirector) {
+                document.getElementById('dna-section').style.display = 'block';
+                document.getElementById('dna-tongue').textContent = user.motherTongue || '—';
+                document.getElementById('dna-actor').textContent = user.actor || '—';
+                document.getElementById('dna-actress').textContent = user.favouriteActress || '—';
+                document.getElementById('dna-director').textContent = user.favouriteDirector || '—';
+            }
+        }
+
+        function renderReviews(reviews) {
+            const list = document.getElementById('reviews-list');
+            if (!reviews || reviews.length === 0) {
+                list.innerHTML = '<p style="text-align:center; color:#555; padding:20px;">This user hasn\'t posted any reviews yet.</p>';
+                return;
+            }
+
+            list.innerHTML = reviews.map(r => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <span class="review-movie" onclick="window.location.href='movie.html?id=${r.movieId}'">${esc(r.movieTitle)}</span>
+                        <span class="review-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+                    </div>
+                    <div class="review-text">${esc(r.text)}</div>
+                    <div class="review-date">${new Date(r.createdAt).toLocaleDateString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function esc(str) {
+            const d = document.createElement('div');
+            d.textContent = str || '';
+            return d.innerHTML;
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const app = express();
@@ -41,6 +42,13 @@ app.use(cors({
 
 app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
+
+// Rate Limiter for Search
+const searchLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: { error: 'Too many search requests, please try again later.' }
+});
 
 // Import Auth Routes
 const authRoutes = require('./routes/auth');
@@ -241,6 +249,95 @@ async function syncCategoryCollections() {
 
 // ─── API ROUTES ───────────────────────────────────────
 app.use('/api/auth', authRoutes);
+
+// --- User Search API ---
+app.get('/api/users/search', searchLimiter, async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query || query.length < 2) {
+            return res.status(400).json({ error: 'Search query must be at least 2 characters long' });
+        }
+
+        let users = [];
+        if (usersCollection) {
+            // Case-insensitive, partial match search
+            users = await usersCollection.find({
+                fullName: { $regex: query, $options: 'i' }
+            }).limit(10).toArray();
+        } else {
+            const allUsers = loadLocalJSON('users.json');
+            users = allUsers.filter(u => 
+                (u.fullName || '').toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 10);
+        }
+
+        // Return only necessary public fields
+        const safeUsers = users.map(u => ({
+            uid: u.uid,
+            username: u.fullName,
+            picture: u.picture || null,
+            badge: u.badge || null,
+            onboardingComplete: u.onboardingComplete || false,
+            // Bio-equivalents from "Movie DNA"
+            motherTongue: u.motherTongue || '',
+            actor: u.actor || ''
+        }));
+
+        res.json(safeUsers);
+    } catch (err) {
+        console.error('User search error:', err);
+        res.status(500).json({ error: 'Server error during search' });
+    }
+});
+
+// --- User Profile Details ---
+app.get('/api/users/:uid', async (req, res) => {
+    try {
+        const uid = req.params.uid;
+        let user;
+        if (usersCollection) {
+            user = await usersCollection.findOne({ uid });
+        } else {
+            const allUsers = loadLocalJSON('users.json');
+            user = allUsers.find(u => u.uid === uid);
+        }
+
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        res.json({
+            uid: user.uid,
+            fullName: user.fullName,
+            picture: user.picture || null,
+            badge: user.badge || null,
+            motherTongue: user.motherTongue || '',
+            actor: user.actor || '',
+            favouriteActress: user.favouriteActress || '',
+            favouriteDirector: user.favouriteDirector || '',
+            favouriteComposer: user.favouriteComposer || '',
+            onboardingComplete: user.onboardingComplete || false
+        });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error fetching user details' });
+    }
+});
+
+// --- User Review History ---
+app.get('/api/users/:uid/reviews', async (req, res) => {
+    try {
+        const uid = req.params.uid;
+        let reviews = [];
+        if (reviewsCollection) {
+            reviews = await reviewsCollection.find({ uid }).sort({ createdAt: -1 }).toArray();
+        } else {
+            const allReviews = loadLocalJSON('reviews.json');
+            reviews = allReviews.filter(r => r.uid === uid);
+            reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        res.json(reviews);
+    } catch (err) {
+        res.status(500).json({ error: 'Server error fetching user reviews' });
+    }
+});
 
 app.get('/api/movies', async (req, res) => {
     try {
@@ -497,9 +594,11 @@ app.get('/api/reviews', async (req, res) => {
     }
 });
 
-app.post('/api/reviews', async (req, res) => {
+app.post('/api/reviews', authMiddleware, async (req, res) => {
     try {
         const { bookingId, movieId, movieTitle, userName, rating, text, userBadge } = req.body;
+        const uid = req.user.uid; // From authMiddleware
+
         if (!bookingId || !movieId || !userName || !rating || !text) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
@@ -523,6 +622,7 @@ app.post('/api/reviews', async (req, res) => {
 
         const review = {
             _id: generateId(),
+            uid, // Link to the user
             bookingId: upperBookingId,
             movieId,
             movieTitle: movieTitle || movieId,

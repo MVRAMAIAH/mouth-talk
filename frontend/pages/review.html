@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/premium-buttons.css" />
   <link rel="stylesheet" href="../assets/css/responsive.css" />
+  <link rel="stylesheet" href="../assets/css/nav-search.css" />
   <style>
     * {
       margin: 0;
@@ -837,6 +838,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
   <script src="../assets/js/firebase-init.js"></script>
   <script src="../assets/js/responsive.js"></script>
+  <script src="../assets/js/nav-search.js"></script>
 
   <script>
     // Badge map
@@ -943,7 +945,7 @@
                             <span class="review-movie">${esc(r.movieTitle)}</span>
                             <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
                         </div>
-                        <div class="review-user">by ${esc(r.userName)} ${badgeHtml}</div>
+                        <div class="review-user">by <a href="user-details.html?id=${r.uid || ''}" style="color:inherit; text-decoration:none; font-weight:bold; border-bottom:1px solid transparent; transition:0.3s;" onmouseover="this.style.borderColor='#FF073A';this.style.color='#FF073A'" onmouseout="this.style.borderColor='transparent';this.style.color='inherit'">${esc(r.userName)}</a> ${badgeHtml}</div>
                         <div class="review-text">${esc(r.text)}</div>
                         <div class="review-actions">
                             <button class="react-btn ${likeClass}" onclick="react('${r._id}','like', this)">
