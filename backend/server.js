@@ -70,6 +70,7 @@ let usersCollection = null;
 let commentsCollection = null;
 let reactionsCollection = null;
 let commentReactionsCollection = null;
+let followsCollection = null;
 
 // Per-category movie collections
 const CATEGORY_NAMES = ['tollywood', 'kollywood', 'sandalwood', 'mollywood', 'bollywood', 'hollywood', 'webseries'];
@@ -128,6 +129,7 @@ async function initDb() {
 
         bookingsCollection = db.collection('bookings');
         reviewsCollection = db.collection('reviews');
+        followsCollection = db.collection('follows');
         theatresCollection = db.collection('theatres');
         usersCollection = db.collection('users');
         commentsCollection = db.collection('comments');
@@ -304,6 +306,36 @@ app.get('/api/users/:uid', async (req, res) => {
 
         if (!user) return res.status(404).json({ error: 'User not found' });
 
+        // Get Follow Stats
+        let followerCount = 0;
+        let followingCount = 0;
+        let isFollowing = false;
+
+        // Try to get current user UID from token for follow status
+        let viewerUid = null;
+        if (req.cookies.token) {
+            try {
+                const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET || 'fallback-secret-for-dev-only');
+                viewerUid = decoded.uid;
+            } catch (e) { /* ignore */ }
+        }
+
+        if (followsCollection) {
+            followerCount = await followsCollection.countDocuments({ followingId: uid });
+            followingCount = await followsCollection.countDocuments({ followerId: uid });
+            if (viewerUid) {
+                const followDoc = await followsCollection.findOne({ followerId: viewerUid, followingId: uid });
+                isFollowing = !!followDoc;
+            }
+        } else {
+            const allFollows = loadLocalJSON('follows.json');
+            followerCount = allFollows.filter(f => f.followingId === uid).length;
+            followingCount = allFollows.filter(f => f.followerId === uid).length;
+            if (viewerUid) {
+                isFollowing = allFollows.some(f => f.followerId === viewerUid && f.followingId === uid);
+            }
+        }
+
         res.json({
             uid: user.uid,
             fullName: user.fullName,
@@ -314,7 +346,10 @@ app.get('/api/users/:uid', async (req, res) => {
             favouriteActress: user.favouriteActress || '',
             favouriteDirector: user.favouriteDirector || '',
             favouriteComposer: user.favouriteComposer || '',
-            onboardingComplete: user.onboardingComplete || false
+            onboardingComplete: user.onboardingComplete || false,
+            followerCount,
+            followingCount,
+            isFollowing
         });
     } catch (err) {
         res.status(500).json({ error: 'Server error fetching user details' });
@@ -351,6 +386,147 @@ app.get('/api/users/:uid/reviews', async (req, res) => {
     } catch (err) {
         console.error('Fetch user reviews error:', err);
         res.status(500).json({ error: 'Server error fetching user reviews' });
+    }
+});
+
+// --- Follow/Unfollow API ---
+app.post('/api/follow/:id', authMiddleware, async (req, res) => {
+    try {
+        const followerId = req.user.uid;
+        const followingId = req.params.id;
+
+        if (followerId === followingId) {
+            return res.status(400).json({ error: 'You cannot follow yourself' });
+        }
+
+        if (followsCollection) {
+            await followsCollection.updateOne(
+                { followerId, followingId },
+                { $set: { followerId, followingId, createdAt: new Date() } },
+                { upsert: true }
+            );
+        } else {
+            const follows = loadLocalJSON('follows.json');
+            const exists = follows.find(f => f.followerId === followerId && f.followingId === followingId);
+            if (!exists) {
+                follows.push({ followerId, followingId, createdAt: new Date() });
+                writeLocalJSON('follows.json', follows);
+            }
+        }
+
+        res.json({ success: true, message: 'Followed successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Follow error' });
+    }
+});
+
+app.delete('/api/unfollow/:id', authMiddleware, async (req, res) => {
+    try {
+        const followerId = req.user.uid;
+        const followingId = req.params.id;
+
+        if (followsCollection) {
+            await followsCollection.deleteOne({ followerId, followingId });
+        } else {
+            const follows = loadLocalJSON('follows.json');
+            const updated = follows.filter(f => !(f.followerId === followerId && f.followingId === followingId));
+            writeLocalJSON('follows.json', updated);
+        }
+
+        res.json({ success: true, message: 'Unfollowed successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Unfollow error' });
+    }
+});
+
+// --- User Follow Lists ---
+app.get('/api/users/:id/followers', async (req, res) => {
+    try {
+        const targetUid = req.params.id;
+
+        // Try to get current user UID from token for mutual followers logic
+        let viewerUid = null;
+        if (req.cookies.token) {
+            try {
+                const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET || 'fallback-secret-for-dev-only');
+                viewerUid = decoded.uid;
+            } catch (e) { /* ignore */ }
+        }
+
+        let followers = [];
+        if (followsCollection) {
+            followers = await followsCollection.find({ followingId: targetUid }).toArray();
+        } else {
+            followers = loadLocalJSON('follows.json').filter(f => f.followingId === targetUid);
+        }
+
+        const followerUids = followers.map(f => f.followerId);
+        let followerProfiles = [];
+        
+        if (usersCollection) {
+            followerProfiles = await usersCollection.find({ uid: { $in: followerUids } }).toArray();
+        } else {
+            followerProfiles = loadLocalJSON('users.json').filter(u => followerUids.includes(u.uid));
+        }
+
+        // Check if viewer follows back for "isFollowing" status in list
+        let followedByViewer = [];
+        if (viewerUid) {
+            if (followsCollection) {
+                const docs = await followsCollection.find({ followerId: viewerUid, followingId: { $in: followerUids } }).toArray();
+                followedByViewer = docs.map(d => d.followingId);
+            } else {
+                followedByViewer = loadLocalJSON('follows.json')
+                    .filter(f => f.followerId === viewerUid && followerUids.includes(f.followingId))
+                    .map(f => f.followingId);
+            }
+        }
+
+        const safetyProfiles = followerProfiles.map(u => ({
+            uid: u.uid,
+            fullName: u.fullName,
+            picture: u.picture || null,
+            badge: u.badge || null,
+            isFollowing: followedByViewer.includes(u.uid)
+        }));
+
+        res.json(safetyProfiles);
+    } catch (err) {
+        res.status(500).json({ error: 'Fetch followers error' });
+    }
+});
+
+app.get('/api/users/:id/following', async (req, res) => {
+    try {
+        const targetUid = req.params.id;
+        
+        let following = [];
+        if (followsCollection) {
+            following = await followsCollection.find({ followerId: targetUid }).toArray();
+        } else {
+            following = loadLocalJSON('follows.json').filter(f => f.followerId === targetUid);
+        }
+
+        const followingUids = following.map(f => f.followingId);
+        let followingProfiles = [];
+        
+        if (usersCollection) {
+            followingProfiles = await usersCollection.find({ uid: { $in: followingUids } }).toArray();
+        } else {
+            followingProfiles = loadLocalJSON('users.json').filter(u => followingUids.includes(u.uid));
+        }
+
+        const safetyProfiles = followingProfiles.map(u => ({
+            uid: u.uid,
+            fullName: u.fullName,
+            picture: u.picture || null,
+            badge: u.badge || null,
+            isFollowing: true // By definition, since we are viewing who they follow
+        }));
+
+        res.json(safetyProfiles);
+    } catch (err) {
+        res.status(500).json({ error: 'Fetch following error' });
     }
 });
 

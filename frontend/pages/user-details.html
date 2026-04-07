@@ -67,6 +67,19 @@
         <div class="user-info">
             <h2 class="username-row" id="username-text">Loading User...</h2>
             <div id="user-badge" class="badge" style="display:none;"></div>
+            <div id="follow-container" style="display:none;">
+                <button id="follow-btn" class="follow-btn follow" onclick="toggleFollow()">Follow</button>
+            </div>
+            <div class="stats-bar">
+                <div class="stat-item" onclick="openFollowsModal('followers')">
+                    <span class="stat-value" id="follower-count">0</span>
+                    <span class="stat-label">Followers</span>
+                </div>
+                <div class="stat-item" onclick="openFollowsModal('following')">
+                    <span class="stat-value" id="following-count">0</span>
+                    <span class="stat-label">Following</span>
+                </div>
+            </div>
         </div>
 
         <div class="dna-section" id="dna-section" style="display:none;">
@@ -83,6 +96,19 @@
             <h3 class="reviews-title">Recent Reviews</h3>
             <div id="reviews-list">
                 <p style="text-align:center; color:#555; padding:20px;">No reviews found for this user.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Follows Modal -->
+    <div class="modal-overlay" id="followsModal" onclick="closeFollowsModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Followers</h3>
+                <button class="modal-close" onclick="closeFollowsModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- List items will be rendered here -->
             </div>
         </div>
     </div>
@@ -138,6 +164,25 @@
                 badgeEl.style.display = 'inline-block';
             }
 
+            // Follow UI
+            const followerCountEl = document.getElementById('follower-count');
+            const followingCountEl = document.getElementById('following-count');
+            const followBtn = document.getElementById('follow-btn');
+            const followContainer = document.getElementById('follow-container');
+
+            followerCountEl.textContent = user.followerCount || 0;
+            followingCountEl.textContent = user.followingCount || 0;
+
+            // Check if viewing own profile (simplified check by name or logic)
+            // Ideally we'd compare against currentUser's uid
+            const currentUser = parseJwt(getCookie('token'));
+            if (currentUser && currentUser.uid !== user.uid) {
+                followContainer.style.display = 'block';
+                updateFollowBtn(user.isFollowing);
+            } else {
+                followContainer.style.display = 'none';
+            }
+
             if (user.motherTongue || user.actor || user.favouriteActress || user.favouriteDirector) {
                 document.getElementById('dna-section').style.display = 'block';
                 document.getElementById('dna-tongue').textContent = user.motherTongue || '—';
@@ -145,6 +190,129 @@
                 document.getElementById('dna-actress').textContent = user.favouriteActress || '—';
                 document.getElementById('dna-director').textContent = user.favouriteDirector || '—';
             }
+        }
+
+        function updateFollowBtn(isFollowing) {
+            const btn = document.getElementById('follow-btn');
+            if (isFollowing) {
+                btn.textContent = 'Unfollow';
+                btn.className = 'follow-btn unfollow';
+            } else {
+                btn.textContent = 'Follow';
+                btn.className = 'follow-btn follow';
+            }
+        }
+
+        async function toggleFollow() {
+            const params = new URLSearchParams(window.location.search);
+            const targetUid = params.get('id');
+            const btn = document.getElementById('follow-btn');
+            const isFollowing = btn.classList.contains('unfollow');
+            
+            // Optimistic Update
+            const countEl = document.getElementById('follower-count');
+            let currentCount = parseInt(countEl.textContent);
+            updateFollowBtn(!isFollowing);
+            countEl.textContent = isFollowing ? currentCount - 1 : currentCount + 1;
+            btn.disabled = true;
+
+            try {
+                const method = isFollowing ? 'DELETE' : 'POST';
+                const endpoint = isFollowing ? `/api/unfollow/${targetUid}` : `/api/follow/${targetUid}`;
+                const res = await fetch(endpoint, { method });
+                if (!res.ok) throw new Error('Action failed');
+            } catch (err) {
+                console.error(err);
+                // Rollback
+                updateFollowBtn(isFollowing);
+                countEl.textContent = currentCount;
+                alert('Connection error. Please try again.');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function openFollowsModal(type) {
+            const params = new URLSearchParams(window.location.search);
+            const uid = params.get('id');
+            const modal = document.getElementById('followsModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            title.textContent = type === 'followers' ? 'Followers' : 'Following';
+            body.innerHTML = '<div class="search-loading"><div class="spinner"></div></div>';
+            modal.classList.add('active');
+
+            try {
+                const [res, viewerFollowingRes] = await Promise.all([
+                    fetch(`/api/users/${uid}/${type}`),
+                    fetch('/api/auth/me') // To find mutuals
+                ]);
+                
+                if (!res.ok) throw new Error('Fetch failed');
+                const users = await res.json();
+                
+                let viewerFollowing = [];
+                if (viewerFollowingRes.ok) {
+                    const me = await viewerFollowingRes.json();
+                    const meFollowingRes = await fetch(`/api/users/${me.uid}/following`);
+                    if (meFollowingRes.ok) {
+                        const list = await meFollowingRes.json();
+                        viewerFollowing = list.map(u => u.uid);
+                    }
+                }
+
+                if (users.length === 0) {
+                    body.innerHTML = `<div class="search-no-results">No ${type} yet.</div>`;
+                    return;
+                }
+
+                // Sort: Mutuals first
+                users.sort((a, b) => {
+                    const aMutual = viewerFollowing.includes(a.uid);
+                    const bMutual = viewerFollowing.includes(b.uid);
+                    return bMutual - aMutual;
+                });
+
+                let lastWasMutual = false;
+                body.innerHTML = users.map((u, index) => {
+                    const isMutual = viewerFollowing.includes(u.uid);
+                    let label = '';
+                    if (index === 0 && isMutual) label = '<div class="mutual-label">Mutual Followers</div>';
+                    if (index > 0 && !isMutual && lastWasMutual) label = '<div class="mutual-label" style="background:transparent; border-top:1px solid rgba(255,255,255,0.05); margin-top:10px; padding-top:15px;">Other Users</div>';
+                    lastWasMutual = isMutual;
+
+                    return `
+                        ${label}
+                        <div class="list-item">
+                            <img class="list-avatar" src="${u.picture || 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png'}" alt="" onclick="window.location.href='user-details.html?id=${u.uid}'">
+                            <div class="list-info" onclick="window.location.href='user-details.html?id=${u.uid}'">
+                                <div class="list-name">${esc(u.fullName)}</div>
+                                <div class="list-badge">${u.badge ? u.badge.toUpperCase() : 'MEMBER'}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                body.innerHTML = '<div class="search-no-results">Failed to load list.</div>';
+            }
+        }
+
+        function closeFollowsModal() {
+            document.getElementById('followsModal').classList.remove('active');
+        }
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        function parseJwt(token) {
+            try {
+                return JSON.parse(atob(token.split('.')[1]));
+            } catch (e) { return null; }
         }
 
         function renderReviews(reviews) {
