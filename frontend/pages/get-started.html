@@ -306,25 +306,24 @@
     <!-- Page Scripts -->
     <script>
         // Auth Guard
-        async function checkAuth() {
-            try {
-                const res = await fetch('/api/auth/me');
-                if (!res.ok) window.location.href = 'login.html';
-                else {
-                    const user = await res.json();
-                    const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
-                    if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
+        function updateUIWithUser(user) {
+            if (!user) return;
+            const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
+            if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
 
-                    // Admin toggle
-                    if (user.isAdmin) {
-                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
-                    }
-                }
-            } catch (e) {
-                window.location.href = 'login.html';
+            // Admin toggle
+            if (user.isAdmin) {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+                if (typeof injectAdminModal === 'function') injectAdminModal();
             }
         }
-        checkAuth();
+
+        // Initialize UI with user data if available
+        if (window.__USER__) {
+            updateUIWithUser(window.__USER__);
+        } else {
+            window.addEventListener('authReady', (e) => updateUIWithUser(e.detail), { once: true });
+        }
 
         // Modal container for admin.js
         const modalContainer = document.createElement('div');

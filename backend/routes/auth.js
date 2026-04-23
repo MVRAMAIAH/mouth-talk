@@ -91,19 +91,22 @@ router.get('/me', authMiddleware, async (req, res) => {
 
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        // Get Follow Stats
+        // Get Follow Stats (skip if lite=true or specified)
         let followerCount = 0;
         let followingCount = 0;
+        const isLite = req.query.lite === 'true';
         
-        if (db) {
-            followerCount = await db.collection('follows').countDocuments({ followingId: uid });
-            followingCount = await db.collection('follows').countDocuments({ followerId: uid });
-        } else {
-            const followsPath = path.join(DATA_DIR, 'follows.json');
-            if (fs.existsSync(followsPath)) {
-                const follows = JSON.parse(fs.readFileSync(followsPath, 'utf8'));
-                followerCount = follows.filter(f => f.followingId === uid).length;
-                followingCount = follows.filter(f => f.followerId === uid).length;
+        if (!isLite) {
+            if (db) {
+                followerCount = await db.collection('follows').countDocuments({ followingId: uid });
+                followingCount = await db.collection('follows').countDocuments({ followerId: uid });
+            } else {
+                const followsPath = path.join(DATA_DIR, 'follows.json');
+                if (fs.existsSync(followsPath)) {
+                    const follows = JSON.parse(fs.readFileSync(followsPath, 'utf8'));
+                    followerCount = follows.filter(f => f.followingId === uid).length;
+                    followingCount = follows.filter(f => f.followerId === uid).length;
+                }
             }
         }
 

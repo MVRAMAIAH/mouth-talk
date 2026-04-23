@@ -320,53 +320,40 @@
             }
         }
 
-        async function checkAuth() {
-            try {
-                const res = await fetch('/api/auth/me');
-                if (!res.ok) throw new Error('Not authenticated');
+        function updateUIWithUser(user) {
+            if (!user) return;
+            globalUser = user;
+            isLoggedIn = true;
 
-                const user = await res.json();
-                globalUser = user;
-                isLoggedIn = true;
+            const loginLink = document.getElementById('navLoginLink');
+            if (loginLink) loginLink.style.display = 'none';
 
-                // Hide the Login link since user is authenticated
-                const loginLink = document.getElementById('navLoginLink');
-                if (loginLink) loginLink.style.display = 'none';
-
-                const navLinks = document.querySelectorAll('.nav-links a');
-                const profileLink = Array.from(navLinks).find(a => a.textContent.includes('Profile'));
-                if (profileLink && user.fullName) {
-                    profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
-                }
-
-                if (user.isAdmin) {
-                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
-                }
-                return true;
-            } catch (e) {
-                console.warn('Auth check skipped:', e.message);
-                const loginLink = document.getElementById('navLoginLink');
-                if (loginLink) loginLink.style.display = 'inline-block';
+            const navLinks = document.querySelectorAll('.nav-links a');
+            const profileLink = Array.from(navLinks).find(a => a.textContent.includes('Profile'));
+            if (profileLink && user.fullName) {
+                profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
             }
-            return false;
+
+            if (user.isAdmin) {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+            }
         }
 
         async function init() {
             try {
-                // Run auth check and movie fetch in parallel
-                const results = await Promise.allSettled([
-                    checkAuth(),
-                    fetch('/api/movies').then(async res => {
-                        if (!res.ok) throw new Error('Movies fetch failed');
-                        return res.json();
-                    })
-                ]);
+                // Initialize UI with user data if available
+                if (window.__USER__) {
+                    updateUIWithUser(window.__USER__);
+                } else {
+                    window.addEventListener('authReady', (e) => updateUIWithUser(e.detail), { once: true });
+                }
 
-                const moviesRes = results[1].status === 'fulfilled' ? results[1].value : [];
+                // Fetch movies (lite check happening in background via auth-guard)
+                const moviesRes = await fetch('/api/movies').then(res => res.json()).catch(() => []);
                 renderMarquee(moviesRes);
             } catch (err) {
                 console.error('Init error:', err);
-                renderMarquee([]); // Fallback to empty marquee so UI doesn't break
+                renderMarquee([]);
             }
         }
 

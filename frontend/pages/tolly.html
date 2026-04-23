@@ -177,24 +177,16 @@
 
   <script>
     let globalUser = null;
-    // Auth Guard
-    async function checkAuth() {
-      try {
-        const res = await fetch('/api/auth/me');
-        if (!res.ok) window.location.href = 'login.html';
-        else {
-          const user = await res.json();
-          globalUser = user;
-          const navLinks = document.querySelectorAll('.header a');
-          const profileLink = Array.from(navLinks).find(a => a.href.includes('profile.html'));
-          if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
+    // Auth Data Handling — now uses global state from auth-guard.js
+    function updateUIWithUser(user) {
+      if (!user) return;
+      globalUser = user;
+      const navLinks = document.querySelectorAll('.header a');
+      const profileLink = Array.from(navLinks).find(a => a.href.includes('profile.html'));
+      if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
 
-          if (user.isAdmin && typeof injectAdminModal === 'function') {
-            injectAdminModal();
-          }
-        }
-      } catch (e) {
-        window.location.href = 'login.html';
+      if (user.isAdmin && typeof injectAdminModal === 'function') {
+        injectAdminModal();
       }
     }
 
@@ -258,7 +250,15 @@
     }
 
     async function init() {
-      await checkAuth();
+      // Use cached user if available from guard
+      if (window.__USER__) {
+        updateUIWithUser(window.__USER__);
+      } else {
+        // Wait for background verify if not in cache yet
+        window.addEventListener('authReady', (e) => updateUIWithUser(e.detail), { once: true });
+      }
+      
+      // Start loading movies immediately (parallel to auth verify)
       await loadMovies();
     }
     init();
