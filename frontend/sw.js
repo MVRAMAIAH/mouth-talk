@@ -25,7 +25,7 @@ self.addEventListener('notificationclick', function(event) {
 });
 
 // Cache basic assets for offline stability and instant second load
-const CACHE_NAME = 'mtalk-cache-v2';
+const CACHE_NAME = 'mtalk-cache-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -76,6 +76,11 @@ self.addEventListener('fetch', (event) => {
   const isImageCdn = url.host.includes('m.media-amazon.com') || url.host.includes('cf-img-a-in.tosshub.com') || url.host.includes('stat5.bollywoodhungama.in') || url.host.includes('t3.ftcdn.net') || url.host.includes('upload.wikimedia.org');
 
   if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Do not cache HTML page navigations to avoid stale pages or authentication redirect loops
+  if (event.request.destination === 'document' || url.pathname.endsWith('.html')) {
     return;
   }
 
