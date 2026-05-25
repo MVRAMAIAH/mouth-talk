@@ -413,7 +413,7 @@
     async function checkCurrentSession() {
       try {
         console.log('Checking existing session...');
-        const res = await fetch('/api/auth/me');
+        const res = await fetch('/api/auth/me?_t=' + Date.now(), { cache: 'no-store' });
         if (res.ok) {
           console.log('Session exists, redirecting to home...');
           window.location.href = '/index.html';

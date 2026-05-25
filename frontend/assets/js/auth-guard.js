@@ -25,7 +25,7 @@
     }
 
     // 2. Background Re-verification (Lite Mode)
-    fetch('/api/auth/me?lite=true')
+    fetch('/api/auth/me?lite=true&_t=' + Date.now(), { cache: 'no-store' })
         .then(function (res) {
             if (!res.ok) throw new Error('Not logged in');
             return res.json();
