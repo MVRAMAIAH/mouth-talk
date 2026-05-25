@@ -42,7 +42,7 @@ const STATIC_ASSETS = [
   '/assets/js/notifications.js',
   '/assets/js/nav-search.js',
   '/assets/js/responsive.js',
-  '/assets/images/land.jpg'
+  '/assets/images/land.webp'
 ];
 
 self.addEventListener('install', (event) => {
@@ -70,8 +70,22 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Do not cache API requests or non-GET requests
-  if (event.request.method !== 'GET' || url.pathname.startsWith('/api/')) {
+  // ONLY cache same-origin GET requests or Google Fonts/image CDNs
+  const isSameOrigin = url.origin === self.location.origin;
+  const isGoogleFont = url.host.includes('fonts.gstatic.com') || url.host.includes('fonts.googleapis.com');
+  const isImageCdn = url.host.includes('m.media-amazon.com') || url.host.includes('cf-img-a-in.tosshub.com') || url.host.includes('stat5.bollywoodhungama.in') || url.host.includes('t3.ftcdn.net') || url.host.includes('upload.wikimedia.org');
+
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Do not cache API requests
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
+
+  // Do not cache third-party APIs (like Firebase Auth / Google APIs)
+  if (!isSameOrigin && !isGoogleFont && !isImageCdn) {
     return;
   }
 

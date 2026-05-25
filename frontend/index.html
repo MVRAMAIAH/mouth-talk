@@ -8,7 +8,7 @@
     <title>MTALK - The Ultimate Movie Destination</title>
 
     <!-- PERF: Preload critical hero background (943KB, LCP element) -->
-    <link rel="preload" href="assets/images/land.jpg" as="image" type="image/jpeg">
+    <link rel="preload" href="assets/images/land.webp" as="image" type="image/webp">
     <!-- PERF: Performance CSS loaded FIRST for GPU hints -->
     <link rel="stylesheet" href="assets/css/performance.css">
 
@@ -36,7 +36,7 @@
 
         body {
             background: black;
-            background-image: url("assets/images/land.jpg");
+            background-image: url("assets/images/land.webp");
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -390,7 +390,7 @@
                     container.style.cssText = 'margin-right:20px;display:inline-block';
 
                     const img = document.createElement('img');
-                    img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + (m.poster.includes('.') ? m.poster : m.poster + '.jpg');
+                    img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + (m.poster.includes('.') ? m.poster : m.poster + '.webp');
                     img.alt = m.title;
                     img.className = 'marquee-img';
                     img.loading = 'lazy';

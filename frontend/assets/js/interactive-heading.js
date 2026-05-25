@@ -62,7 +62,7 @@
                     }
 
                     const elapsed = now - triggerTime;
-                    if (elapsed < 1) {
+                    if (data.el.style.opacity !== '1') {
                         // Just triggered — apply entry transition
                         data.el.style.transition = 'all 0.8s cubic-bezier(0.2, 1, 0.3, 1)';
                         data.el.style.opacity = '1';
