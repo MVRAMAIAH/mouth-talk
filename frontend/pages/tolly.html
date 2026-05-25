@@ -8,7 +8,10 @@
   <title>Mouth Talk – Tollywood</title>
   <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
     type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/performance.css">
   <link rel="stylesheet" href="../assets/css/premium-buttons.css">
   <link rel="stylesheet" href="../assets/css/responsive.css">
   <link rel="stylesheet" href="../assets/css/nav-search.css">
@@ -164,16 +167,16 @@
   <div id="movieGrid" class="movie-grid"></div>
 
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
-  <script src="../assets/js/firebase-init.js"></script>
-  <script src="../assets/js/admin.js"></script>
-  <script src="../assets/js/premium-buttons.js"></script>
-  <script src="../assets/js/responsive.js"></script>
-  <script src="../assets/js/nav-search.js"></script>
-  <script src="../assets/js/notifications.js"></script>
-  <script src="../assets/js/beast-mode-nav.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js" defer></script>
+  <script src="../assets/js/firebase-init.js" defer></script>
+  <script src="../assets/js/admin.js" defer></script>
+  <script src="../assets/js/premium-buttons.js" defer></script>
+  <script src="../assets/js/responsive.js" defer></script>
+  <script src="../assets/js/nav-search.js" defer></script>
+  <script src="../assets/js/notifications.js" defer></script>
+  <script src="../assets/js/beast-mode-nav.js" defer></script>
 
   <script>
     let globalUser = null;
@@ -218,6 +221,8 @@
           const img = document.createElement('img');
           img.alt = m.title || 'Poster';
           img.src = m.poster.startsWith('http') ? m.poster : `../assets/images/${m.poster.includes('.') ? m.poster : m.poster + '.jpg'}`;
+          img.loading = 'lazy';
+          img.decoding = 'async';
 
           const title = document.createElement('span');
           title.className = 'movie-title';

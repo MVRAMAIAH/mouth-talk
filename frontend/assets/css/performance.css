@@ -1,0 +1,149 @@
+/*
+  MTALK Performance Layer
+  GPU acceleration, CSS containment, and offscreen rendering optimizations.
+  This file contains ZERO visual changes — only rendering hints.
+  Load this FIRST for maximum effect.
+*/
+
+/* ─── GPU Compositor Hints ─── */
+
+/* Fixed/sticky positioned elements benefit from their own compositor layer */
+.header {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+/* Marquee track — already GPU-promoted in index.html, reinforce here */
+.marquee-track {
+    backface-visibility: hidden;
+}
+
+/* Login toast — animates opacity and transform */
+.login-toast {
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+}
+
+/* ─── CSS Containment ─── */
+
+/* Isolate header from page reflows */
+.header {
+    contain: layout style;
+}
+
+/* Isolate card containers — changes inside don't trigger page-level reflow */
+.review-card {
+    contain: content;
+}
+
+.comment-item {
+    contain: content;
+}
+
+.notification-item {
+    contain: content;
+}
+
+.search-result-item {
+    contain: layout style;
+}
+
+/* Isolate dropdowns and overlays */
+.notifications-dropdown {
+    contain: content;
+}
+
+.search-results-dropdown {
+    contain: content;
+}
+
+.modal-overlay {
+    contain: layout style;
+}
+
+/* Category boxes on get-started page */
+.box {
+    contain: layout style;
+}
+
+.box-inner {
+    contain: content;
+}
+
+/* Movie grid cards */
+.movie-card-container {
+    contain: content;
+}
+
+/* ─── Offscreen Rendering (content-visibility) ─── */
+
+/* Large scrollable lists — skip rendering until near viewport */
+.reviews-feed {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+}
+
+.comments-list {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 250px;
+}
+
+.notifications-list {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 300px;
+}
+
+/* Category grid — below fold on get-started */
+.container {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+}
+
+/* Movie grids on category pages */
+.movie-grid {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+}
+
+/* ─── Paint Containment for Modal Content ─── */
+.modal-content {
+    contain: layout style;
+}
+
+.modal {
+    contain: layout style;
+}
+
+/* ─── Scroll Performance ─── */
+
+/* Optimize scrollable containers */
+.comments-list,
+.notifications-list,
+.modal-body,
+.search-results-dropdown {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ─── Image Rendering Hints ─── */
+
+/* Hint browser to use faster image decoding for thumbnails */
+.marquee-track img,
+.movie-grid img,
+.box-inner img,
+.notif-avatar,
+.comment-avatar,
+.search-result-avatar,
+.list-avatar {
+    content-visibility: auto;
+    will-change: auto;
+}
+
+/* ─── Reduce Implicit Layer Creation ─── */
+
+/* Ensure z-index stacking doesn't create unnecessary layers */
+.marquee-fade-left,
+.marquee-fade-right {
+    transform: translateZ(0);
+    will-change: auto;
+}

@@ -12,6 +12,7 @@
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
+    will-change: width;
 }
 
 .search-input-wrapper.active {
@@ -29,7 +30,7 @@
     font-family: 'Orbitron', sans-serif;
     font-size: 13px;
     outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .nav-search-input:focus {
@@ -43,10 +44,11 @@
     color: white;
     font-size: 20px;
     cursor: pointer;
-    transition: color 0.3s, transform 0.3s;
+    transition: color 0.3s ease, transform 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    will-change: transform;
 }
 
 .search-toggle-btn:hover {
@@ -72,6 +74,7 @@
     z-index: 2000;
     max-height: 400px;
     overflow-y: auto;
+    contain: content;
 }
 
 .search-results-dropdown.active {
@@ -160,7 +163,7 @@
     font-size: 13px;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
     margin-top: 15px;
     border: 2px solid #FF073A;
     text-transform: uppercase;
@@ -199,7 +202,7 @@
 
 .stat-item {
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.3s ease;
 }
 
 .stat-item:hover {

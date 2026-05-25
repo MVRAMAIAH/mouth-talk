@@ -1,35 +1,46 @@
 /*
   MTALK Responsive Navigation
   Hamburger menu toggle for mobile screens.
+  PERF: Debounced resize, cached DOM refs
 */
 
-function toggleMenu() {
-    const navLinks = document.querySelector('.header .nav-links');
-    const btn = document.querySelector('.hamburger-btn');
-    if (!navLinks || !btn) return;
+// PERF: Cache DOM refs once
+let _navLinks = null;
+let _hamburgerBtn = null;
 
-    navLinks.classList.toggle('active');
-    btn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+function _getNavRefs() {
+    if (!_navLinks) _navLinks = document.querySelector('.header .nav-links');
+    if (!_hamburgerBtn) _hamburgerBtn = document.querySelector('.hamburger-btn');
+}
+
+function toggleMenu() {
+    _getNavRefs();
+    if (!_navLinks || !_hamburgerBtn) return;
+
+    _navLinks.classList.toggle('active');
+    _hamburgerBtn.textContent = _navLinks.classList.contains('active') ? '✕' : '☰';
 }
 
 // Close menu when a nav link is clicked
 document.addEventListener('click', function (e) {
     if (e.target.closest('.nav-links a') || e.target.closest('.nav-links button:not(.hamburger-btn)')) {
-        const navLinks = document.querySelector('.header .nav-links');
-        const btn = document.querySelector('.hamburger-btn');
-        if (navLinks && btn && window.innerWidth <= 768) {
-            navLinks.classList.remove('active');
-            btn.textContent = '☰';
+        _getNavRefs();
+        if (_navLinks && _hamburgerBtn && window.innerWidth <= 768) {
+            _navLinks.classList.remove('active');
+            _hamburgerBtn.textContent = '☰';
         }
     }
 });
 
-// Close menu on resize to desktop
+// PERF: Debounced resize handler — prevents firing on every resize frame
+let _resizeTimer = null;
 window.addEventListener('resize', function () {
-    if (window.innerWidth > 768) {
-        const navLinks = document.querySelector('.header .nav-links');
-        const btn = document.querySelector('.hamburger-btn');
-        if (navLinks) navLinks.classList.remove('active');
-        if (btn) btn.textContent = '☰';
-    }
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(function () {
+        if (window.innerWidth > 768) {
+            _getNavRefs();
+            if (_navLinks) _navLinks.classList.remove('active');
+            if (_hamburgerBtn) _hamburgerBtn.textContent = '☰';
+        }
+    }, 100);
 });

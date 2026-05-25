@@ -1,6 +1,17 @@
-/* nav-search.js */
+/* nav-search.js
+   PERF: Reusable esc element, cached DOM refs, lazy init */
 (function() {
     let searchTimeout = null;
+
+    // PERF: Reusable element for HTML escaping instead of creating new div per call
+    const _escDiv = document.createElement('div');
+    function esc(str) {
+        _escDiv.textContent = str || '';
+        return _escDiv.innerHTML;
+    }
+
+    // PERF: Cached DOM references
+    let _toggleBtn, _inputWrapper, _input, _dropdown;
 
     function initSearch() {
         // 1. Inject HTML into the navbar
@@ -18,7 +29,7 @@
                 🔍
             </button>
             <div class="search-results-dropdown" id="searchResultsDropdown">
-                <!-- Results akan dirender di sini -->
+                <!-- Results rendered here -->
             </div>
         `;
 
@@ -26,25 +37,26 @@
         // Insert search container BEFORE the first nav link
         navLinks.insertBefore(searchContainer, navLinks.firstChild);
 
-        const toggleBtn = document.getElementById('searchToggleBtn');
-        const inputWrapper = document.getElementById('searchInputWrapper');
-        const input = document.getElementById('navSearchInput');
-        const dropdown = document.getElementById('searchResultsDropdown');
+        // PERF: Cache refs once at init
+        _toggleBtn = document.getElementById('searchToggleBtn');
+        _inputWrapper = document.getElementById('searchInputWrapper');
+        _input = document.getElementById('navSearchInput');
+        _dropdown = document.getElementById('searchResultsDropdown');
 
-        toggleBtn.onclick = (e) => {
+        _toggleBtn.onclick = (e) => {
             e.stopPropagation();
-            inputWrapper.classList.toggle('active');
-            if (inputWrapper.classList.contains('active')) {
-                input.focus();
+            _inputWrapper.classList.toggle('active');
+            if (_inputWrapper.classList.contains('active')) {
+                _input.focus();
             } else {
-                dropdown.classList.remove('active');
+                _dropdown.classList.remove('active');
             }
         };
 
-        input.oninput = (e) => {
+        _input.oninput = (e) => {
             const query = e.target.value.trim();
             if (query.length < 2) {
-                dropdown.classList.remove('active');
+                _dropdown.classList.remove('active');
                 return;
             }
 
@@ -58,23 +70,23 @@
         // Close on outside click
         document.onclick = (e) => {
             if (!searchContainer.contains(e.target)) {
-                inputWrapper.classList.remove('active');
-                dropdown.classList.remove('active');
+                _inputWrapper.classList.remove('active');
+                _dropdown.classList.remove('active');
             }
         };
 
-        dropdown.onclick = (e) => e.stopPropagation();
+        _dropdown.onclick = (e) => e.stopPropagation();
     }
 
     async function performSearch(query) {
-        const dropdown = document.getElementById('searchResultsDropdown');
-        dropdown.innerHTML = `
+        if (!_dropdown) return;
+        _dropdown.innerHTML = `
             <div class="search-loading">
                 <div class="spinner"></div>
                 Searching for "${esc(query)}"...
             </div>
         `;
-        dropdown.classList.add('active');
+        _dropdown.classList.add('active');
 
         try {
             const res = await fetch(`/api/users/search?query=${encodeURIComponent(query)}`);
@@ -83,13 +95,14 @@
             const users = await res.json();
 
             if (users.length === 0) {
-                dropdown.innerHTML = `<div class="search-no-results">No users found for "${esc(query)}"</div>`;
+                _dropdown.innerHTML = `<div class="search-no-results">No users found for "${esc(query)}"</div>`;
                 return;
             }
 
-            dropdown.innerHTML = users.map(u => `
+            // PERF: Single innerHTML assignment
+            _dropdown.innerHTML = users.map(u => `
                 <div class="search-result-item" onclick="window.location.href='/pages/user-details.html?id=${u.uid}'">
-                    <img class="search-result-avatar" src="${u.picture || 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png'}" alt="">
+                    <img class="search-result-avatar" src="${u.picture || 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png'}" alt="" loading="lazy" decoding="async">
                     <div class="search-result-info">
                         <div class="search-result-name">${esc(u.username)}</div>
                         ${u.badge ? `<div class="search-result-badge">${u.badge}</div>` : ''}
@@ -99,14 +112,8 @@
 
         } catch (err) {
             console.error(err);
-            dropdown.innerHTML = `<div class="search-no-results" style="color:#ff073a">Error searching users.</div>`;
+            _dropdown.innerHTML = `<div class="search-no-results" style="color:#ff073a">Error searching users.</div>`;
         }
-    }
-
-    function esc(str) {
-        const d = document.createElement('div');
-        d.textContent = str || '';
-        return d.innerHTML;
     }
 
     // Initialize when DOM is ready

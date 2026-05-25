@@ -4,10 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MTALK - The Ultimate Movie Review Destination. Discover, review, and discuss the latest movies across Tollywood, Bollywood, Kollywood, Hollywood and more.">
     <title>MTALK - The Ultimate Movie Destination</title>
+
+    <!-- PERF: Preload critical hero background (943KB, LCP element) -->
+    <link rel="preload" href="assets/images/land.jpg" as="image" type="image/jpeg">
+    <!-- PERF: Performance CSS loaded FIRST for GPU hints -->
+    <link rel="stylesheet" href="assets/css/performance.css">
 
     <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
         type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/interactive-heading.css">
     <link rel="stylesheet" href="assets/css/premium-buttons.css">
@@ -72,7 +80,7 @@
             color: white;
             font-size: 18px;
             font-weight: 500;
-            transition: 0.3s;
+            transition: color 0.3s ease;
             white-space: nowrap;
         }
 
@@ -293,13 +301,13 @@
         </div>
     </div>
 
-    <script src="assets/js/admin.js"></script>
-    <script src="assets/js/interactive-heading.js"></script>
-    <script src="assets/js/premium-buttons.js"></script>
-    <script src="assets/js/responsive.js"></script>
-    <script src="assets/js/nav-search.js"></script>
-    <script src="assets/js/notifications.js"></script>
-    <script src="assets/js/beast-mode-nav.js"></script>
+    <script src="assets/js/admin.js" defer></script>
+    <script src="assets/js/interactive-heading.js" defer></script>
+    <script src="assets/js/premium-buttons.js" defer></script>
+    <script src="assets/js/responsive.js" defer></script>
+    <script src="assets/js/nav-search.js" defer></script>
+    <script src="assets/js/notifications.js" defer></script>
+    <script src="assets/js/beast-mode-nav.js" defer></script>
     <script>
         let globalUser = null;
         let isLoggedIn = false;
@@ -372,100 +380,155 @@
             const track = document.getElementById('marqueeTrack');
             if (!track || !movies || movies.length === 0) return;
 
-            // Duplicate movies for seamless loop
+            // PERF: Build all elements into a DocumentFragment first, then append once
+            const fragment = document.createDocumentFragment();
             const totalLoops = 3;
             for (let r = 0; r < totalLoops; r++) {
                 movies.forEach(m => {
                     const container = document.createElement('div');
                     container.className = 'movie-card';
-                    container.style.marginRight = '20px';
-                    container.style.display = 'inline-block';
+                    container.style.cssText = 'margin-right:20px;display:inline-block';
 
                     const img = document.createElement('img');
                     img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + (m.poster.includes('.') ? m.poster : m.poster + '.jpg');
                     img.alt = m.title;
                     img.className = 'marquee-img';
+                    img.loading = 'lazy';
+                    img.decoding = 'async';
                     img.onclick = () => location.href = 'pages/movie.html?id=' + m.id;
 
                     container.appendChild(img);
-                    track.appendChild(container);
+                    fragment.appendChild(container);
                 });
             }
+            // Single DOM append — avoids N reflows
+            track.appendChild(fragment);
 
             startScroll(track);
         }
 
         function startScroll(track) {
             let pos = 0;
-            const speed = 0.5; // Slightly slower for cinematic feel
+            const speed = 0.5;
             const oneSetWidth = track.scrollWidth / 3;
             let paused = false;
 
             const wrapper = document.querySelector('.marquee-wrapper');
-            const images = Array.from(track.querySelectorAll('.marquee-img'));
+            const images = track.querySelectorAll('.marquee-img');
+            const imgCount = images.length;
 
-            // Pre-calculate base positions and initialize per-image state
-            const imgData = images.map(img => ({
-                el: img,
-                baseCenter: img.parentElement.offsetLeft + img.parentElement.offsetWidth / 2,
-                currentScale: 1
-            }));
+            // PERF: Pre-calculate base positions into typed arrays for cache-friendly iteration
+            const baseCenters = new Float64Array(imgCount);
+            const currentScales = new Float64Array(imgCount);
+            const prevZIndex = new Array(imgCount);
+            const prevBorderColor = new Array(imgCount);
+            const prevBoxShadow = new Array(imgCount);
+
+            for (let i = 0; i < imgCount; i++) {
+                const img = images[i];
+                baseCenters[i] = img.parentElement.offsetLeft + img.parentElement.offsetWidth / 2;
+                currentScales[i] = 1;
+                prevZIndex[i] = '';
+                prevBorderColor[i] = '';
+                prevBoxShadow[i] = '';
+            }
 
             track.onmouseenter = () => { paused = true; };
             track.onmouseleave = () => { paused = false; };
 
-            function updateZoom() {
-                const wrapperRect = wrapper.getBoundingClientRect();
-                const centerX = wrapperRect.left + wrapperRect.width / 2;
-                const trackLeft = track.getBoundingClientRect().left;
-                const lerpFactor = 0.15; // Smoothness control
+            // Cache dimensions to avoid layout thrashing inside requestAnimationFrame
+            let wrapperRect = wrapper.getBoundingClientRect();
+            let wrapperLeft = wrapperRect.left;
+            let wrapperWidth = wrapperRect.width;
+            let initialTrackLeft = track.getBoundingClientRect().left;
 
-                imgData.forEach(data => {
-                    const img = data.el;
-                    // Current absolute center on page
-                    const currentCenter = trackLeft + data.baseCenter;
+            // PERF: Debounce resize to avoid layout thrashing during resize
+            let resizeTimer = null;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    wrapperRect = wrapper.getBoundingClientRect();
+                    wrapperLeft = wrapperRect.left;
+                    wrapperWidth = wrapperRect.width;
+                    const oldTransform = track.style.transform;
+                    track.style.transform = 'none';
+                    initialTrackLeft = track.getBoundingClientRect().left;
+                    track.style.transform = oldTransform;
+                }, 150);
+            });
+
+            // PERF: Pre-compute constants
+            const lerpFactor = 0.15;
+            const maxDist = 300;
+            const halfPI = Math.PI / 2;
+            const DEFAULT_BORDER = 'rgba(255, 7, 58, 0.2)';
+            const DEFAULT_SHADOW = '0 10px 25px rgba(0, 0, 0, 0.5)';
+            const HOVER_BORDER = '#FF073A';
+            const HOVER_SHADOW = '0 0 35px rgba(255, 7, 58, 0.8)';
+
+            function updateZoom() {
+                const centerX = wrapperLeft + wrapperWidth / 2;
+                const trackLeft = initialTrackLeft + pos;
+
+                // === READ PHASE: Gather all hover states FIRST ===
+                // PERF: Batch all :hover checks before any writes to avoid forced style recalc
+                const hoverStates = new Uint8Array(imgCount);
+                for (let i = 0; i < imgCount; i++) {
+                    hoverStates[i] = images[i].matches(':hover') ? 1 : 0;
+                }
+
+                // === WRITE PHASE: Apply all style changes ===
+                for (let i = 0; i < imgCount; i++) {
+                    const img = images[i];
+                    const currentCenter = trackLeft + baseCenters[i];
                     const distance = Math.abs(centerX - currentCenter);
-                    const maxDist = 300; // Zoom effective range
 
                     let targetScale = 1;
+                    let targetBorderColor = DEFAULT_BORDER;
+                    let targetBoxShadow = DEFAULT_SHADOW;
+                    let targetZIndex = '1';
 
-                    if (img.matches(':hover')) {
+                    if (hoverStates[i]) {
                         targetScale = 1.45;
-                        img.style.zIndex = '100';
-                        img.style.borderColor = '#FF073A';
-                        img.style.boxShadow = '0 0 35px rgba(255, 7, 58, 0.8)';
+                        targetZIndex = '100';
+                        targetBorderColor = HOVER_BORDER;
+                        targetBoxShadow = HOVER_SHADOW;
                     } else if (distance < maxDist) {
-                        // Cosine curve for smoother zoom falloff
                         const relDist = distance / maxDist;
-                        targetScale = 1 + (0.35 * Math.cos(relDist * Math.PI / 2));
+                        targetScale = 1 + (0.35 * Math.cos(relDist * halfPI));
+                        targetZIndex = distance < 60 ? '50' : String(10 - (distance / 30) | 0);
 
-                        // Z-index based on proximity to center
-                        img.style.zIndex = distance < 60 ? '50' : Math.floor(10 - distance / 30);
-
-                        // Dynamic glow
                         if (distance < 100) {
-                            img.style.borderColor = `rgba(255, 7, 58, ${0.4 * (1 - distance / 100)})`;
-                        } else {
-                            img.style.borderColor = 'rgba(255, 7, 58, 0.2)';
+                            const opacity = (0.4 * (1 - distance / 100)).toFixed(2);
+                            targetBorderColor = `rgba(255, 7, 58, ${opacity})`;
                         }
-                    } else {
-                        targetScale = 1;
-                        img.style.zIndex = '1';
-                        img.style.borderColor = 'rgba(255, 7, 58, 0.2)';
-                        img.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.5)';
                     }
 
-                    // Smoothly transition scale
-                    data.currentScale += (targetScale - data.currentScale) * lerpFactor;
-                    img.style.transform = `scale(${data.currentScale})`;
-                });
+                    // PERF: Only touch DOM when values actually changed
+                    if (prevZIndex[i] !== targetZIndex) {
+                        img.style.zIndex = targetZIndex;
+                        prevZIndex[i] = targetZIndex;
+                    }
+                    if (prevBorderColor[i] !== targetBorderColor) {
+                        img.style.borderColor = targetBorderColor;
+                        prevBorderColor[i] = targetBorderColor;
+                    }
+                    if (prevBoxShadow[i] !== targetBoxShadow) {
+                        img.style.boxShadow = targetBoxShadow;
+                        prevBoxShadow[i] = targetBoxShadow;
+                    }
+
+                    // Smoothly lerp scale on GPU
+                    currentScales[i] += (targetScale - currentScales[i]) * lerpFactor;
+                    img.style.transform = `scale3d(${currentScales[i]}, ${currentScales[i]}, 1) translateZ(0)`;
+                }
             }
 
             function frame() {
                 if (!paused && oneSetWidth > 0) {
                     pos -= speed;
                     if (Math.abs(pos) >= oneSetWidth) pos = 0;
-                    track.style.transform = 'translateX(' + pos + 'px)';
+                    track.style.transform = 'translate3d(' + pos + 'px, 0, 0)';
                 }
                 updateZoom();
                 requestAnimationFrame(frame);

@@ -1,6 +1,17 @@
-/* notifications.js */
+/* notifications.js
+   PERF: Cached DOM refs at init, reusable esc element, avoid redundant getElementById calls */
 (function() {
     const NOTIF_POLL_INTERVAL = 60000; // Poll every 60 seconds
+
+    // PERF: Reusable element for HTML escaping instead of creating a new one per call
+    const _escDiv = document.createElement('div');
+    function esc(str) {
+        _escDiv.textContent = str || '';
+        return _escDiv.innerHTML;
+    }
+
+    // PERF: Cached DOM references — avoids getElementById on every poll/render cycle
+    let _btn, _dropdown, _markAll, _badge, _list;
 
     function initNotifications() {
         const navLinks = document.querySelector('.nav-links');
@@ -29,14 +40,16 @@
         // Prepend to nav-links (or adjust placement as needed)
         navLinks.insertBefore(wrapper, navLinks.firstChild);
 
-        // Event Listeners
-        const btn = document.getElementById('notifBtn');
-        const dropdown = document.getElementById('notifDropdown');
-        const markAll = document.getElementById('markAllRead');
+        // PERF: Cache all DOM refs once at init
+        _btn = document.getElementById('notifBtn');
+        _dropdown = document.getElementById('notifDropdown');
+        _markAll = document.getElementById('markAllRead');
+        _badge = document.getElementById('notifBadge');
+        _list = document.getElementById('notifList');
 
-        btn.addEventListener('click', (e) => {
+        _btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const isActive = dropdown.classList.toggle('active');
+            const isActive = _dropdown.classList.toggle('active');
             if (isActive) {
                 fetchNotifications();
             }
@@ -44,11 +57,11 @@
 
         document.addEventListener('click', (e) => {
             if (!wrapper.contains(e.target)) {
-                dropdown.classList.remove('active');
+                _dropdown.classList.remove('active');
             }
         });
 
-        markAll.addEventListener('click', async (e) => {
+        _markAll.addEventListener('click', async (e) => {
             e.stopPropagation();
             try {
                 await fetch('/api/notifications/mark-read', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
@@ -69,12 +82,12 @@
             const res = await fetch('/api/notifications/unread-count');
             if (!res.ok) return;
             const { count } = await res.json();
-            const badge = document.getElementById('notifBadge');
+            if (!_badge) return;
             if (count > 0) {
-                badge.textContent = count > 99 ? '99+' : count;
-                badge.classList.add('active');
+                _badge.textContent = count > 99 ? '99+' : count;
+                _badge.classList.add('active');
             } else {
-                badge.classList.remove('active');
+                _badge.classList.remove('active');
             }
         } catch (err) {
             // Ignore error for polling
@@ -82,20 +95,21 @@
     }
 
     async function fetchNotifications() {
-        const list = document.getElementById('notifList');
+        if (!_list) return;
         try {
             const res = await fetch('/api/notifications');
             if (!res.ok) throw new Error('Fetch failed');
             const notifications = await res.json();
 
             if (notifications.length === 0) {
-                list.innerHTML = '<div class="no-notifications">No notifications yet.</div>';
+                _list.innerHTML = '<div class="no-notifications">No notifications yet.</div>';
                 return;
             }
 
-            list.innerHTML = notifications.map(n => `
+            // PERF: Build HTML string in one pass, assign once (single innerHTML write)
+            _list.innerHTML = notifications.map(n => `
                 <div class="notification-item ${n.isRead ? '' : 'unread'}" onclick="handleNotifClick('${n._id}', '${n.type}', '${n.referenceId}')">
-                    <img class="notif-avatar" src="${n.senderAvatar || 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png'}" alt="">
+                    <img class="notif-avatar" src="${n.senderAvatar || 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Icon-round-Question_mark.svg/768px-Icon-round-Question_mark.svg.png'}" alt="" loading="lazy" decoding="async">
                     <div class="notif-content">
                         <div class="notif-text"><span class="notif-sender">${esc(n.senderName)}</span> ${n.text}</div>
                         <div class="notif-time">${formatTime(n.createdAt)}</div>
@@ -103,7 +117,7 @@
                 </div>
             `).join('');
         } catch (err) {
-            list.innerHTML = '<div class="no-notifications">Failed to load notifications.</div>';
+            _list.innerHTML = '<div class="no-notifications">Failed to load notifications.</div>';
         }
     }
 
@@ -121,16 +135,6 @@
             if (type === 'follow') {
                 window.location.href = `/pages/user-details.html?id=${refId}`;
             } else if (type === 'review_like' || type === 'comment_new' || type === 'comment_reply' || type === 'comment_like') {
-                // If refId is reviewId, go to movie.html or similar? 
-                // Actually, most these refer to a reviewId.
-                // We should go to movie.html?id=... but we don't have the movieId here.
-                // For now, let's just go to user profile or something general if we can't deep link.
-                // Wait, referenceId for review_like IS reviewId. 
-                // Better approach: Let's redirect to movie.html if we can? 
-                // But we don't know the movieId from the reviewId alone in this notification object.
-                // Standard: For now, refresh or go to the relevant object.
-                // Let's assume refId is enough to find the context in some cases.
-                // Alternatively, I'll go to the user-details.html of the sender.
                 window.location.href = `/pages/user-details.html?id=${refId}`; // Fallback
             }
         } catch (err) {
@@ -154,12 +158,6 @@
         return date.toLocaleDateString();
     }
 
-    function esc(str) {
-        const d = document.createElement('div');
-        d.textContent = str || '';
-        return d.innerHTML;
-    }
-
     // Start
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
@@ -178,7 +176,6 @@
                 console.log('SW Registered:', reg.scope);
                 
                 // If user is logged in, attempt to subscribe
-                // We'll check for a logged in state (globalUser or checking auth/me)
                 checkAndSubscribe(reg);
             } catch (err) {
                 console.error('SW Registration failed:', err);

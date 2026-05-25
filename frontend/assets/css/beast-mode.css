@@ -10,6 +10,14 @@
   --mt-blur: blur(20px);
 }
 
+/* --- Offscreen Rendering Containment for dynamic scrolling lists --- */
+.reviews-feed,
+.movie-grid,
+.comments-list {
+  content-visibility: auto;
+  contain-intrinsic-size: 400px;
+}
+
 /* --- Global Haptic Simulation --- */
 button, .btn, .nav-item, .clickable {
   transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
@@ -58,8 +66,8 @@ html {
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from { transform: translate3d(0, 100%, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
 .nav-item {
@@ -72,12 +80,12 @@ html {
   font-size: 10px;
   gap: 4px;
   flex: 1;
-  transition: 0.3s;
+  transition: color 0.3s ease;
 }
 
 .nav-item i, .nav-item span.icon {
   font-size: 22px;
-  transition: 0.3s;
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .nav-item.active {
@@ -133,15 +141,17 @@ html {
     max-width: 100% !important;
     margin: 0 !important;
     border-radius: 25px 25px 0 0 !important;
-    transform: translateY(100%);
+    transform: translate3d(0, 100%, 0);
     animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     max-height: 85vh;
     overflow-y: auto;
     padding-bottom: 90px !important; /* Space for bottom nav */
+    contain: layout style;
+    will-change: transform;
   }
 
   @keyframes slideUp {
-    to { transform: translateY(0); }
+    to { transform: translate3d(0, 0, 0); }
   }
 
   /* Handle for Bottom Sheet */

@@ -40,7 +40,9 @@
         filter 0.4s ease,
         letter-spacing 0.4s ease;
 
-    will-change: transform, filter, letter-spacing;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
     animation: floating 4s ease-in-out infinite;
     animation-delay: var(--delay);
 }
@@ -50,7 +52,7 @@
     content: "";
     position: absolute;
     top: 0;
-    left: -100%;
+    left: 0;
     width: 50%;
     height: 100%;
     background: linear-gradient(90deg,
@@ -59,15 +61,16 @@
             transparent);
     animation: shimmer 8s infinite linear;
     pointer-events: none;
+    will-change: transform;
 }
 
 @keyframes shimmer {
     0% {
-        left: -100%;
+        transform: translate3d(-200%, 0, 0);
     }
 
     100% {
-        left: 200%;
+        transform: translate3d(400%, 0, 0);
     }
 }
 
@@ -75,11 +78,11 @@
 
     0%,
     100% {
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
     }
 
     50% {
-        transform: translateY(-8px);
+        transform: translate3d(0, -8px, 0);
     }
 }
 
