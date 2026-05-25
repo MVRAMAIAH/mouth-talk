@@ -79,8 +79,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Do not cache API requests
-  if (url.pathname.startsWith('/api/')) {
+  // Do not cache API requests or Firebase auth utility routes
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/__/')) {
     return;
   }
 
