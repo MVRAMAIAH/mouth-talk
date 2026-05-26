@@ -165,7 +165,6 @@
                     for (let i = 0; i < letters.length; i++) {
                         const span = letters[i].el;
                         span.style.transform = '';
-                        span.style.color = 'rgba(255, 255, 255, 0.2)';
                         span.classList.remove('active');
                     }
                 });
