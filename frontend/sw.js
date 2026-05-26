@@ -25,7 +25,7 @@ self.addEventListener('notificationclick', function(event) {
 });
 
 // Cache basic assets for offline stability and instant second load
-const CACHE_NAME = 'mtalk-cache-v3';
+const CACHE_NAME = 'mtalk-cache-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

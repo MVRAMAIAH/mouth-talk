@@ -301,11 +301,16 @@
         const res = await fetch('/api/auth/google', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ idToken })
         });
 
         if (res.ok) {
           const data = await res.json();
+          // Cache user for auth-guard optimistic rendering
+          if (data.user) {
+            sessionStorage.setItem('mt_user', JSON.stringify(data.user));
+          }
           if (data.isNewUser) {
             window.location.href = 'onboarding.html';
           } else {
@@ -381,11 +386,16 @@
         const res = await fetch('/api/auth/phone', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ idToken, fullName: name })
         });
 
         if (res.ok) {
           const data = await res.json();
+          // Cache user for auth-guard optimistic rendering
+          if (data.user) {
+            sessionStorage.setItem('mt_user', JSON.stringify(data.user));
+          }
           if (data.isNewUser) {
             window.location.href = 'onboarding.html';
           } else {
@@ -413,7 +423,7 @@
     async function checkCurrentSession() {
       try {
         console.log('Checking existing session...');
-        const res = await fetch('/api/auth/me?_t=' + Date.now(), { cache: 'no-store' });
+        const res = await fetch('/api/auth/me?_t=' + Date.now(), { cache: 'no-store', credentials: 'include' });
         if (res.ok) {
           console.log('Session exists, redirecting to home...');
           window.location.href = '/index.html';

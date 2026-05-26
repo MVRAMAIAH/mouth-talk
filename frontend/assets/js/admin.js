@@ -214,7 +214,12 @@ function openModal(movieData = null) {
         if (movieData.poster) {
             const tempPreview = document.getElementById('posterPreview');
             if (tempPreview) {
-                tempPreview.src = movieData.poster;
+                if (movieData.poster.startsWith('http') || movieData.poster.startsWith('data:')) {
+                    tempPreview.src = movieData.poster;
+                } else {
+                    const filename = movieData.poster.includes('.') ? movieData.poster : movieData.poster + '.webp';
+                    tempPreview.src = '/assets/images/' + encodeURIComponent(filename);
+                }
                 tempPreview.style.display = 'block';
             }
         }

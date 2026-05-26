@@ -227,7 +227,8 @@
 
                     const img = document.createElement('img');
                     img.alt = m.title || 'Poster';
-                    img.src = m.poster.startsWith('http') ? m.poster : `/assets/images/${m.poster.includes('.') ? m.poster : m.poster + '.webp'}`;
+                    const filename = m.poster.includes('.') ? m.poster : m.poster + '.webp';
+                    img.src = m.poster.startsWith('http') ? m.poster : `/assets/images/${encodeURIComponent(filename)}`;
 
                     const title = document.createElement('span');
                     title.className = 'movie-title';

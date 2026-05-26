@@ -390,7 +390,8 @@
                     container.style.cssText = 'margin-right:20px;display:inline-block';
 
                     const img = document.createElement('img');
-                    img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + (m.poster.includes('.') ? m.poster : m.poster + '.webp');
+                    const filename = m.poster.includes('.') ? m.poster : m.poster + '.webp';
+                    img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + encodeURIComponent(filename);
                     img.alt = m.title;
                     img.className = 'marquee-img';
                     img.loading = 'lazy';
