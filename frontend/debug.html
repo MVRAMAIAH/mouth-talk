@@ -70,7 +70,7 @@
             // 2. Check Auth Endpoint
             try {
                 log('Testing /api/auth/me...');
-                const res = await fetch('/api/auth/me');
+                const res = await fetch('/api/auth/me', { credentials: 'include' });
                 log(`Status: ${res.status} ${res.statusText}`);
                 if (res.status === 401) {
                     log('Auth endpoint reached (401 is normal for anonymous).', 'success');

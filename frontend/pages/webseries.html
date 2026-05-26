@@ -180,7 +180,7 @@
         let globalUser = null;
         async function checkAuth() {
             try {
-                const res = await fetch('/api/auth/me');
+                const res = await fetch('/api/auth/me', { credentials: 'include' });
                 if (!res.ok) window.location.href = 'login.html';
                 else {
                     const user = await res.json();

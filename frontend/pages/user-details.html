@@ -481,7 +481,7 @@
             try {
                 const [res, viewerFollowingRes] = await Promise.all([
                     fetch(`/api/users/${uid}/${type}`),
-                    fetch('/api/auth/me') // To find mutuals
+                    fetch('/api/auth/me', { credentials: 'include' }) // To find mutuals
                 ]);
                 
                 if (!res.ok) throw new Error('Fetch failed');
