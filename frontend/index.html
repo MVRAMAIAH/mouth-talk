@@ -349,14 +349,26 @@
 
         async function init() {
             try {
-                // Initialize UI with user data if available
-                if (window.__USER__) {
-                    updateUIWithUser(window.__USER__);
-                } else {
-                    window.addEventListener('authReady', (e) => updateUIWithUser(e.detail), { once: true });
+                // Check if user is logged in by calling the API
+                try {
+                    const authRes = await fetch('/api/auth/me?lite=true&_t=' + Date.now(), { cache: 'no-store', credentials: 'include' });
+                    if (authRes.ok) {
+                        const user = await authRes.json();
+                        if (user) {
+                            updateUIWithUser(user);
+                        }
+                    } else {
+                        // Not logged in — show the login link in nav
+                        const loginLink = document.getElementById('navLoginLink');
+                        if (loginLink) loginLink.style.display = 'inline-block';
+                    }
+                } catch (authErr) {
+                    console.log('Auth check failed:', authErr);
+                    const loginLink = document.getElementById('navLoginLink');
+                    if (loginLink) loginLink.style.display = 'inline-block';
                 }
 
-                // Fetch movies (lite check happening in background via auth-guard)
+                // Fetch movies
                 const moviesRes = await fetch('/api/movies').then(res => res.json()).catch(() => []);
                 renderMarquee(moviesRes);
             } catch (err) {

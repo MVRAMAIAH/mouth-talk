@@ -314,7 +314,7 @@
           if (data.isNewUser) {
             window.location.href = 'onboarding.html';
           } else {
-            window.location.href = '../index.html';
+            window.location.href = 'get-started.html';
           }
         } else {
           const data = await res.json();
@@ -399,7 +399,7 @@
           if (data.isNewUser) {
             window.location.href = 'onboarding.html';
           } else {
-            window.location.href = '../index.html';
+            window.location.href = 'get-started.html';
           }
         } else {
           const data = await res.json();
@@ -419,20 +419,8 @@
       confirmationResult = null;
     }
 
-    // Auto-login check
-    async function checkCurrentSession() {
-      try {
-        console.log('Checking existing session...');
-        const res = await fetch('/api/auth/me?_t=' + Date.now(), { cache: 'no-store', credentials: 'include' });
-        if (res.ok) {
-          console.log('Session exists, redirecting to home...');
-          window.location.href = '/index.html';
-        }
-      } catch (e) {
-        console.log('No active session.');
-      }
-    }
-    setTimeout(checkCurrentSession, 100);
+    // Auto-login check — disabled to prevent redirect loops
+    // Users who are already logged in can navigate normally from index.html
 
   </script>
 
