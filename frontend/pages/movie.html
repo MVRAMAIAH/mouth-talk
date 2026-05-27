@@ -126,7 +126,7 @@
 <body>
 
   <div class="header" style="backdrop-filter:blur(10px);z-index:1000">
-    <div class="logo" onclick="location.href='get-started.html'" style="color:#FF073A;text-transform:uppercase">MTALK
+    <div class="logo" onclick="location.href='../index.html'" style="color:#FF073A;text-transform:uppercase">MTALK
     </div>
     <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
     <div class="nav-links">
@@ -172,7 +172,7 @@
     // Parse movie id from query string: pages/movie.html?id=hit3
     function getMovieId() { const p = new URLSearchParams(location.search); return p.get('id') || p.get('movie') }
 
-    function renderNotFound() { document.getElementById('content').innerHTML = `<div class="notfound"><h2>Movie not found</h2><p>Return <a class="back" href="get-started.html">Home</a></p></div>` }
+    function renderNotFound() { document.getElementById('content').innerHTML = `<div class="notfound"><h2>Movie not found</h2><p>Return <a class="back" href="../index.html">Home</a></p></div>` }
 
     async function loadMovie() {
       const id = getMovieId();

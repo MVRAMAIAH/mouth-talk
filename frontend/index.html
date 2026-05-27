@@ -273,11 +273,11 @@
     </div>
 
     <div class="header">
-        <div class="logo" onclick="handleAuthNav('pages/get-started.html')">MTALK</div>
+        <div class="logo" onclick="window.location.href='index.html'">MTALK</div>
         <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
         <div class="nav-links">
             <button class="add-movie-btn admin-only premium-btn" onclick="openModal()">+ Add Movie</button>
-            <a href="#" onclick="handleAuthNav('pages/get-started.html'); return false;">Home</a>
+            <a href="index.html">Home</a>
             <a href="#" onclick="handleAuthNav('pages/profile.html'); return false;">Profile</a>
             <a href="#" onclick="handleAuthNav('pages/location.html'); return false;">Location</a>
             <a href="#" onclick="handleAuthNav('pages/about.html'); return false;">About</a>
@@ -403,7 +403,7 @@
 
                     const img = document.createElement('img');
                     const filename = m.poster.includes('.') ? m.poster : m.poster + '.webp';
-                    img.src = m.poster.startsWith('http') ? m.poster : 'assets/images/' + encodeURIComponent(filename);
+                    img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + encodeURIComponent(filename);
                     img.alt = m.title;
                     img.className = 'marquee-img';
                     img.loading = 'lazy';
