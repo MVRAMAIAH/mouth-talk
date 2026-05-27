@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mouth Talk – Kollywood</title>
-    <link rel="icon" href="../assets/images/ps.webp" type="image/png" />
+    <link rel="icon" href="../assets/images/ps.jpg" type="image/png" />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="../assets/css/performance.css">
     <link rel="stylesheet" href="../assets/css/premium-buttons.css">
@@ -218,7 +218,7 @@
 
                     const img = document.createElement('img');
                     img.alt = m.title || 'Poster';
-                    const filename = m.poster.includes('.') ? m.poster : m.poster + '.webp';
+                    const filename = m.poster.includes('.') ? m.poster : m.poster + '.jpg';
                     img.src = m.poster.startsWith('http') ? m.poster : `/assets/images/${encodeURIComponent(filename)}`;
 
                     const title = document.createElement('span');

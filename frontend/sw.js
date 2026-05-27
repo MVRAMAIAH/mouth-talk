@@ -25,7 +25,7 @@ self.addEventListener('notificationclick', function(event) {
 });
 
 // Cache basic assets for offline stability and instant second load
-const CACHE_NAME = 'mtalk-cache-v5';
+const CACHE_NAME = 'mtalk-cache-v6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -42,7 +42,7 @@ const STATIC_ASSETS = [
   '/assets/js/notifications.js',
   '/assets/js/nav-search.js',
   '/assets/js/responsive.js',
-  '/assets/images/land.webp'
+  '/assets/images/land.jpg'
 ];
 
 self.addEventListener('install', (event) => {

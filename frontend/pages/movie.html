@@ -191,7 +191,7 @@
 
         document.title = movie.title + ' · MTALK';
 
-        const filename = movie.poster.includes('.') ? movie.poster : movie.poster + '.webp';
+        const filename = movie.poster.includes('.') ? movie.poster : movie.poster + '.jpg';
         const imgSrc = movie.poster.startsWith('http') ? movie.poster : '../assets/images/' + encodeURIComponent(filename);
 
         const html = `

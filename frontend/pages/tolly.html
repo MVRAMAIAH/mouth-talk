@@ -220,7 +220,7 @@
 
           const img = document.createElement('img');
           img.alt = m.title || 'Poster';
-          const filename = m.poster.includes('.') ? m.poster : m.poster + '.webp';
+          const filename = m.poster.includes('.') ? m.poster : m.poster + '.jpg';
           img.src = m.poster.startsWith('http') ? m.poster : `../assets/images/${encodeURIComponent(filename)}`;
           img.loading = 'lazy';
           img.decoding = 'async';
