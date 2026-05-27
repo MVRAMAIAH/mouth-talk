@@ -48,9 +48,7 @@ router.post('/google', async (req, res) => {
             writeUsersJSON(users);
         }
         const token = generateToken(user);
-        const isLocalhost = req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'));
-        const isProd = process.env.NODE_ENV === 'production' && !isLocalhost;
-        res.cookie('token', token, { httpOnly: true, secure: isProd, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/' });
+        res.cookie('token', token, { httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/' });
         res.json({ success: true, user, isNewUser: !user.onboardingComplete });
     } catch (e) { console.error('Google Auth Error:', e); res.status(401).json({ error: 'Invalid Google token' }); }
 });
@@ -78,9 +76,7 @@ router.post('/phone', async (req, res) => {
             writeUsersJSON(users);
         }
         const token = generateToken(user);
-        const isLocalhost = req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'));
-        const isProd = process.env.NODE_ENV === 'production' && !isLocalhost;
-        res.cookie('token', token, { httpOnly: true, secure: isProd, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/' });
+        res.cookie('token', token, { httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/' });
         res.json({ success: true, user, isNewUser: !user.onboardingComplete });
     } catch (e) { console.error('Phone Auth Error:', e); res.status(401).json({ error: 'Invalid Phone token' }); }
 });
@@ -127,7 +123,7 @@ router.get('/me', authMiddleware, async (req, res) => {
 });
 
 router.post('/logout', (req, res) => {
-    res.clearCookie('token', { path: '/', secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+    res.clearCookie('token', { path: '/', sameSite: 'lax' });
     res.json({ success: true, message: 'Logged out successfully' });
 });
 

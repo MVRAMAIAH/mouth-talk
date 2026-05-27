@@ -391,7 +391,7 @@
 
                     const img = document.createElement('img');
                     const filename = m.poster.includes('.') ? m.poster : m.poster + '.webp';
-                    img.src = m.poster.startsWith('http') ? m.poster : '/assets/images/' + encodeURIComponent(filename);
+                    img.src = m.poster.startsWith('http') ? m.poster : 'assets/images/' + encodeURIComponent(filename);
                     img.alt = m.title;
                     img.className = 'marquee-img';
                     img.loading = 'lazy';
