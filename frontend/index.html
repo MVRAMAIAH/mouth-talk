@@ -110,7 +110,7 @@
             position: relative;
             overflow: hidden;
             width: 75vw;
-            margin: 0 auto 10px;
+            margin: 0 auto 20px;
             height: 380px;
             display: flex;
             align-items: center;
@@ -185,21 +185,62 @@
                 font-size: 40px;
             }
             .marquee-wrapper {
-                width: 85vw;
+                width: 90vw;
+                height: 300px;
+                margin-bottom: 30px;
+            }
+            .hero-content {
+                margin-top: 0;
+                gap: 8px;
+            }
+            .bottom-section {
+                padding: 100px 0 50px;
             }
         }
 
         @media (max-width: 480px) {
             .heading {
-                font-size: 32px;
+                font-size: 28px;
             }
             .marquee-wrapper {
-                width: 95vw;
-                height: 200px;
+                width: 100vw;
+                height: 220px;
+                margin-bottom: 24px;
+                border-radius: 0;
+            }
+            .marquee-track {
+                gap: 14px;
+                padding: 40px 0;
+            }
+            .marquee-track img {
+                width: 80px;
+                height: 115px;
+                border-radius: 10px;
+            }
+            .marquee-fade-left,
+            .marquee-fade-right {
+                width: 30px;
             }
             .movie-card img {
-                width: 100px;
-                height: 150px;
+                width: 80px;
+                height: 115px;
+            }
+            .hero-content {
+                margin-top: 0;
+                gap: 6px;
+                padding: 0 15px;
+            }
+            .hero-tagline {
+                font-size: 0.75rem;
+                letter-spacing: 2px;
+                margin-bottom: 8px;
+            }
+            .bottom-section {
+                padding: 80px 0 40px;
+                justify-content: center;
+            }
+            .cta-button {
+                margin-top: 10px;
             }
         }
     </style>
@@ -250,7 +291,7 @@
     <script src="assets/js/admin.js" defer></script>
     <script src="assets/js/interactive-heading.js" defer></script>
     <script src="assets/js/premium-buttons.js" defer></script>
-    <script src="assets/js/responsive.js" defer></script>
+    <script src="assets/js/responsive.js"></script>
     <script src="assets/js/nav-search.js" defer></script>
     <script src="assets/js/notifications.js" defer></script>
     <script src="assets/js/beast-mode-nav.js" defer></script>

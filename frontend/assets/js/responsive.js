@@ -9,7 +9,7 @@ let _navLinks = null;
 let _hamburgerBtn = null;
 
 function _getNavRefs() {
-    if (!_navLinks) _navLinks = document.querySelector('.header .nav-links');
+    if (!_navLinks) _navLinks = document.querySelector('.site-nav');
     if (!_hamburgerBtn) _hamburgerBtn = document.querySelector('.hamburger-btn');
 }
 
@@ -23,7 +23,7 @@ function toggleMenu() {
 
 // Close menu when a nav link is clicked
 document.addEventListener('click', function (e) {
-    if (e.target.closest('.nav-links a') || e.target.closest('.nav-links button:not(.hamburger-btn)')) {
+    if (e.target.closest('.site-nav a') || e.target.closest('.site-nav button:not(.hamburger-btn)')) {
         _getNavRefs();
         if (_navLinks && _hamburgerBtn && window.innerWidth <= 768) {
             _navLinks.classList.remove('active');

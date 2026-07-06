@@ -104,33 +104,13 @@
 /* ─── MOBILE (≤480px) ─── */
 @media (max-width: 480px) {
 
-    /* Marquee adjustments for landing page */
-    .marquee-wrapper {
-        width: 95vw;
-        height: 200px;
-    }
+    /* Marquee adjustments — primary rules are inline in index.html */
 
-    .marquee-track {
-        gap: 15px;
-        padding: 55px 0;
-    }
-
-    .marquee-track img {
-        width: 60px;
-        height: 85px;
-        border-radius: 6px;
-        border-width: 1.5px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    }
-
-    .marquee-fade-left,
-    .marquee-fade-right {
-        width: 40px;
-    }
-
-    /* Interactive heading - fit on mobile */
+    /* Interactive heading — fit on mobile */
     .interactive-heading {
         padding: 10px 0;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .interactive-letter {
@@ -144,7 +124,7 @@
     }
     
     .hero-content {
-        margin-top: -30px;
+        margin-top: 0;
     }
 
     /* Login */

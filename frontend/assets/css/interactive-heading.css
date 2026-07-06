@@ -109,17 +109,24 @@
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
     .interactive-letter {
-        font-size: 44px;
+        font-size: 40px;
+    }
+
+    .interactive-heading {
+        padding: 15px 10px;
+        flex-wrap: wrap;
     }
 }
 
 @media (max-width: 480px) {
     .interactive-letter {
-        font-size: 32px;
+        font-size: 26px;
         letter-spacing: -0.03em;
     }
 
     .interactive-heading {
-        padding: 15px 0;
+        padding: 10px 8px;
+        flex-wrap: wrap;
+        gap: 0;
     }
 }
