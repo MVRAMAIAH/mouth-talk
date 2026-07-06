@@ -21,14 +21,20 @@ function toggleMenu() {
     _hamburgerBtn.textContent = _navLinks.classList.contains('active') ? '✕' : '☰';
 }
 
-// Close menu when a nav link is clicked
+// Close menu when a nav link is clicked, or when clicking outside
 document.addEventListener('click', function (e) {
-    if (e.target.closest('.site-nav a') || e.target.closest('.site-nav button:not(.hamburger-btn)')) {
-        _getNavRefs();
-        if (_navLinks && _hamburgerBtn && window.innerWidth <= 768) {
-            _navLinks.classList.remove('active');
-            _hamburgerBtn.textContent = '☰';
-        }
+    _getNavRefs();
+    if (!_navLinks || !_hamburgerBtn || window.innerWidth > 768) return;
+
+    // Check if click was inside nav or hamburger
+    const clickedInsideNav = e.target.closest('.site-nav');
+    const clickedHamburger = e.target.closest('.hamburger-btn');
+    const clickedNavLink = e.target.closest('.site-nav a') || e.target.closest('.site-nav button');
+
+    // Close if clicked a link, or clicked outside both nav and hamburger
+    if (clickedNavLink || (!clickedInsideNav && !clickedHamburger)) {
+        _navLinks.classList.remove('active');
+        _hamburgerBtn.textContent = '☰';
     }
 });
 

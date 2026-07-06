@@ -77,12 +77,12 @@
         };
 
         // Close on outside click
-        document.onclick = (e) => {
+        document.addEventListener('click', (e) => {
             if (!searchContainer.contains(e.target)) {
                 _inputWrapper.classList.remove('active');
                 _dropdown.classList.remove('active');
             }
-        };
+        });
 
         _dropdown.onclick = (e) => e.stopPropagation();
     }
