@@ -107,7 +107,7 @@
     /* Marquee adjustments for landing page */
     .marquee-wrapper {
         width: 95vw;
-        height: 190px;
+        height: 100px;
     }
 
     .marquee-track {
