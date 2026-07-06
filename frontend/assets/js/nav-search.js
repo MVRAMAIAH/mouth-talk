@@ -14,9 +14,9 @@
     let _toggleBtn, _inputWrapper, _input, _dropdown;
 
     function initSearch() {
-        // 1. Inject HTML into the navbar
-        const navLinks = document.querySelector('.nav-links');
-        if (!navLinks) return;
+        // 1. Inject HTML into the header bar (between logo and hamburger)
+        const siteHeader = document.querySelector('.site-header');
+        if (!siteHeader) return;
 
         // Create the search container
         const searchContainer = document.createElement('div');
@@ -33,9 +33,18 @@
             </div>
         `;
 
-        // 2. Add search logic to navbar
-        // Insert search container BEFORE the first nav link
-        navLinks.insertBefore(searchContainer, navLinks.firstChild);
+        // 2. Insert before the hamburger button (or before the nav if no hamburger)
+        const hamburger = siteHeader.querySelector('.hamburger-btn');
+        if (hamburger) {
+            siteHeader.insertBefore(searchContainer, hamburger);
+        } else {
+            const nav = siteHeader.querySelector('.site-nav');
+            if (nav) {
+                siteHeader.insertBefore(searchContainer, nav);
+            } else {
+                siteHeader.appendChild(searchContainer);
+            }
+        }
 
         // PERF: Cache refs once at init
         _toggleBtn = document.getElementById('searchToggleBtn');
