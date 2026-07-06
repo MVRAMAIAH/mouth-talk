@@ -39,6 +39,8 @@
             position: relative;
             overflow-x: hidden;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
             animation: none; /* Override page enter for full-bleed hero */
         }
 
@@ -61,18 +63,17 @@
             pointer-events: none;
         }
 
-        /* BOTTOM SECTION — fixed to bottom of screen */
+        /* BOTTOM SECTION — Flex container for main content */
         .bottom-section {
-            position: fixed;
-            top: 100px;
-            bottom: 40px;
-            left: 0;
-            right: 0;
+            flex: 1;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-end;
+            padding: 120px 0 60px; /* Safe space from header and bottom edge */
             z-index: 10;
+            position: relative;
         }
 
         .hero-content {
@@ -92,6 +93,8 @@
             margin-bottom: var(--sp-3);
             opacity: 0;
             animation: fadeInUp 0.8s 1.5s ease-out forwards;
+            text-align: center;
+            padding: 0 15px;
         }
 
         @keyframes fadeInUp {
@@ -163,28 +166,15 @@
             margin-top: var(--sp-4);
         }
 
-        /* Ensure header/nav are above overlay */
-        .site-header {
-            z-index: 1000;
-        }
-
-        .bottom-section,
-        #admin-modal-container {
-            position: relative;
-            z-index: 10;
-        }
-
         /* Fix z-index for elements over the body::before overlay */
-        .site-header, .bottom-section, .login-toast, #admin-modal-container {
+        .site-header, .login-toast, #admin-modal-container {
             position: relative;
             z-index: 10;
         }
+        
         .site-header {
             position: fixed;
             z-index: 1000;
-        }
-        .bottom-section {
-            position: fixed;
         }
 
         @media (max-width: 768px) {

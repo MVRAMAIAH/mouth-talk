@@ -140,7 +140,7 @@
 
     /* Bottom section adjustments */
     .bottom-section {
-        bottom: 20px;
+        padding: 80px 0 30px;
     }
 
     /* Login */
