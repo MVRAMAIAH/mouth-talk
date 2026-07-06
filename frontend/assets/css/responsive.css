@@ -107,12 +107,12 @@
     /* Marquee adjustments for landing page */
     .marquee-wrapper {
         width: 95vw;
-        height: 100px;
+        height: 115px;
     }
 
     .marquee-track {
         gap: 15px;
-        padding: 30px 0;
+        padding: 15px 0;
     }
 
     .marquee-track img {

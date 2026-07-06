@@ -35,9 +35,10 @@
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
-            height: 100vh;
+            min-height: 100vh;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             animation: none; /* Override page enter for full-bleed hero */
         }
 
@@ -103,8 +104,8 @@
             position: relative;
             overflow: hidden;
             width: 75vw;
-            margin: 0 auto 30px;
-            height: 220px;
+            margin: 0 auto 10px;
+            height: 250px;
             display: flex;
             align-items: center;
         }
@@ -133,7 +134,7 @@
             display: flex;
             align-items: center;
             gap: 30px;
-            padding: 50px 0;
+            padding: 25px 0;
             will-change: transform;
         }
 
@@ -201,7 +202,7 @@
             }
             .marquee-wrapper {
                 width: 95vw;
-                height: 100px;
+                height: 115px;
             }
             .movie-card img {
                 width: 100px;
