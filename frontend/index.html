@@ -9,31 +9,26 @@
 
     <!-- PERF: Preload critical hero background (943KB, LCP element) -->
     <link rel="preload" href="assets/images/land.jpg" as="image" type="image/jpeg">
-    <!-- PERF: Performance CSS loaded FIRST for GPU hints -->
-    <link rel="stylesheet" href="assets/css/performance.css">
 
-    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
-        type="image/png">
+    <!-- Fonts: Inter (body) + Orbitron (display) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/interactive-heading.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="assets/css/performance.css">
+    <link rel="stylesheet" href="assets/css/global.css">
     <link rel="stylesheet" href="assets/css/premium-buttons.css">
+    <link rel="stylesheet" href="assets/css/interactive-heading.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/nav-search.css">
     <link rel="stylesheet" href="assets/css/notifications.css">
-    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/css/beast-mode.css">
-
+    <link rel="manifest" href="manifest.json">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Orbitron', sans-serif;
-        }
-
         body {
             background: black;
             background-image: url("assets/images/land.jpg");
@@ -42,50 +37,27 @@
             background-position: center;
             height: 100vh;
             position: relative;
-            color: white;
             overflow: hidden;
+            animation: none; /* Override page enter for full-bleed hero */
         }
 
-        /* HEADER */
-        .header {
-            width: 100%;
-            padding: 20px 50px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            position: fixed;
+        /* Hero overlay gradient */
+        body::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .logo {
-            font-size: 26px;
-            font-weight: bold;
-            color: #FF073A;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: white;
-            font-size: 18px;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .nav-links a:hover {
-            color: #FF073A;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                180deg,
+                rgba(0, 0, 0, 0.3) 0%,
+                rgba(0, 0, 0, 0.1) 40%,
+                rgba(0, 0, 0, 0.5) 70%,
+                rgba(0, 0, 0, 0.85) 100%
+            );
+            z-index: 1;
+            pointer-events: none;
         }
 
         /* BOTTOM SECTION — fixed to bottom of screen */
@@ -104,19 +76,33 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
+        }
+
+        .hero-tagline {
+            font-family: var(--font-body);
+            font-size: var(--fs-base);
+            color: var(--mt-text-tertiary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: var(--sp-3);
+            opacity: 0;
+            animation: fadeInUp 0.8s 1.5s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* MARQUEE */
         .marquee-wrapper {
             position: relative;
             overflow: hidden;
-            /* Focus the view within the 75vw lens */
             width: 75vw;
             margin: 0 auto 30px;
             height: 320px;
-            /* Ample height for the 1.4x zoom expansion */
             display: flex;
             align-items: center;
         }
@@ -133,12 +119,12 @@
 
         .marquee-fade-left {
             left: 0;
-            background: linear-gradient(to right, rgba(0, 0, 0, 0.5), transparent);
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.6), transparent);
         }
 
         .marquee-fade-right {
             right: 0;
-            background: linear-gradient(to left, rgba(0, 0, 0, 0.5), transparent);
+            background: linear-gradient(to left, rgba(0, 0, 0, 0.6), transparent);
         }
 
         .marquee-track {
@@ -152,93 +138,58 @@
         .marquee-track img {
             width: 140px;
             height: 200px;
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             object-fit: cover;
             flex-shrink: 0;
-            border: 2px solid rgba(255, 7, 58, 0.2);
+            border: 2px solid rgba(255, 7, 58, 0.15);
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            /* Removed transform transition to allow frame-by-frame JS control without lag */
+            box-shadow: var(--shadow-md);
             transition: border-color 0.4s, box-shadow 0.4s;
             will-change: transform;
         }
 
         .marquee-track img:hover {
-            border-color: #FF073A;
-            box-shadow: 0 0 20px rgba(255, 7, 58, 0.6);
+            border-color: var(--mt-primary);
+            box-shadow: 0 0 25px var(--mt-primary-glow);
             z-index: 10;
         }
-
-
 
         /* CTA BUTTON */
         .cta-button {
             display: inline-block;
-            margin-top: 20px;
-            /* All aesthetics now handled by .premium-btn */
+            margin-top: var(--sp-4);
         }
 
-        /* LOGIN TOAST */
-        .login-toast {
+        /* Ensure header/nav are above overlay */
+        .site-header {
+            z-index: 1000;
+        }
+
+        .bottom-section,
+        #admin-modal-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Fix z-index for elements over the body::before overlay */
+        .site-header, .bottom-section, .login-toast, #admin-modal-container {
+            position: relative;
+            z-index: 10;
+        }
+        .site-header {
             position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-20px);
-            background: rgba(255, 7, 58, 0.95);
-            color: white;
-            padding: 14px 30px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-family: 'Orbitron', sans-serif;
-            z-index: 9999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s, transform 0.4s;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(255, 7, 58, 0.4);
-            text-align: center;
+            z-index: 1000;
         }
-
-        .login-toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-            pointer-events: auto;
-        }
-
-        .login-toast a {
-            color: #fff;
-            text-decoration: underline;
-            font-weight: bold;
-            margin-left: 8px;
-        }
-
-        /* Header login link for unauthenticated users */
-        .nav-login-link {
-            display: none;
-        }
-
-
-        /* ADMIN STUFF */
-        .admin-only {
-            display: none;
-        }
-
-        .add-movie-btn {
-            /* Aesthetics now handled by .premium-btn */
-            margin-right: 15px;
+        .bottom-section {
+            position: fixed;
         }
 
         @media (max-width: 768px) {
             .heading {
                 font-size: 40px;
             }
-
-            .cta-button {
-                font-size: 18px;
-            }
-
             .marquee-wrapper {
-                width: 80vw;
+                width: 85vw;
             }
         }
 
@@ -246,16 +197,10 @@
             .heading {
                 font-size: 32px;
             }
-
-            .cta-button {
-                font-size: 16px;
-            }
-
             .marquee-wrapper {
-                width: 90vw;
+                width: 95vw;
                 height: 180px;
             }
-
             .movie-card img {
                 width: 100px;
                 height: 150px;
@@ -266,28 +211,31 @@
 
 <body>
 
+    <!-- Skip to content -->
+    <a href="#hero-content" class="skip-link">Skip to content</a>
+
     <!-- Login toast notification -->
-    <div class="login-toast" id="loginToast">
+    <div class="login-toast" id="loginToast" role="alert" aria-live="assertive">
         Please log in to access this feature.
         <a href="pages/login.html">Log In</a>
     </div>
 
-    <div class="header">
-        <div class="logo" onclick="window.location.href='index.html'">MTALK</div>
-        <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
-        <div class="nav-links">
+    <header class="site-header">
+        <a href="index.html" class="site-logo">MTALK</a>
+        <button class="hamburger-btn" onclick="toggleMenu()" aria-label="Toggle navigation menu">☰</button>
+        <nav class="site-nav" aria-label="Main navigation">
             <button class="add-movie-btn admin-only premium-btn" onclick="openModal()">+ Add Movie</button>
-            <a href="index.html">Home</a>
+            <a href="index.html" class="active">Home</a>
             <a href="#" onclick="handleAuthNav('pages/profile.html'); return false;">Profile</a>
             <a href="#" onclick="handleAuthNav('pages/location.html'); return false;">Location</a>
             <a href="#" onclick="handleAuthNav('pages/about.html'); return false;">About</a>
             <a href="pages/login.html" class="nav-login-link" id="navLoginLink">Login</a>
-        </div>
-    </div>
+        </nav>
+    </header>
 
     <div id="admin-modal-container"></div>
 
-    <div class="bottom-section">
+    <main id="hero-content" class="bottom-section site-main">
         <div class="marquee-wrapper">
             <div class="marquee-fade-left"></div>
             <div class="marquee-fade-right"></div>
@@ -295,12 +243,14 @@
         </div>
 
         <div class="hero-content">
-            <h3 class="interactive-heading heading-interactive-trigger" data-text="Its word of mouth"></h3>
+            <h1 class="interactive-heading heading-interactive-trigger" data-text="Its word of mouth"></h1>
+            <p class="hero-tagline">Where Every Opinion Matters</p>
             <a href="#" onclick="handleAuthNav('pages/get-started.html'); return false;"
-                class="cta-button premium-btn">Get Started</a>
+                class="cta-button premium-btn">Explore Movies</a>
         </div>
-    </div>
+    </main>
 
+    <script src="assets/js/toast.js" defer></script>
     <script src="assets/js/admin.js" defer></script>
     <script src="assets/js/interactive-heading.js" defer></script>
     <script src="assets/js/premium-buttons.js" defer></script>
@@ -336,7 +286,7 @@
             const loginLink = document.getElementById('navLoginLink');
             if (loginLink) loginLink.style.display = 'none';
 
-            const navLinks = document.querySelectorAll('.nav-links a');
+            const navLinks = document.querySelectorAll('.site-nav a');
             const profileLink = Array.from(navLinks).find(a => a.textContent.includes('Profile'));
             if (profileLink && user.fullName) {
                 profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
@@ -474,8 +424,8 @@
             const lerpFactor = 0.15;
             const maxDist = 300;
             const halfPI = Math.PI / 2;
-            const DEFAULT_BORDER = 'rgba(255, 7, 58, 0.2)';
-            const DEFAULT_SHADOW = '0 10px 25px rgba(0, 0, 0, 0.5)';
+            const DEFAULT_BORDER = 'rgba(255, 7, 58, 0.15)';
+            const DEFAULT_SHADOW = '0 8px 24px rgba(0, 0, 0, 0.4)';
             const HOVER_BORDER = '#FF073A';
             const HOVER_SHADOW = '0 0 35px rgba(255, 7, 58, 0.8)';
 
@@ -484,7 +434,6 @@
                 const trackLeft = initialTrackLeft + pos;
 
                 // === READ PHASE: Gather all hover states FIRST ===
-                // PERF: Batch all :hover checks before any writes to avoid forced style recalc
                 const hoverStates = new Uint8Array(imgCount);
                 for (let i = 0; i < imgCount; i++) {
                     hoverStates[i] = images[i].matches(':hover') ? 1 : 0;

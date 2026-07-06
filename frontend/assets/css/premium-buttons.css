@@ -1,77 +1,82 @@
 /* 
-  Premium Global UI System
-  Standardized high-end components
+  Premium Global UI Components
+  ─────────────────────────────
+  Buttons, inputs, selects, and scrollbar.
+  Depends on global.css design tokens.
 */
 
-:root {
-    --premium-red: #FF073A;
-    --premium-dark-red: #700B1A;
-    --premium-glass: rgba(255, 255, 255, 0.05);
-    --premium-border: rgba(255, 7, 58, 0.3);
-}
-
-/* Global Premium Scrollbar */
+/* ─── Global Premium Scrollbar ─── */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #0a0a0a;
+    background: var(--mt-bg-elevated, #0a0a0a);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 7, 58, 0.3);
+    background: rgba(255, 7, 58, 0.25);
     border-radius: 10px;
-    border: 2px solid #0a0a0a;
+    border: 1px solid var(--mt-bg-elevated, #0a0a0a);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--premium-red);
+    background: var(--mt-primary, #FF073A);
 }
 
-/* For Firefox */
+/* Firefox */
 * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 7, 58, 0.3) #0a0a0a;
+    scrollbar-color: rgba(255, 7, 58, 0.25) var(--mt-bg-elevated, #0a0a0a);
 }
 
+/* ─── Primary Button ─── */
 .premium-btn {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2, 8px);
     padding: 14px 36px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-display, 'Orbitron', sans-serif);
     font-weight: 700;
+    font-size: var(--fs-base, 0.875rem);
     text-transform: uppercase;
     text-decoration: none;
-    color: white !important;
-    background: linear-gradient(135deg, var(--premium-red) 0%, var(--premium-dark-red) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
+    color: white;
+    background: linear-gradient(135deg, var(--mt-primary, #FF073A) 0%, var(--mt-primary-dark, #700B1A) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-md, 8px);
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-    box-shadow: 0 4px 15px rgba(255, 7, 58, 0.3);
+    transition: 
+        transform var(--duration-normal, 0.3s) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)), 
+        box-shadow var(--duration-normal, 0.3s) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1)),
+        border-color var(--duration-normal, 0.3s) ease;
+    box-shadow: 0 4px 15px rgba(255, 7, 58, 0.25);
     z-index: 1;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     letter-spacing: 1px;
     will-change: transform;
     backface-visibility: hidden;
     transform: translateZ(0);
+    line-height: 1;
 }
 
 .premium-btn:hover {
-    box-shadow: 0 8px 25px rgba(255, 7, 58, 0.6);
+    box-shadow: 0 8px 25px rgba(255, 7, 58, 0.5);
     transform: translateY(-2px) scale(1.02);
-    border-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: white;
 }
 
 .premium-btn:active {
     transform: translateY(0) scale(0.98);
-    box-shadow: 0 2px 10px rgba(255, 7, 58, 0.4);
+    box-shadow: 0 2px 10px rgba(255, 7, 58, 0.3);
 }
 
-/* Enhanced Shimmer - GPU-composited transform instead of left */
+/* Shimmer Effect */
 .premium-btn::before {
     content: '';
     position: absolute;
@@ -83,7 +88,7 @@
             transparent,
             rgba(255, 255, 255, 0.15),
             transparent);
-    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: transform var(--duration-slow, 0.5s) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
     transform: translate3d(-150%, 0, 0);
     pointer-events: none;
     z-index: -1;
@@ -94,24 +99,99 @@
     transform: translate3d(150%, 0, 0);
 }
 
-/* Premium Form Controls */
+/* Disabled State */
+.premium-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.premium-btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* ─── Secondary (Outline) Button ─── */
+.premium-btn-outline {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2, 8px);
+    padding: 12px 30px;
+    font-family: var(--font-display, 'Orbitron', sans-serif);
+    font-weight: 700;
+    font-size: var(--fs-sm, 0.75rem);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--mt-primary, #FF073A);
+    background: transparent;
+    border: 2px solid rgba(255, 7, 58, 0.4);
+    border-radius: var(--radius-md, 8px);
+    cursor: pointer;
+    transition: all var(--duration-normal, 0.3s) ease;
+    letter-spacing: 1.5px;
+}
+
+.premium-btn-outline:hover {
+    border-color: var(--mt-primary, #FF073A);
+    color: white;
+    background: var(--mt-primary, #FF073A);
+    box-shadow: 0 0 20px rgba(255, 7, 58, 0.3);
+}
+
+/* ─── Ghost Button ─── */
+.premium-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2, 8px);
+    padding: 10px 24px;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-weight: 600;
+    font-size: var(--fs-sm, 0.75rem);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--mt-text-tertiary, #a0a0a0);
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md, 8px);
+    cursor: pointer;
+    transition: all var(--duration-normal, 0.3s) ease;
+    letter-spacing: 1px;
+}
+
+.premium-btn-ghost:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--mt-text-primary, #fff);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* ─── Premium Form Controls ─── */
 .premium-select,
 .premium-input {
-    background: rgba(0, 0, 0, 0.6) !important;
-    border: 2px solid var(--premium-border) !important;
-    border-radius: 8px !important;
-    color: white !important;
-    padding: 12px 16px !important;
-    font-family: 'Orbitron', sans-serif !important;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease !important;
-    outline: none !important;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--mt-border-accent, rgba(255, 7, 58, 0.2));
+    border-radius: var(--radius-md, 8px);
+    color: white;
+    padding: 12px 16px;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: var(--fs-base, 0.875rem);
+    transition: border-color var(--duration-normal, 0.3s) ease, box-shadow var(--duration-normal, 0.3s) ease, background var(--duration-normal, 0.3s) ease;
+    outline: none;
+    width: 100%;
 }
 
 .premium-select:focus,
 .premium-input:focus {
-    border-color: var(--premium-red) !important;
-    box-shadow: 0 0 15px rgba(255, 7, 58, 0.3) !important;
-    background: rgba(0, 0, 0, 0.8) !important;
+    border-color: var(--mt-primary, #FF073A);
+    box-shadow: 0 0 15px rgba(255, 7, 58, 0.2);
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.premium-input::placeholder {
+    color: var(--mt-text-muted, #777);
+    font-size: var(--fs-sm, 0.75rem);
 }
 
 .premium-select option {
@@ -119,17 +199,17 @@
     color: white;
 }
 
-/* Specific size adjustments */
+/* ─── CTA Button Overrides ─── */
 .cta-button {
     padding: 16px 48px;
-    font-size: 18px;
-    border-radius: 8px;
-    /* Reinforcing the rectangular look */
+    font-size: 1rem;
+    border-radius: var(--radius-md, 8px);
 }
 
 .add-movie-btn {
     padding: 10px 20px;
-    font-size: 14px;
+    font-size: var(--fs-sm, 0.75rem);
+    margin-right: var(--sp-4, 16px);
 }
 
 .edit-overlay {
@@ -138,8 +218,7 @@
     right: 10px;
     padding: 6px 12px;
     font-size: 11px;
-    border-radius: 8px;
-    /* Standard rectangular look */
+    border-radius: var(--radius-md, 8px);
     z-index: 10;
     opacity: 0.9;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);

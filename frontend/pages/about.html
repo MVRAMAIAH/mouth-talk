@@ -15,277 +15,30 @@
     <link rel="stylesheet" href="../assets/css/performance.css">
     <link rel="stylesheet" href="../assets/css/premium-buttons.css">
     <link rel="stylesheet" href="../assets/css/responsive.css">
-    <style>
-        :root {
-            --primary: #FF073A;
-            --accent: #D90429;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #ffffff;
-            --text-dim: rgba(255, 255, 255, 0.7);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        body {
-            background: #000;
-            color: var(--text-main);
-            min-height: 100vh;
-            overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 50%, #1a0202 0%, #000000 100%);
-        }
-
-        /* HEADER */
-        .header {
-            width: 100%;
-            padding: 20px 50px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(20px);
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 26px;
-            font-weight: bold;
-            color: var(--primary);
-            text-transform: uppercase;
-            cursor: pointer;
-            letter-spacing: 2px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: white;
-            font-size: 16px;
-            font-weight: 500;
-            transition: 0.3s;
-            opacity: 0.8;
-            white-space: nowrap;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-            opacity: 1;
-        }
-
-        /* MAIN CONTAINER */
-        .main-container {
-            margin-top: 100px;
-            padding: 0 20px 60px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* HERO CARD */
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 30px;
-            width: 100%;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            text-align: center;
-        }
-
-        /* PROFILE SECTION */
-        .profile-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .profile-img-container {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            padding: 5px;
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            box-shadow: 0 0 30px rgba(255, 7, 58, 0.4);
-            margin-bottom: 15px;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .profile-img-container:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 50px rgba(255, 7, 58, 0.6);
-        }
-
-        .profile-img-container img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #000;
-        }
-
-        .profile-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-top: 10px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: 0.4s ease;
-            letter-spacing: 1px;
-        }
-
-        .profile-img-container:hover+.profile-name {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* INSTAGRAM BUTTON */
-        .insta-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(220, 39, 67, 0.5);
-        }
-
-        /* MISSION SECTION */
-        .mission-section {
-            margin-top: 10px;
-            text-align: left;
-        }
-
-        .mission-section h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 28px;
-            color: var(--primary);
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .mission-text {
-            font-size: 17px;
-            line-height: 1.7;
-            color: var(--text-dim);
-            text-align: center;
-        }
-
-        /* IDEATORS SECTION */
-        .ideators-section {
-            margin-top: 40px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .ideators-section h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            margin-bottom: 25px;
-            position: relative;
-            display: inline-block;
-        }
-
-        .ideators-section h2::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 2px;
-            background: var(--primary);
-        }
-
-        .ideators-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .ideator-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            padding: 20px;
-            border-radius: 16px;
-            opacity: 0;
-            /* Set initial state for GSAP */
-        }
-
-        .ideator-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 5px;
-        }
-
-        .ideator-tag {
-            font-size: 12px;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 700;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .header {
-                padding: 15px 30px;
-            }
-
-            .logo {
-                font-size: 22px;
-            }
-
-            .ideators-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .glass-card {
-                padding: 30px 20px;
-            }
-        }
-    </style>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/global.css" />
+  <link rel="stylesheet" href="../assets/css/about.css" />
+  <link rel="stylesheet" href="../assets/css/nav-search.css" />
 </head>
 
 <body>
     <!-- Header -->
-    <div class="header">
-        <div class="logo" onclick="window.location.href='../index.html'">MTALK</div>
-        <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
-        <div class="nav-links">
-            <a href="../index.html">Home</a>
-            <a href="profile.html">Profile</a>
-            <a href="location.html">Location</a>
-            <a href="about.html">About</a>
-        </div>
-    </div>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div class="ambient-glow"></div>
+  <header class="site-header">
+    <a href="../index.html" class="site-logo">MTALK</a>
+    <button class="hamburger-btn" aria-label="Toggle navigation menu" onclick="toggleMenu()">☰</button>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="../index.html">Home</a>
+      <a href="profile.html">Profile</a>
+      <a href="location.html">Location</a>
+      <a href="about.html" aria-current="page">About</a>
+    </nav>
+  </header>
 
-    <div class="main-container">
+    <main class="site-main main-container" id="main-content">
         <!-- PROFILE CARD -->
         <div class="glass-card profile-card">
             <div class="profile-section">
@@ -404,6 +157,15 @@
             });
         });
     </script>
+  <footer class="site-footer">
+    <div class="footer-brand">MTALK</div>
+    <p class="footer-tagline">Its word of mouth</p>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="../index.html">Home</a>
+    </div>
+    <p class="footer-copy">© 2026 MTALK. All rights reserved.</p>
+  </footer>
 </body>
 
 </html>

@@ -5,92 +5,29 @@
     <script src="../assets/js/auth-guard.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Category - MTALK OTT</title>
-    <meta name="description"
-        content="MTALK OTT - Stream your favorite Hindi, Tamil, Malayalam, and English movies online!">
-    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
-        type="image/png">
+    <title>Select Category - MTALK</title>
+    <meta name="description" content="MTALK - Stream your favorite Hindi, Tamil, Malayalam, and English movies online!">
+    <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/performance.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- DNS Prefetch for poster images -->
     <link rel="dns-prefetch" href="https://m.media-amazon.com">
     <link rel="dns-prefetch" href="https://cf-img-a-in.tosshub.com">
     <link rel="dns-prefetch" href="https://stat5.bollywoodhungama.in">
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="../assets/css/performance.css">
+    <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/premium-buttons.css">
     <link rel="stylesheet" href="../assets/css/responsive.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Orbitron', sans-serif;
-        }
-
         body {
-            background: black;
-            color: white;
             text-align: center;
-            overflow-x: hidden;
             padding-bottom: 80px;
-        }
-
-        /* HEADER */
-        .header {
-            width: 100%;
-            padding: 20px 50px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            transition: background 0.3s ease;
-        }
-
-
-        .header:hover {
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .logo {
-            font-size: 26px;
-            font-weight: bold;
-            color: white;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-
-        .logo:hover {
-            color: #FF073A;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-
-        .nav-links a {
-            text-decoration: none;
-            color: white;
-            font-size: 18px;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            white-space: nowrap;
-        }
-
-
-        .nav-links a:hover {
-            color: #FF073A;
         }
 
         /* CONTAINER */
@@ -101,7 +38,7 @@
             justify-content: center;
             align-items: flex-start;
             gap: 80px 40px;
-            padding: 20px;
+            padding: var(--sp-5);
             max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
@@ -113,19 +50,19 @@
             height: 330px;
             position: relative;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s var(--ease-spring);
             flex: 0 0 auto;
         }
 
         .box-inner {
             width: 100%;
             height: 100%;
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             overflow: hidden;
             position: relative;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--mt-glass-border);
+            transition: all var(--duration-normal) ease;
         }
 
         .box:hover {
@@ -133,16 +70,16 @@
         }
 
         .box:hover .box-inner {
-            box-shadow: 0 0 25px rgba(255, 7, 58, 0.6);
-            border: 1px solid rgba(255, 7, 58, 0.3);
+            box-shadow: 0 0 30px var(--mt-primary-glow), var(--shadow-lg);
+            border-color: var(--mt-border-accent-hover);
         }
 
         .box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.6s ease;
-            filter: brightness(80%);
+            transition: transform 0.6s ease, filter 0.6s ease;
+            filter: brightness(75%);
         }
 
         .box:hover img {
@@ -155,22 +92,23 @@
             top: -30px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 14px;
+            font-family: var(--font-display);
+            font-size: var(--fs-sm);
             font-weight: 700;
-            color: #FF073A;
+            color: var(--mt-primary);
             text-transform: uppercase;
             letter-spacing: 3px;
             opacity: 0;
             transition: all 0.4s ease;
             white-space: nowrap;
             pointer-events: none;
-            text-shadow: 0 0 12px rgba(255, 7, 58, 0.6);
+            text-shadow: 0 0 12px var(--mt-primary-glow);
         }
 
         .box:hover .category-label {
             opacity: 1;
             top: -45px;
-            text-shadow: 0 0 15px rgba(255, 7, 58, 0.8);
+            text-shadow: 0 0 20px var(--mt-primary-glow);
             transform: translateX(-50%) scale(1.1);
         }
 
@@ -180,36 +118,53 @@
             text-align: center;
         }
 
-        @keyframes blink {
-
-            0%,
-            100% {
-                opacity: 0.3;
-                text-shadow: none;
-            }
-
-            50% {
-                opacity: 1;
-                text-shadow: 0 0 20px #FF073A;
-            }
-        }
-
         .page-header h1 {
             font-size: 42px;
             text-transform: uppercase;
             letter-spacing: 8px;
             color: white;
             font-weight: 700;
-            animation: blink 2s infinite ease-in-out;
+            position: relative;
+            display: inline-block;
         }
 
-        /* RESPONSIVE DESIGN */
+        .page-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--mt-primary), var(--mt-cyan));
+            border-radius: 2px;
+        }
+
+        /* Pulsing dot indicator */
+        .page-header h1::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -30px;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: var(--mt-primary);
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 0.3; box-shadow: 0 0 0 0 var(--mt-primary-glow); }
+            50% { opacity: 1; box-shadow: 0 0 15px var(--mt-primary-glow); }
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
             .box {
                 width: 180px;
                 height: 270px;
             }
-
             .container {
                 gap: 60px 25px;
             }
@@ -220,7 +175,6 @@
                 width: 150px;
                 height: 225px;
             }
-
             .container {
                 gap: 50px 20px;
             }
@@ -229,76 +183,90 @@
 </head>
 
 <body>
+
+    <a href="#categories" class="skip-link">Skip to categories</a>
+    <div class="ambient-glow"></div>
+
     <!-- HEADER -->
-    <div class="header">
-        <div class="logo" onclick="window.location.href='../index.html'">MTALK</div>
-        <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
-        <div class="nav-links">
-            <button class="add-movie-btn admin-only premium-btn" onclick="openModal()" style="display: none;">+ Add
-                Movie</button>
+    <header class="site-header">
+        <a href="../index.html" class="site-logo">MTALK</a>
+        <button class="hamburger-btn" onclick="toggleMenu()" aria-label="Toggle navigation menu">☰</button>
+        <nav class="site-nav" aria-label="Main navigation">
+            <button class="add-movie-btn admin-only premium-btn" onclick="openModal()" style="display: none;">+ Add Movie</button>
             <a href="../index.html">Home</a>
             <a href="profile.html">Profile</a>
             <a href="location.html">Location</a>
             <a href="about.html">About</a>
-        </div>
-    </div>
+        </nav>
+    </header>
 
+    <main id="categories" class="site-main">
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <h1>Select Category</h1>
+        </div>
 
-    <!-- PAGE HEADER -->
-    <div class="page-header">
-        <h1>Select Category</h1>
-    </div>
+        <!-- IMAGE ROW -->
+        <div class="container">
+            <div class="box" onclick="window.location.href='tolly.html'" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+                <div class="category-label">Tollywood</div>
+                <div class="box-inner">
+                    <img src="https://m.media-amazon.com/images/M/MV5BNTRhYTlhZTgtYmMyYy00NWI4LTk4MzItOWM2YjBmYTg2OTI2XkEyXkFqcGc@._V1_.jpg"
+                        alt="Tollywood Movies" loading="lazy" decoding="async">
+                </div>
+            </div>
+            <div class="box" onclick="window.location.href='hindi.html'" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+                <div class="category-label">Bollywood</div>
+                <div class="box-inner">
+                    <img src="https://cf-img-a-in.tosshub.com/sites/visualstory/wp/2025/02/vicky-chhava-1ITG-1739516595408.jpg?size=*:900"
+                        alt="Bollywood Movies" loading="lazy" decoding="async">
+                </div>
+            </div>
+            <div class="box" onclick="window.location.href='kollywood.html'" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+                <div class="category-label">Kollywood</div>
+                <div class="box-inner">
+                    <img src="../assets/images/ps.jpg" alt="Kollywood Movies" loading="lazy" decoding="async">
+                </div>
+            </div>
+            <div class="box" onclick="window.location.href='mollywood.html'" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+                <div class="category-label">Mollywood</div>
+                <div class="box-inner">
+                    <img src="https://m.media-amazon.com/images/M/MV5BNmY5NjI5ZTQtNDAyZi00NjgyLWE3NzItODE4OGYxNmFkN2E2XkEyXkFqcGc@._V1_.jpg"
+                        alt="Mollywood Movies" loading="lazy" decoding="async">
+                </div>
+            </div>
+            <div class="box" onclick="window.location.href='sandalwood.html'" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+                <div class="category-label">Sandalwood</div>
+                <div class="box-inner">
+                    <img src="https://stat5.bollywoodhungama.in/wp-content/uploads/2022/10/Kantara-1.jpg"
+                        alt="Sandalwood Movies" loading="lazy" decoding="async">
+                </div>
+            </div>
+            <div class="box" onclick="window.location.href='hollywood.html'" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+                <div class="category-label">Hollywood</div>
+                <div class="box-inner">
+                    <img src="../assets/images/hollywood.jpg" alt="Hollywood Movies" loading="lazy" decoding="async">
+                </div>
+            </div>
+            <div class="box" onclick="window.location.href='webseries.html'" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+                <div class="category-label">Web Series</div>
+                <div class="box-inner">
+                    <img src="../assets/images/webseries.jpg" alt="Web Series" loading="lazy" decoding="async">
+                </div>
+            </div>
+        </div>
+    </main>
 
-    <!-- IMAGE ROW -->
-    <div class="container">
-        <div class="box" onclick="window.location.href='tolly.html'">
-            <div class="category-label">Tollywood</div>
-            <div class="box-inner">
-                <img src="https://m.media-amazon.com/images/M/MV5BNTRhYTlhZTgtYmMyYy00NWI4LTk4MzItOWM2YjBmYTg2OTI2XkEyXkFqcGc@._V1_.jpg"
-                    alt="Tollywood Movies" loading="lazy" decoding="async">
-            </div>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-brand">MTALK</div>
+        <p class="footer-tagline">Its word of mouth</p>
+        <div class="footer-links">
+            <a href="about.html">About</a>
+            <a href="../index.html">Home</a>
         </div>
-        <div class="box" onclick="window.location.href='hindi.html'">
-            <div class="category-label">Bollywood</div>
-            <div class="box-inner">
-                <img src="https://cf-img-a-in.tosshub.com/sites/visualstory/wp/2025/02/vicky-chhava-1ITG-1739516595408.jpg?size=*:900"
-                    alt="Bollywood Movies" loading="lazy" decoding="async">
-            </div>
-        </div>
-        <div class="box" onclick="window.location.href='kollywood.html'">
-            <div class="category-label">Kollywood</div>
-            <div class="box-inner">
-                <img src="../assets/images/ps.jpg" alt="Kollywood Movies" loading="lazy" decoding="async">
-            </div>
-        </div>
-        <div class="box" onclick="window.location.href='mollywood.html'">
-            <div class="category-label">Mollywood</div>
-            <div class="box-inner">
-                <img src="https://m.media-amazon.com/images/M/MV5BNmY5NjI5ZTQtNDAyZi00NjgyLWE3NzItODE4OGYxNmFkN2E2XkEyXkFqcGc@._V1_.jpg"
-                    alt="Mollywood Movies" loading="lazy" decoding="async">
-            </div>
-        </div>
-        <div class="box" onclick="window.location.href='sandalwood.html'">
-            <div class="category-label">Sandalwood</div>
-            <div class="box-inner">
-                <img src="https://stat5.bollywoodhungama.in/wp-content/uploads/2022/10/Kantara-1.jpg"
-                    alt="Sandalwood Movies" loading="lazy" decoding="async">
-            </div>
-        </div>
-        <!-- NEW CATEGORIES -->
-        <div class="box" onclick="window.location.href='hollywood.html'">
-            <div class="category-label">Hollywood</div>
-            <div class="box-inner">
-                <img src="../assets/images/hollywood.jpg" alt="Hollywood Movies" loading="lazy" decoding="async">
-            </div>
-        </div>
-        <div class="box" onclick="window.location.href='webseries.html'">
-            <div class="category-label">Web Series</div>
-            <div class="box-inner">
-                <img src="../assets/images/webseries.jpg" alt="Web Series" loading="lazy" decoding="async">
-            </div>
-        </div>
-    </div>
+        <p class="footer-copy">© 2026 MTALK. All rights reserved.</p>
+    </footer>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
@@ -306,6 +274,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js" defer></script>
     <script src="../assets/js/firebase-init.js" defer></script>
     <script src="../assets/js/admin.js" defer></script>
+    <script src="../assets/js/toast.js" defer></script>
     <script src="../assets/js/premium-buttons.js" defer></script>
     <script src="../assets/js/responsive.js" defer></script>
 
@@ -314,7 +283,7 @@
         // Auth Guard
         function updateUIWithUser(user) {
             if (!user) return;
-            const profileLink = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.href.includes('profile.html'));
+            const profileLink = Array.from(document.querySelectorAll('.site-nav a')).find(a => a.href.includes('profile.html'));
             if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
 
             // Admin toggle
@@ -340,10 +309,11 @@
             if (typeof injectAdminModal === 'function') injectAdminModal();
         });
 
+        // FIXED: opacity was 1, should be 0 for the fade-in to work
         window.addEventListener('DOMContentLoaded', () => {
             gsap.from(".box", {
                 duration: 1,
-                opacity: 1,
+                opacity: 0,
                 y: 30,
                 stagger: 0.1,
                 ease: "power3.out"

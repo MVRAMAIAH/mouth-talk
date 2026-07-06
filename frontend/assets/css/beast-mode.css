@@ -1,188 +1,147 @@
 /* 
-  Mouth-Talk Beast-Mode Responsive System 
-  Elite Mobile Design & App-Like UX
+  MTALK Beast-Mode System
+  ───────────────────────
+  Advanced mobile UX: haptic feedback, fluid typography,
+  bottom-sheet modals, card grids.
+  Depends on global.css tokens.
 */
 
-:root {
-  --mt-red: #FF073A;
-  --mt-glass: rgba(255, 255, 255, 0.05);
-  --mt-glass-heavy: rgba(0, 0, 0, 0.85);
-  --mt-blur: blur(20px);
-}
-
-/* --- Offscreen Rendering Containment for dynamic scrolling lists --- */
+/* --- Offscreen Rendering Containment --- */
 .reviews-feed,
 .movie-grid,
 .comments-list {
-  content-visibility: auto;
-  contain-intrinsic-size: 400px;
+    content-visibility: auto;
+    contain-intrinsic-size: 400px;
 }
 
 /* --- Global Haptic Simulation --- */
 button, .btn, .nav-item, .clickable {
-  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-  -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
 }
 
 button:active, .btn:active, .nav-item:active, .clickable:active {
-  transform: scale(0.95);
-  opacity: 0.8;
+    transform: scale(0.95);
+    opacity: 0.85;
 }
 
-/* --- Fluid Typography (Beast-Mode Scale) --- */
-html {
-  font-size: 16px;
-}
+/* --- Fluid Typography (Mobile) --- */
 @media (max-width: 480px) {
-  h1 { font-size: clamp(1.8rem, 8vw, 2.5rem) !important; }
-  h2 { font-size: clamp(1.4rem, 6vw, 1.8rem) !important; }
-  p, span, div { font-size: clamp(0.85rem, 4vw, 1rem); }
+    h1 { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+    h2 { font-size: clamp(1.4rem, 6vw, 1.8rem); }
 }
 
-/* --- Global Mobile Navigation Bar (Bottom) --- */
-.mobile-bottom-nav {
-  display: none !important;
-}
-
-/* Mobile-First Notifications Dropdown */
-@media (max-width: 768px) {
-  .notifications-dropdown {
-    position: fixed !important;
-    top: 70px !important;
-    left: 5% !important;
-    right: 5% !important;
-    width: 90% !important;
-    max-height: 70vh !important;
-    z-index: 2200 !important;
-    border: 1px solid var(--mt-red) !important;
-    box-shadow: 0 0 40px rgba(255, 7, 58, 0.3) !important;
-    animation: slideUp 0.3s ease-out forwards;
-  }
-
-  /* Hide redundant header notification bell on mobile */
-  #navNotifWrapper {
-    display: none !important;
-  }
-}
-
-@keyframes slideUp {
-  from { transform: translate3d(0, 100%, 0); }
-  to { transform: translate3d(0, 0, 0); }
-}
-
+/* --- Nav Items (Bottom Nav Base) --- */
 .nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #888;
-  text-decoration: none;
-  font-size: 10px;
-  gap: 4px;
-  flex: 1;
-  transition: color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--mt-text-muted, #888);
+    text-decoration: none;
+    font-size: 10px;
+    gap: 4px;
+    flex: 1;
+    transition: color var(--duration-normal, 0.3s) ease;
 }
 
 .nav-item i, .nav-item span.icon {
-  font-size: 22px;
-  transition: transform 0.3s ease, filter 0.3s ease;
+    font-size: 22px;
+    transition: transform var(--duration-normal, 0.3s) ease, filter var(--duration-normal, 0.3s) ease;
 }
 
 .nav-item.active {
-  color: var(--mt-red);
+    color: var(--mt-primary, #FF073A);
 }
 
 .nav-item.active span.icon {
-  transform: translateY(-2px);
-  filter: drop-shadow(0 0 8px var(--mt-red));
+    transform: translateY(-2px);
+    filter: drop-shadow(0 0 8px var(--mt-primary, #FF073A));
 }
 
-/* Hide desktop header elements on small screens if redundant */
+/* --- Mobile Notifications --- */
 @media (max-width: 768px) {
-  .mobile-bottom-nav { display: none !important; }
+    .notifications-dropdown {
+        position: fixed;
+        top: 70px;
+        left: 5%;
+        right: 5%;
+        width: 90%;
+        max-height: 70vh;
+        z-index: var(--z-dropdown, 2200);
+        border: 1px solid var(--mt-primary, #FF073A);
+        box-shadow: 0 0 40px rgba(255, 7, 58, 0.2);
+        animation: beastSlideUp 0.3s ease-out forwards;
+    }
+
+    #navNotifWrapper {
+        display: none;
+    }
+}
+
+@keyframes beastSlideUp {
+    from { transform: translate3d(0, 100%, 0); opacity: 0; }
+    to { transform: translate3d(0, 0, 0); opacity: 1; }
 }
 
 /* --- Beast-Mode Cards & Grids --- */
 @media (max-width: 480px) {
-  .movie-grid {
-    grid-template-columns: repeat(2, 1fr) !important; /* Forces 2-column grid even on small phones */
-    gap: 12px !important;
-    padding: 10px !important;
-  }
+    .movie-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 10px;
+    }
 
-  .movie-title {
-    font-size: 0.65rem !important;
-  }
+    .movie-title {
+        font-size: 0.65rem;
+    }
 
-  .profile-container {
-    padding: 30px 15px !important;
-    margin-top: 70px !important;
-    width: 95% !important;
-  }
+    .profile-container {
+        padding: 30px 15px;
+        margin-top: 70px;
+        width: 95%;
+    }
 
-  .dna-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
-  }
+    .dna-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
 
-  .dna-item {
-    padding: 12px !important;
-  }
+    .dna-item {
+        padding: 12px;
+    }
 }
 
-/* --- Bottom-Sheet Modals (Mobile-Only) --- */
+/* --- Bottom-Sheet Modals (Mobile) --- */
 @media (max-width: 768px) {
-  .modal-content, .modal {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    border-radius: 25px 25px 0 0 !important;
-    transform: translate3d(0, 100%, 0);
-    animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    max-height: 85vh;
-    overflow-y: auto;
-    padding-bottom: 90px !important; /* Space for bottom nav */
-    contain: layout style;
-    will-change: transform;
-  }
+    .modal-content, .modal {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        border-radius: var(--radius-xl, 24px) var(--radius-xl, 24px) 0 0;
+        transform: translate3d(0, 100%, 0);
+        animation: beastSlideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        max-height: 85vh;
+        overflow-y: auto;
+        padding-bottom: 40px;
+        contain: layout style;
+        will-change: transform;
+    }
 
-  @keyframes slideUp {
-    to { transform: translate3d(0, 0, 0); }
-  }
-
-  /* Handle for Bottom Sheet */
-  .modal-content::before {
-    content: '';
-    width: 40px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-}
-
-/* --- Premium Buttons for Mobile --- */
-.premium-btn {
-  border-radius: 12px !important;
-  font-weight: 700 !important;
-  letter-spacing: 1px !important;
-}
-
-/* Custom Scrollbar for Beast Mode */
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: black;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--mt-red);
-  border-radius: 10px;
+    /* Drag handle for bottom sheets */
+    .modal-content::before {
+        content: '';
+        width: 40px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 2px;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }

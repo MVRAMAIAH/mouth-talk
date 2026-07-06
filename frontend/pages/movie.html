@@ -6,140 +6,169 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Movie - MTALK</title>
+  <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/css/notifications.css">
-  <link rel="stylesheet" href="../assets/css/beast-mode.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Design System -->
   <link rel="stylesheet" href="../assets/css/performance.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
   <link rel="stylesheet" href="../assets/css/premium-buttons.css">
   <link rel="stylesheet" href="../assets/css/responsive.css">
+  <link rel="stylesheet" href="../assets/css/nav-search.css">
+  <link rel="stylesheet" href="../assets/css/notifications.css">
+  <link rel="stylesheet" href="../assets/css/beast-mode.css">
+  <link rel="manifest" href="../manifest.json">
   <style>
     body {
-      font-family: 'Orbitron', sans-serif;
-      background: #000;
-      color: #fff;
-      margin: 0;
-      padding-bottom: 60px
+      padding-bottom: 80px;
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 120px auto 40px;
-      padding: 20px
+      padding: var(--sp-4);
+    }
+
+    .movie-detail-card {
+      display: flex;
+      gap: var(--sp-6);
+      background: var(--mt-surface);
+      border: 1px solid var(--mt-border);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-6);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(10px);
+      align-items: flex-start;
+      flex-wrap: wrap;
     }
 
     .poster {
-      width: 300px;
-      height: 500px;
+      width: 280px;
+      aspect-ratio: 3/4;
       object-fit: cover;
-      border-radius: 10px
+      border-radius: var(--radius-md);
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      border: 1px solid rgba(255, 7, 58, 0.3);
+    }
+
+    .movie-info-wrap {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .movie-info-wrap h1 {
+      font-size: 2.2rem;
+      margin-bottom: var(--sp-4);
+      text-shadow: 0 0 15px var(--mt-primary-glow);
     }
 
     .synopsis {
-      margin-top: 20px;
-      font-size: 1.1rem;
-      line-height: 1.6rem
+      margin-top: var(--sp-4);
+      font-size: var(--fs-base);
+      line-height: 1.6;
+      color: var(--mt-text-secondary);
+      font-family: var(--font-body);
     }
 
     .info {
-      font-size: 1.05rem;
-      line-height: 1.8rem;
-      margin-top: 16px
+      font-size: var(--fs-base);
+      line-height: 2;
+      margin-top: var(--sp-4);
+      color: var(--mt-text-secondary);
+      font-family: var(--font-body);
     }
 
     .highlight {
-      color: #FF073A;
-      font-weight: 700
+      color: var(--mt-primary);
+      font-weight: 600;
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      font-size: var(--fs-xs);
+      letter-spacing: 1px;
+      margin-right: var(--sp-2);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: var(--sp-4);
+      margin-top: var(--sp-6);
+      flex-wrap: wrap;
     }
 
     .trailer-container {
       display: flex;
       justify-content: center;
-      margin-top: 40px
+      margin-top: var(--sp-8);
     }
 
     .trailer-video {
       width: 100%;
-      max-width: 700px;
+      max-width: 800px;
       aspect-ratio: 16/9;
-      border: 4px solid #FF073A;
-      border-radius: 12px
+      border: 2px solid var(--mt-border-accent);
+      border-radius: var(--radius-md);
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
     }
 
     .notfound {
-      padding: 60px;
-      text-align: center
+      padding: var(--sp-10);
+      text-align: center;
     }
 
-    a.back {
-      display: inline-block;
-      margin-top: 16px;
-      color: #FF073A;
-      text-transform: uppercase;
-      font-weight: 700;
-      text-decoration: none;
-      font-size: 0.8rem;
-    }
-
-    @keyframes pulse-review {
-
-      0%,
-      100% {
-        box-shadow: 0 0 14px rgba(255, 7, 58, 0.5);
+    @media (max-width: 768px) {
+      .movie-detail-card {
+        flex-direction: column;
+        align-items: center;
+        padding: var(--sp-4);
       }
-
-      50% {
-        box-shadow: 0 0 22px rgba(255, 7, 58, 0.8);
+      .poster {
+        width: 100%;
+        max-width: 250px;
       }
-    }
-
-    .header {
-      position: fixed;
-      left: 0;
-      top: 0;
-      right: 0;
-      padding: 18px 40px;
-      background: rgba(0, 0, 0, 0.2);
-      display: flex;
-      justify-content: space-between;
-      align-items: center
-    }
-
-    .logo {
-      font-weight: 700;
-      cursor: pointer
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-      align-items: center
-    }
-
-    .nav-links a {
-      white-space: nowrap
+      .movie-info-wrap h1 {
+        text-align: center;
+      }
+      .btn-group {
+        justify-content: center;
+      }
     }
   </style>
 </head>
 
 <body>
+  <a href="#content" class="skip-link">Skip to movie details</a>
+  <div class="ambient-glow"></div>
 
-  <div class="header" style="backdrop-filter:blur(10px);z-index:1000">
-    <div class="logo" onclick="location.href='../index.html'" style="color:#FF073A;text-transform:uppercase">MTALK
-    </div>
-    <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
-    <div class="nav-links">
-      <a href="get-started.html" style="color:white;text-decoration:none;transition:color 0.3s">Home</a>
-      <a href="profile.html" style="color:white;text-decoration:none;transition:color 0.3s">Profile</a>
-      <a href="location.html" style="color:white;text-decoration:none;transition:color 0.3s">Location</a>
-      <a href="about.html" style="color:white;text-decoration:none;transition:color 0.3s">About</a>
-    </div>
-  </div>
+  <!-- HEADER -->
+  <header class="site-header">
+    <a href="../index.html" class="site-logo">MTALK</a>
+    <button class="hamburger-btn" aria-label="Toggle navigation menu" onclick="toggleMenu()">☰</button>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="../index.html">Home</a>
+      <a href="profile.html">Profile</a>
+      <a href="location.html">Location</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
 
-  <div class="container" id="content">
-    <div id="loading" style="text-align:center;padding:60px">Loading movie...</div>
-  </div>
+  <main class="site-main container" id="content">
+    <div id="loading" style="text-align:center;padding:60px;color:var(--mt-text-muted)">
+      <div class="skeleton" style="width: 280px; height: 420px; display: inline-block; border-radius: var(--radius-md);"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand">MTALK</div>
+    <p class="footer-tagline">Its word of mouth</p>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="../index.html">Home</a>
+    </div>
+    <p class="footer-copy">© 2026 MTALK. All rights reserved.</p>
+  </footer>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
@@ -150,6 +179,7 @@
   <script src="../assets/js/beast-mode-nav.js" defer></script>
   <script src="../assets/js/premium-buttons.js" defer></script>
   <script src="../assets/js/responsive.js" defer></script>
+  <script src="../assets/js/nav-search.js" defer></script>
 
   <script>
     // Auth Guard
@@ -159,20 +189,35 @@
         if (!res.ok) window.location.href = 'login.html';
         else {
           const user = await res.json();
-          const navLinks = document.querySelectorAll('.header a');
-          const profileLink = Array.from(navLinks).find(a => a.href.includes('profile.html'));
-          if (profileLink) profileLink.textContent = user.fullName.split(' ')[0];
+          const profileLink = Array.from(document.querySelectorAll('.site-nav a')).find(a => a.href.includes('profile.html'));
+          if (profileLink) profileLink.textContent = user.fullName.split(' ')[0] + "'s Profile";
         }
       } catch (e) {
         window.location.href = 'login.html';
       }
     }
-    checkAuth();
+    
+    // Check cached auth from auth-guard immediately to prevent flickering
+    if (window.__USER__) {
+      const profileLink = Array.from(document.querySelectorAll('.site-nav a')).find(a => a.href.includes('profile.html'));
+      if (profileLink) profileLink.textContent = window.__USER__.fullName.split(' ')[0] + "'s Profile";
+    } else {
+      checkAuth();
+    }
 
     // Parse movie id from query string: pages/movie.html?id=hit3
     function getMovieId() { const p = new URLSearchParams(location.search); return p.get('id') || p.get('movie') }
 
-    function renderNotFound() { document.getElementById('content').innerHTML = `<div class="notfound"><h2>Movie not found</h2><p>Return <a class="back" href="../index.html">Home</a></p></div>` }
+    function renderNotFound() { 
+      document.getElementById('content').innerHTML = `
+        <div class="notfound movie-detail-card">
+          <div style="width: 100%;">
+            <h2 style="font-size: 2rem; color: var(--mt-primary);">Movie not found</h2>
+            <p style="margin-top: 15px; color: var(--mt-text-secondary);">The movie you are looking for does not exist or has been removed.</p>
+            <a class="premium-btn" style="margin-top: 25px;" href="get-started.html">Return to Categories</a>
+          </div>
+        </div>`;
+    }
 
     async function loadMovie() {
       const id = getMovieId();
@@ -181,7 +226,7 @@
         if (!res.ok) throw new Error('data fetch failed');
         const movies = await res.json();
         const movie = movies.find(m => m.id === id) || movies[0];
-        if (!movie) { renderNotFound(); return }
+        if (!movie) { renderNotFound(); return; }
 
         let trailerUrl = movie.trailer || '';
         if (trailerUrl.includes('<iframe')) {
@@ -195,34 +240,36 @@
         const imgSrc = movie.poster.startsWith('http') ? movie.poster : '../assets/images/' + encodeURIComponent(filename);
 
         const html = `
-          <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
+          <div class="movie-detail-card">
             <img class="poster" src="${imgSrc}" alt="${movie.title} Poster" decoding="async" />
-            <div style="flex:1;min-width:260px">
-              <h1 style="font-size:1.8rem;margin-bottom:8px">${movie.title}</h1>
+            <div class="movie-info-wrap">
+              <h1>${movie.title}</h1>
               <p class="synopsis"><span class="highlight">Synopsis:</span> ${movie.synopsis}</p>
               <div class="info">
-                <p><span class="highlight">Actor:</span> ${movie.actor}</p>
-                <p><span class="highlight">Actress:</span> ${movie.actress || '—'}</p>
-                <p><span class="highlight">Director:</span> ${movie.director || '—'}</p>
-                <p><span class="highlight">Producer:</span> ${movie.producer || '—'}</p>
-                <p><span class="highlight">Music:</span> ${movie.music || '—'}</p>
+                <div><span class="highlight">Actor</span> ${movie.actor}</div>
+                <div><span class="highlight">Actress</span> ${movie.actress || '—'}</div>
+                <div><span class="highlight">Director</span> ${movie.director || '—'}</div>
+                <div><span class="highlight">Producer</span> ${movie.producer || '—'}</div>
+                <div><span class="highlight">Music</span> ${movie.music || '—'}</div>
               </div>
-              <a class="back premium-btn" style="padding: 10px 20px; font-size: 0.75rem;" href="get-started.html">← Back</a>
-              <a class="review-btn premium-btn" style="padding: 10px 20px; font-size: 0.75rem;" href="review.html?movieId=${movie.id}">🎬 Explore Reviews</a>
+              <div class="btn-group">
+                <a class="premium-btn-ghost" href="javascript:history.back()">← Back</a>
+                <a class="premium-btn" href="review.html?movieId=${movie.id}">🎬 Explore Reviews</a>
+              </div>
             </div>
           </div>
+          ${trailerUrl ? `
           <div class="trailer-container">
-            <iframe class="trailer-video" src="${trailerUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+            <iframe class="trailer-video" src="${trailerUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen title="${movie.title} Trailer"></iframe>
           </div>
+          ` : ''}
         `;
 
         document.getElementById('content').innerHTML = html;
-      } catch (err) { console.error(err); renderNotFound() }
+      } catch (err) { console.error(err); renderNotFound(); }
     }
 
     loadMovie();
   </script>
-
 </body>
-
 </html>

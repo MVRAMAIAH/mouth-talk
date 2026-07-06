@@ -5,109 +5,95 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - MTALK</title>
-  <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg"
-    type="image/png">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="description" content="Sign in to MTALK - Access movie reviews, ratings, and community discussions.">
+  <link rel="icon" href="https://t3.ftcdn.net/jpg/06/76/63/78/360_F_676637882_ywOxjtsIXUK79F6lKVtXAwYiI9zZ2h3H.jpg" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Design System -->
   <link rel="stylesheet" href="../assets/css/performance.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
   <link rel="stylesheet" href="../assets/css/premium-buttons.css">
   <link rel="stylesheet" href="../assets/css/responsive.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Orbitron', sans-serif;
-    }
 
+  <style>
     body {
-      background: black;
-      color: white;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       overflow-y: auto;
     }
 
-    /* HEADER */
-    .header {
-      width: 100%;
-      padding: 20px 50px;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      position: fixed;
-      top: 0;
-      left: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .logo {
-      font-size: 26px;
-      font-weight: bold;
-      color: #FF073A;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: white;
-      font-size: 18px;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-
-    .nav-links a:hover {
-      color: #FF073A;
-    }
-
     /* LOGIN CONTAINER */
     .login-container {
       margin-top: 140px;
       text-align: center;
-      padding: 40px;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 8px;
-      /* Changed from 15px */
-      box-shadow: 0 4px 20px rgba(255, 7, 58, 0.6);
+      padding: var(--sp-10);
+      background: var(--mt-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 4px 30px rgba(255, 7, 58, 0.15), var(--shadow-lg);
       width: 90%;
       max-width: 450px;
-      border: 1px solid rgba(255, 7, 58, 0.3);
+      border: 1px solid var(--mt-glass-border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle top gradient accent */
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--mt-primary), var(--mt-cyan), var(--mt-primary));
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
 
     .login-container h2 {
+      font-family: var(--font-display);
       font-size: 28px;
       margin-bottom: 25px;
-      text-shadow: 0 0 10px #FF073A;
+      text-shadow: 0 0 20px var(--mt-primary-glow);
+      background: linear-gradient(135deg, #fff, var(--mt-primary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     /* TABS */
     .tabs {
       display: flex;
       margin-bottom: 25px;
-      border-bottom: 2px solid rgba(255, 7, 58, 0.2);
+      border-bottom: 2px solid var(--mt-border);
     }
 
     .tab {
       flex: 1;
-      padding: 12px;
+      padding: var(--sp-3);
       cursor: pointer;
-      transition: 0.3s;
-      font-weight: bold;
-      color: rgba(255, 255, 255, 0.6);
+      transition: var(--duration-normal);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--fs-sm);
+      color: var(--mt-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: none;
+      background: none;
     }
 
     .tab.active {
-      color: #FF073A;
-      border-bottom: 2px solid #FF073A;
+      color: var(--mt-primary);
+      border-bottom: 2px solid var(--mt-primary);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--mt-text-secondary);
     }
 
     .tab-content {
@@ -120,33 +106,27 @@
 
     /* FORMS */
     .input-group {
-      margin-bottom: 15px;
+      margin-bottom: var(--sp-4);
       text-align: left;
     }
 
     .input-group label {
       display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      color: #FF073A;
-    }
-
-    input:focus {
-      outline: none;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+      margin-bottom: var(--sp-2);
+      font-size: var(--fs-sm);
+      color: var(--mt-primary);
+      font-family: var(--font-body);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .google-btn {
-      display: flex !important;
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 15px;
+      gap: var(--sp-4);
       width: 100%;
-      /* Aesthetics handled by .premium-btn */
     }
 
     .google-btn img {
@@ -155,108 +135,131 @@
     }
 
     /* UTILS */
-    .error-msg {
-      color: #ff4d4d;
-      font-size: 14px;
-      margin-top: 10px;
-      display: none;
-    }
-
     .loading-spinner {
       display: none;
       margin: 20px auto;
       width: 30px;
       height: 30px;
-      border: 4px solid rgba(255, 7, 58, 0.1);
-      border-top: 4px solid #FF073A;
+      border: 4px solid var(--mt-primary-subtle);
+      border-top: 4px solid var(--mt-primary);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
 
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
+    #recaptcha-container {
+      margin: var(--sp-4) 0;
     }
 
-    #recaptcha-container {
-      margin: 15px 0;
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: var(--sp-6) 0;
+      gap: var(--sp-4);
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--mt-border);
+    }
+
+    .divider span {
+      font-size: var(--fs-xs);
+      color: var(--mt-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
   </style>
 </head>
 
 <body>
 
+  <a href="#login-form" class="skip-link">Skip to login form</a>
+
+  <div class="ambient-glow"></div>
+
   <!-- HEADER -->
-  <div class="header">
-    <div class="logo" onclick="window.location.href='../index.html'">MTALK</div>
-    <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
-    <div class="nav-links">
+  <header class="site-header">
+    <a href="../index.html" class="site-logo">MTALK</a>
+    <button class="hamburger-btn" onclick="toggleMenu()" aria-label="Toggle navigation menu">☰</button>
+    <nav class="site-nav" aria-label="Main navigation">
       <a href="../index.html">Home</a>
       <a href="profile.html">Profile</a>
       <a href="location.html">Location</a>
       <a href="about.html">About</a>
-    </div>
-  </div>
+    </nav>
+  </header>
 
   <!-- LOGIN FORM -->
-  <div class="login-container">
-    <h2>Access MTALK</h2>
+  <main id="login-form" class="site-main">
+    <div class="login-container">
+      <h2>Access MTALK</h2>
 
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('google')">Google</div>
-      <div class="tab" onclick="switchTab('phone')">Phone OTP</div>
-    </div>
-
-    <!-- Google Tab Content -->
-    <div id="google-tab" class="tab-content active">
-      <p style="margin-bottom: 25px; color: rgba(255,255,255,0.7); font-size: 14px;">One-click secure access</p>
-      <button class="google-btn premium-btn" onclick="signInWithGoogle()">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-        Sign in with Google
-      </button>
-    </div>
-
-    <!-- Phone Tab Content -->
-    <div id="phone-tab" class="tab-content">
-      <div id="phone-step-1">
-        <div class="input-group">
-          <label style="display:block; margin-bottom:8px; font-size:14px; color:#FF073A;">Full Name</label>
-          <input type="text" id="phone-name" class="premium-input" placeholder="E.g. John Doe">
-        </div>
-        <div class="input-group">
-          <label style="display:block; margin-bottom:8px; font-size:14px; color:#FF073A;">Mobile Number</label>
-          <input type="tel" id="phoneNumber" class="premium-input" placeholder="+91 9876543210">
-        </div>
-        <div id="recaptcha-container"></div>
-        <button id="send-otp-btn" class="premium-btn" style="width:100%" onclick="sendOTP()">Send OTP</button>
+      <div class="tabs" role="tablist">
+        <button class="tab active" onclick="switchTab('google')" role="tab" aria-selected="true">Google</button>
+        <button class="tab" onclick="switchTab('phone')" role="tab" aria-selected="false">Phone OTP</button>
       </div>
 
-      <div id="phone-step-2" style="display: none;">
-        <div class="input-group">
-          <label style="display:block; margin-bottom:8px; font-size:14px; color:#FF073A;">Enter 6-digit OTP</label>
-          <input type="text" id="otp-input" class="premium-input" maxlength="6"
-            style="letter-spacing: 5px; font-size: 20px; text-align: center;">
-        </div>
-        <button class="premium-btn" style="width:100%" onclick="verifyOTP()">Verify & Login</button>
-        <p style="margin-top: 15px; font-size: 12px; cursor: pointer; color: #FF073A;" onclick="resetPhoneStep()">Change
-          Number</p>
+      <!-- Google Tab Content -->
+      <div id="google-tab" class="tab-content active" role="tabpanel">
+        <p style="margin-bottom: 25px; color: var(--mt-text-tertiary); font-size: var(--fs-sm);">One-click secure access</p>
+        <button class="google-btn premium-btn" onclick="signInWithGoogle()">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo">
+          Sign in with Google
+        </button>
       </div>
-    </div>
 
-    <div class="loading-spinner" id="loader"></div>
-    <div id="error-box" class="error-msg"></div>
-  </div>
+      <!-- Phone Tab Content -->
+      <div id="phone-tab" class="tab-content" role="tabpanel">
+        <div id="phone-step-1">
+          <div class="input-group">
+            <label for="phone-name">Full Name</label>
+            <input type="text" id="phone-name" class="premium-input" placeholder="E.g. John Doe">
+          </div>
+          <div class="input-group">
+            <label for="phoneNumber">Mobile Number</label>
+            <input type="tel" id="phoneNumber" class="premium-input" placeholder="+91 9876543210">
+          </div>
+          <div id="recaptcha-container"></div>
+          <button id="send-otp-btn" class="premium-btn" style="width:100%" onclick="sendOTP()">Send OTP</button>
+        </div>
+
+        <div id="phone-step-2" style="display: none;">
+          <div class="input-group">
+            <label for="otp-input">Enter 6-digit OTP</label>
+            <input type="text" id="otp-input" class="premium-input" maxlength="6"
+              style="letter-spacing: 5px; font-size: 20px; text-align: center; font-family: var(--font-display);">
+          </div>
+          <button class="premium-btn" style="width:100%" onclick="verifyOTP()">Verify & Login</button>
+          <p style="margin-top: 15px; font-size: var(--fs-xs); cursor: pointer; color: var(--mt-primary);" onclick="resetPhoneStep()">Change
+            Number</p>
+        </div>
+      </div>
+
+      <div class="loading-spinner" id="loader"></div>
+      <div id="error-box" class="error-msg"></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-brand">MTALK</div>
+    <p class="footer-tagline">Its word of mouth</p>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="../index.html">Home</a>
+    </div>
+    <p class="footer-copy">© 2026 MTALK. All rights reserved.</p>
+  </footer>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
   <script src="../assets/js/firebase-init.js"></script>
+  <script src="../assets/js/toast.js"></script>
   <script src="../assets/js/premium-buttons.js"></script>
   <script src="../assets/js/responsive.js"></script>
 
@@ -349,7 +352,6 @@
       if (phone.length === 10) {
         phone = '+91' + phone;
       } else if (!phone.startsWith('+')) {
-        // If it doesn't start with +, assume it needs one but warn if not 10 digits
         if (phone.length > 0) phone = '+' + phone;
       }
 
@@ -420,8 +422,6 @@
     }
 
     // Auto-login check — disabled to prevent redirect loops
-    // Users who are already logged in can navigate normally from index.html
-
   </script>
 
 </body>

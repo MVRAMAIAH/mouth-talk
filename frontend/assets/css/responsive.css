@@ -1,81 +1,13 @@
 /*
-  MTALK Responsive System
-  Handles mobile navigation (hamburger menu) and common responsive overrides.
-  Desktop styles are untouched — these rules only apply at ≤768px and ≤480px.
+  MTALK Responsive Overrides
+  ──────────────────────────
+  Handles page-specific responsive adjustments.
+  Header/nav mobile styles are in global.css.
+  These rules handle content-area and component scaling.
 */
-
-/* ─── HAMBURGER BUTTON (hidden on desktop) ─── */
-.hamburger-btn {
-    display: none;
-    background: none;
-    border: none;
-    color: #FF073A;
-    font-size: 28px;
-    cursor: pointer;
-    padding: 4px 8px;
-    z-index: 1001;
-    line-height: 1;
-    transition: transform 0.3s ease;
-}
-
-.hamburger-btn:hover {
-    transform: scale(1.15);
-}
 
 /* ─── TABLET (≤768px) ─── */
 @media (max-width: 768px) {
-
-    /* Show hamburger */
-    .hamburger-btn {
-        display: block;
-    }
-
-    /* Collapse nav links into a vertical dropdown */
-    .header .nav-links {
-        display: none !important;
-        flex-direction: column;
-        position: absolute;
-        top: 100%;
-        right: 0;
-        left: 0;
-        background: rgba(0, 0, 0, 0.95);
-        backdrop-filter: blur(20px);
-        padding: 15px 0;
-        gap: 0;
-        border-bottom: 2px solid rgba(255, 7, 58, 0.3);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-        contain: content;
-    }
-
-    .header .nav-links.active {
-        display: flex !important;
-    }
-
-    .header .nav-links a,
-    .header .nav-links button {
-        display: block;
-        text-align: center;
-        padding: 14px 20px;
-        margin: 0;
-        font-size: 16px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        transition: background 0.3s;
-    }
-
-    .header .nav-links a:hover,
-    .header .nav-links button:hover {
-        background: rgba(255, 7, 58, 0.1);
-    }
-
-    /* Header adjustments */
-    .header {
-        padding: 15px 20px !important;
-        flex-wrap: nowrap;
-    }
-
-    .logo {
-        font-size: 22px !important;
-    }
 
     /* Common content containers */
     .login-container {
@@ -99,7 +31,7 @@
 
     /* Movie poster sizing */
     .poster {
-        width: 100% !important;
+        width: 100%;
         max-width: 280px;
         aspect-ratio: 3/5;
         object-fit: cover;
@@ -172,14 +104,6 @@
 /* ─── MOBILE (≤480px) ─── */
 @media (max-width: 480px) {
 
-    .header {
-        padding: 12px 15px !important;
-    }
-
-    .logo {
-        font-size: 20px !important;
-    }
-
     /* Marquee adjustments for landing page */
     .marquee-wrapper {
         width: 95vw;
@@ -210,7 +134,7 @@
     }
 
     .interactive-letter {
-        font-size: 26px !important;
+        font-size: 26px;
         letter-spacing: -0.03em;
     }
 
@@ -288,11 +212,6 @@
     .movie-grid {
         padding: 15px;
         gap: 12px;
-    }
-
-    h1 {
-        font-size: 1.5rem;
-        margin-top: 100px;
     }
 
     /* Review */
