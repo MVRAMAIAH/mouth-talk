@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="../assets/css/premium-buttons.css">
     <link rel="stylesheet" href="../assets/css/responsive.css">
     <link rel="stylesheet" href="../assets/css/nav-search.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <style>
         body {
@@ -180,6 +180,14 @@
                 gap: 50px 20px;
             }
         }
+
+        /* Override performance.css content-visibility on this page —
+           it can skip rendering the container on mobile, causing
+           GSAP animations to run on invisible elements and leave
+           stale opacity values. */
+        .container {
+            content-visibility: visible !important;
+        }
     </style>
 </head>
 
@@ -311,16 +319,33 @@
             if (typeof injectAdminModal === 'function') injectAdminModal();
         });
 
-        // FIXED: opacity was 1, should be 0 for the fade-in to work
-        window.addEventListener('DOMContentLoaded', () => {
-            gsap.from(".box", {
-                duration: 1,
-                opacity: 0,
-                y: 30,
-                stagger: 0.1,
-                ease: "power3.out"
-            });
-        });
+        // Animate boxes in with a fade+slide, guarding against GSAP load race
+        function runBoxAnimation() {
+            if (typeof gsap !== 'undefined') {
+                // Clear any stale inline styles from a previous failed animation
+                document.querySelectorAll('.box').forEach(b => {
+                    b.style.opacity = '';
+                    b.style.transform = '';
+                });
+                gsap.fromTo(".box",
+                    { opacity: 0, y: 30 },
+                    { duration: 1, opacity: 1, y: 0, stagger: 0.1, ease: "power3.out" }
+                );
+            } else {
+                // GSAP not loaded — make sure boxes are visible anyway
+                document.querySelectorAll('.box').forEach(b => {
+                    b.style.opacity = '1';
+                    b.style.transform = 'none';
+                });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', runBoxAnimation);
+        } else {
+            // DOMContentLoaded already fired (e.g. navigating back to this page)
+            runBoxAnimation();
+        }
     </script>
 </body>
 
