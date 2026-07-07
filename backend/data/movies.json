@@ -1,21 +1,5 @@
 [
   {
-    "_id": "69bbfc9a056d008a083a9438",
-    "id": "USB",
-    "actor": "PAWAN  KALYAN KONIDELA ",
-    "actress": "SRI LEELA , RASHI KHANNA",
-    "category": "tollywood",
-    "createdAt": "2026-03-19T13:39:38.771Z",
-    "director": "CULT CAPTAIN HARISH",
-    "music": "DEVI SRI PRASAD",
-    "poster": "usb.jpg",
-    "producer": "MYTHRI MOVIE MAKERS",
-    "synopsis": "Ustaad Bhagat Singh is a 2026 Telugu-language mass action entertainer starring Pawan Kalyan, directed by Harish Shankar and produced by Mythri Movie Makers. Releasing on March 19, 2026, the film is known for its high-voltage action, vintage mass vibes, and power-packed dialogues, reuniting the Gabbar Singh duo",
-    "title": "USTAAD BHAGAT SINGH",
-    "trailer": "https://www.youtube.com/embed/MLU5ZEp9YDo?si=lOcLprdNSphIaitO",
-    "updatedAt": "2026-03-19T13:39:38.771Z"
-  },
-  {
     "_id": "69bc08e8056d008a083a944c",
     "id": "duran",
     "actor": "RANVEER SINGH",
@@ -40,12 +24,60 @@
     "createdAt": "2026-03-20T07:01:31.804Z",
     "director": "Hussian Shah Khan",
     "music": "Kala Bhairava < Vidya Sagar",
-    "poster": "mt.jfif",
+    "poster": "mt.jpg",
     "producer": "light box media , picture perefect media",
     "synopsis": "Mrithyunjay (2026) is a Telugu-language crime thriller film starring Sree Vishnu and Reba Monica John, directed by Hussain Sha Kiran. It follows a marketing employee who uncovers murders disguised as accidents. The film was released on March 6, 2026, and is noted for its thriller elements, though with mixed reviews",
     "title": "mrithyunjay",
     "trailer": "https://www.youtube.com/embed/gvo59XR5cNc?si=uhJ5JWOdnNurvc6I",
-    "updatedAt": "2026-03-24T15:26:24.046Z"
+    "updatedAt": "2026-04-17T13:43:02.860Z"
+  },
+  {
+    "_id": "69da9ebe92eca75e787328df",
+    "id": "Dk",
+    "actor": "Adivi sesh",
+    "actress": "Mrunal thakur ",
+    "category": "tollywood",
+    "createdAt": "2026-04-11T19:19:26.512Z",
+    "director": "Shaneil Deo",
+    "music": "Bheems cecirelio",
+    "poster": "og.jpg",
+    "producer": "Supriya yarlagadda",
+    "synopsis": "\nA man is convicted for a crime he didn't commit owing to a betrayal by his better half. He hunts her down seeking vengeance, as their stories intertwine with a series of robberies.",
+    "title": "Dacoit",
+    "trailer": "https://www.youtube.com/embed/8Y_D7-GCcxY?si=G37jQp4lavUJyTxJ",
+    "updatedAt": "2026-04-23T13:51:54.589Z"
+  },
+  {
+    "_id": "69e3206692eca75e7873384b",
+    "id": "ant",
+    "actor": "jagadish sumala",
+    "actress": "no one",
+    "category": "tollywood",
+    "createdAt": "2026-04-18T06:10:46.416Z",
+    "director": "mv ramaiah",
+    "music": "none",
+    "poster": "WhatsApp_Image_2026-04-18_at_10.11.23_AM.jpeg",
+    "producer": "none",
+    "synopsis": "a short fim on internal emotions",
+    "title": "anthargatha",
+    "trailer": "https://www.youtube.com/embed/VGKpDVfBm1M?si=XhzhCHtwWljZ_Hjf",
+    "updatedAt": "2026-05-29T09:33:23.324Z"
+  },
+  {
+    "_id": "6a19090f02d4fa38e97e5406",
+    "id": "ped",
+    "actor": "RAM CHARAN KONIDELA",
+    "actress": "JAHNVI KAPOOR",
+    "category": "tollywood",
+    "createdAt": "2026-05-29T03:33:35.056Z",
+    "director": "BUCHI BABU SANA ",
+    "music": "AR RAHMAN",
+    "poster": "peddi.jpg",
+    "producer": "VRIDDHI CINEMAS",
+    "synopsis": "In 1980s rural Andhra Pradesh, A spirited villager unites his community through sports to defend their pride against a powerful rival.",
+    "title": "peddi",
+    "trailer": "https://www.youtube.com/embed/sF2dj7ycZvA?si=DlOxwU7suJZOy_B9",
+    "updatedAt": "2026-05-29T03:33:35.056Z"
   },
   {
     "_id": "69a1ddcb645e91569eaf23f7",
@@ -206,5 +238,21 @@
     "title": "DURANDHAR - THE REVENGE",
     "trailer": "https://www.youtube.com/embed/CN0lNff-zm0?si=ED45gboDOHgMoVHB",
     "updatedAt": "2026-03-20T06:00:49.811Z"
+  },
+  {
+    "_id": "69d53a1292eca75e78731ed1",
+    "id": "apx",
+    "actor": "theron",
+    "actress": "taron",
+    "category": "hollywood",
+    "createdAt": "2026-04-07T17:08:34.072Z",
+    "director": "baltasar",
+    "music": "hans zimmer",
+    "poster": "apx.jpg",
+    "producer": "cherin entertainments",
+    "synopsis": "Apex (2026) is a Netflix survival action-thriller directed by Baltasar Kormákur, featuring Charlize Theron as a rock climber hunted by a serial killer, played by Taron Egerton, in the Australian wilderness. Written by Jeremy Robbins and releasing on April 24, 2026, the film focuses on intense, high-stakes survival against both na.",
+    "title": "The Apex",
+    "trailer": "https://www.youtube.com/embed/kgv8jf_8dm0?si=uK9s1SoNe3H1vqk9",
+    "updatedAt": "2026-04-07T17:08:34.072Z"
   }
 ]
