@@ -4,7 +4,11 @@ const path = require('path');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const promClient = require('prom-client');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
+
+const collectDefaultMetrics = promClient.collectDefaultMetrics;
+collectDefaultMetrics({ register: promClient.register });
 
 // ─── Config ────────────────────────────────────────────
 const { connectDb, hasDb, getCategoryCollection, CATEGORY_NAMES } = require('./config/db');
@@ -22,6 +26,15 @@ app.use(cookieParser());
 // ─── Health Checks ─────────────────────────────────────
 app.get('/health', (req, res) => res.status(200).send('HEALTH_OK'));
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
+
+app.get('/metrics', async (req, res) => {
+    try {
+        res.set('Content-Type', promClient.register.contentType);
+        res.end(await promClient.register.metrics());
+    } catch (ex) {
+        res.status(500).end(ex);
+    }
+});
 
 // ─── API Routes ────────────────────────────────────────
 const authRoutes = require('./routes/auth');
