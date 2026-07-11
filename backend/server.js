@@ -110,6 +110,17 @@ app.get('*', (req, res) => {
     res.status(404).send('Not found');
 });
 
+// Catch all other unmatched routes (e.g. POST to unknown paths)
+app.use('*', (req, res) => {
+    res.status(404).json({ error: 'Route not found' });
+});
+
+// Central Error Handler (forces JSON responses instead of Express HTML defaults)
+app.use((err, req, res, next) => {
+    console.error('Express Error:', err.message || err);
+    res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
+});
+
 // ─── Start Server ──────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 
