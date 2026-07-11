@@ -68,6 +68,11 @@ async function createIndexes() {
     if (!db) return;
 
     try {
+        // Categories
+        for (const cat of CATEGORY_NAMES) {
+            await categoryCollections[cat].createIndex({ id: 1 }, { unique: true });
+        }
+
         // Users
         await collections.users.createIndex({ uid: 1 }, { unique: true });
         await collections.users.createIndex({ fullName: 'text' });

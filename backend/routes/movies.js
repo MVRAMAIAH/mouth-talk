@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
+const { performance } = require('perf_hooks');
 
 const authMiddleware = require('../middleware/auth');
 const requireAdmin = require('../middleware/admin');
@@ -15,6 +16,8 @@ const STATIC_ROOT = path.resolve(__dirname, '..', '..', 'frontend');
 
 // GET /api/movies — List all movies (with pagination)
 router.get('/', async (req, res) => {
+    const reqId = generateId().substring(0, 6);
+    console.time(`[Movies] GET /api/movies - ${reqId}`);
     try {
         const page = Math.max(1, parseInt(req.query.page) || 1);
         const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
@@ -23,29 +26,38 @@ router.get('/', async (req, res) => {
 
         if (hasDb()) {
             let results = [];
+            console.time(`[Movies] MongoDB_Query - ${reqId}`);
 
             if (category && CATEGORY_NAMES.includes(category)) {
                 // Single category
                 const coll = getCategoryCollection(category);
-                results = await coll.find({}).skip(skip).limit(limit).toArray();
+                results = await coll.find({}, { projection: { _id: 0 } }).skip(skip).limit(limit).toArray();
             } else {
-                // All categories
-                for (const cat of CATEGORY_NAMES) {
-                    const docs = await getCategoryCollection(cat).find({}).toArray();
+                // All categories concurrently
+                const promises = CATEGORY_NAMES.map(cat => 
+                    getCategoryCollection(cat).find({}, { projection: { _id: 0 } }).toArray()
+                );
+                const allDocs = await Promise.all(promises);
+                for (const docs of allDocs) {
                     results.push(...docs);
                 }
                 // Paginate the combined results
                 results = results.slice(skip, skip + limit);
             }
-
+            console.timeEnd(`[Movies] MongoDB_Query - ${reqId}`);
+            
+            console.timeEnd(`[Movies] GET /api/movies - ${reqId}`);
             return res.json(results);
         }
 
         // JSON fallback
+        console.time(`[Movies] JSON_Fallback - ${reqId}`);
         let movies = await readJSON('movies.json');
         if (category) {
             movies = movies.filter(m => (m.category || '').toLowerCase() === category);
         }
+        console.timeEnd(`[Movies] JSON_Fallback - ${reqId}`);
+        console.timeEnd(`[Movies] GET /api/movies - ${reqId}`);
         res.json(movies.slice(skip, skip + limit));
     } catch (err) {
         console.error('Error fetching movies:', err);
@@ -55,18 +67,30 @@ router.get('/', async (req, res) => {
 
 // GET /api/movies/:id — Get single movie
 router.get('/:id', async (req, res) => {
+    const reqId = generateId().substring(0, 6);
+    console.time(`[Movies] GET /api/movies/:id - ${reqId}`);
     try {
         const id = req.params.id;
 
         if (hasDb()) {
-            for (const cat of CATEGORY_NAMES) {
-                const doc = await getCategoryCollection(cat).findOne({ id });
-                if (doc) return res.json(doc);
-            }
+            console.time(`[Movies] MongoDB_FindOne - ${reqId}`);
+            const promises = CATEGORY_NAMES.map(cat => 
+                getCategoryCollection(cat).findOne({ id }, { projection: { _id: 0 } })
+            );
+            const docs = await Promise.all(promises);
+            const doc = docs.find(d => d !== null);
+            console.timeEnd(`[Movies] MongoDB_FindOne - ${reqId}`);
+            
+            console.timeEnd(`[Movies] GET /api/movies/:id - ${reqId}`);
+            if (doc) return res.json(doc);
             return res.status(404).json({ error: 'Movie not found' });
         }
 
+        console.time(`[Movies] JSON_FindOne - ${reqId}`);
         const movie = (await readJSON('movies.json')).find(m => m.id === id);
+        console.timeEnd(`[Movies] JSON_FindOne - ${reqId}`);
+        
+        console.timeEnd(`[Movies] GET /api/movies/:id - ${reqId}`);
         if (!movie) return res.status(404).json({ error: 'Movie not found' });
         res.json(movie);
     } catch (err) {
@@ -77,17 +101,21 @@ router.get('/:id', async (req, res) => {
 
 // POST /api/movies — Add/update movie (admin only)
 router.post('/', authMiddleware, requireAdmin, movieRules, async (req, res) => {
+    const reqId = generateId().substring(0, 6);
+    console.time(`[Movies] POST /api/movies - ${reqId}`);
     try {
         const movieData = req.body;
         const { id, title, category } = movieData;
 
         if (hasDb()) {
+            console.time(`[Movies] MongoDB_UpsertMovie - ${reqId}`);
             const coll = getCategoryCollection(category.toLowerCase());
             await coll.updateOne(
                 { id },
                 { $set: { ...movieData, updatedAt: new Date() }, $setOnInsert: { createdAt: new Date() } },
                 { upsert: true }
             );
+            console.timeEnd(`[Movies] MongoDB_UpsertMovie - ${reqId}`);
         }
 
         // Also update local JSON
@@ -116,17 +144,22 @@ router.post('/', authMiddleware, requireAdmin, movieRules, async (req, res) => {
 
         // Save booking IDs to MongoDB
         if (hasDb()) {
+            console.time(`[Movies] MongoDB_BulkWriteBookings - ${reqId}`);
             const bookingsCollection = getCollection('bookings');
             const now = new Date();
-            for (const bId of newBookingIds) {
-                await bookingsCollection.updateOne(
-                    { bookingId: bId },
-                    { $set: { movieId: id, bookingId: bId, updatedAt: now }, $setOnInsert: { createdAt: now, used: false } },
-                    { upsert: true }
-                );
-            }
+            
+            const operations = newBookingIds.map(bId => ({
+                updateOne: {
+                    filter: { bookingId: bId },
+                    update: { $set: { movieId: id, bookingId: bId, updatedAt: now }, $setOnInsert: { createdAt: now, used: false } },
+                    upsert: true
+                }
+            }));
+            await bookingsCollection.bulkWrite(operations);
+            console.timeEnd(`[Movies] MongoDB_BulkWriteBookings - ${reqId}`);
         }
 
+        console.timeEnd(`[Movies] POST /api/movies - ${reqId}`);
         console.log(`🎬 Movie added/updated: ${title} (${category}) by admin`);
         res.status(201).json({ success: true, movie: movieData });
     } catch (err) {
@@ -137,19 +170,25 @@ router.post('/', authMiddleware, requireAdmin, movieRules, async (req, res) => {
 
 // DELETE /api/movies/:id — Delete movie (admin only)
 router.delete('/:id', authMiddleware, requireAdmin, async (req, res) => {
+    const reqId = generateId().substring(0, 6);
+    console.time(`[Movies] DELETE /api/movies/:id - ${reqId}`);
     try {
         const id = req.params.id;
 
         if (hasDb()) {
-            for (const cat of CATEGORY_NAMES) {
-                await getCategoryCollection(cat).deleteOne({ id });
-            }
+            console.time(`[Movies] MongoDB_DeleteAll - ${reqId}`);
+            const promises = CATEGORY_NAMES.map(cat => 
+                getCategoryCollection(cat).deleteOne({ id })
+            );
+            await Promise.all(promises);
+            console.timeEnd(`[Movies] MongoDB_DeleteAll - ${reqId}`);
         }
 
         const movies = await readJSON('movies.json');
         const updatedMovies = movies.filter(m => m.id !== id);
         await writeJSON('movies.json', updatedMovies);
 
+        console.timeEnd(`[Movies] DELETE /api/movies/:id - ${reqId}`);
         console.log(`🗑️ Movie deleted: ${id} by admin`);
         res.json({ success: true, message: 'Movie deleted permanently' });
     } catch (err) {
