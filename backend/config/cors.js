@@ -11,6 +11,8 @@ function buildCors() {
     const allowedOrigins = [
         'http://localhost:3000',
         'http://localhost:5173',
+        'https://mouth-talk.onrender.com',
+        'https://mtalk-mouth-talk.onrender.com', // Keep old one just in case
         ...envOrigins.split(',').map(s => s.trim()).filter(Boolean)
     ];
 
